@@ -1,0 +1,100 @@
+import { useCallback, useContext, useEffect, useRef } from "react";
+import Modal from "react-modal/lib/components/Modal";
+import { useSwipeable } from "react-swipeable";
+import Button from "../common/Button";
+import ScreenSwitcher from "../common/ScreenSwitcher";
+import VolumeSlider from "../common/VolumeSlider";
+import { ModalStateContext } from "../contexts/ModalStateProvider";
+import { ScreenContext } from "../contexts/ScreenContextProvider";
+import { eventPathHasNoSwipe } from "../utils/swipe";
+import styles from './ActionPanel.module.scss';
+import { VOLUME_INDICATOR } from "./CommonModals";
+import volumioIcon from "../assets/volumio-icon.png";
+
+function ActionPanel(props) {
+
+  const {disableModal, enableModal} = useContext(ModalStateContext);
+  const {switchScreen} = useContext(ScreenContext);
+  const overlayEl = useRef(null);
+  const {closePanel} = props;
+
+  const modalOverlayClassNames = {
+    base: styles.Overlay,
+    afterOpen: styles['Overlay--after-open'],
+    beforeClose: styles['Overlay--before-close']
+  };
+
+  const modalClassNames = {
+    base: `${styles.Layout} no-swipe`,
+    afterOpen: styles['Layout--after-open'],
+    beforeClose: styles['Layout--before-close']
+  }
+
+  // Disable the Volume Indicator modal from showing
+  // when Action Panel is opened
+  useEffect(() => {
+    if (props.isOpen) {
+      disableModal(VOLUME_INDICATOR);
+    }
+    else {
+      enableModal(VOLUME_INDICATOR);
+    }
+  }, [props.isOpen, disableModal, enableModal]);
+
+  // Close when swipe up occurs on the overlay
+  const swipeHandler = useSwipeable({
+    onSwipedUp: (e) => {
+      if (overlayEl.current && !eventPathHasNoSwipe(e.event, overlayEl.current)) {
+        closePanel();
+      }
+    }
+  });
+
+  const onModalOpened = () => {
+    swipeHandler.ref(overlayEl.current);
+  };
+
+  // Handlers for extra buttons
+  const refresh = useCallback(() => {
+    window.location.reload();
+  }, []);
+
+  const switchToVolumio = useCallback(() => {
+    switchScreen({
+      screenId: 'Volumio'
+    });
+    closePanel();
+  }, [switchScreen, closePanel]);
+
+  const extraButtonStyles = {
+    baseClassName: 'ExtraButton',
+    bundle: styles
+  };
+  
+  return (
+    <Modal 
+      closeTimeoutMS={200}
+      overlayClassName={modalOverlayClassNames}
+      className={modalClassNames}
+      overlayRef={node => (overlayEl.current = node)}
+      onAfterOpen={onModalOpened}
+      {...props}>
+      <VolumeSlider />
+      <div className={styles.Layout__row}>
+        <ScreenSwitcher onSwitch={closePanel}/>
+        <div className={styles.Layout__extraButtonsWrapper}>
+          <Button 
+            styles={extraButtonStyles} 
+            icon="refresh" 
+            onClick={refresh} />
+          <Button 
+            styles={extraButtonStyles} 
+            image={volumioIcon} 
+            onClick={switchToVolumio} />
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+export default ActionPanel;

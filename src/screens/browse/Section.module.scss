@@ -1,0 +1,117 @@
+.Layout {
+  width: 100%;
+  margin: 0 auto;
+
+  &:last-of-type {
+    padding-bottom: 1em;
+  }
+
+  @media (min-width: 1024px) {
+    max-width: 80%;
+  }
+}
+
+.Title {
+  padding: 2em 0.8em 0.5em 0.8em;
+  color: #ccc;
+  font-family: var(--browse-screen-section-title-font-family);
+  font-size: var(--browse-screen-section-title-font-size);
+
+  &--first {
+    padding-top: 1.2em;
+  }
+
+  /*
+  * Temporary workaround for my plugins that provide rich titles
+  */
+  &--rich {
+    display: flex;
+    align-items: center;
+
+    a {
+      color: #ccc;
+      text-decoration: none;
+      font-family: "Roboto", sans-serif;
+      transition: 0.2s;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    div {
+      border-color: #ccc !important;
+    }
+  }
+}
+
+.Items {
+  &--list {
+    --albumart-width: var(--browse-screen-list-item-albumart-width);
+    --albumart-height: var(--browse-screen-list-item-albumart-width);
+    --title-width: calc(100% - var(--album-width) - var(--artist-width));
+    --album-width: 25%;
+    --artist-width: 25%;
+    --duration-width: 4em;
+    --ellipsis-width: 2em;
+    --display-album: inherit;
+    --display-artist: inherit;
+    --display-duration: inherit;
+    --display-menu: inherit;
+
+    display: block;
+    margin-top: 0.5em;
+
+    @media (min-width: 1024px) {
+      margin-bottom: 1em;
+    }
+
+    @import './ListItem';
+  }
+
+  &--noAlbum {
+    --display-album: none;
+  }
+
+  &--noArtist {
+    --display-artist: none;
+  }
+
+  &--noDuration {
+    --display-duration: none;
+  }
+
+  &--noMenu {
+    --display-menu: none;
+  }
+
+  &--grid {
+    --grid-columns: 3;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), 1fr);
+    grid-gap: 1em;
+    margin: 1em;
+
+    @import './GridItem';
+
+    @media (max-width: 240px) {
+      --grid-columns: 2;
+    }
+
+    @media (min-width: 480px) {
+      --grid-columns: 3;
+    }
+
+    @media (min-width: 640px) {
+      --grid-columns: 4;
+    }
+
+    @media (min-width: 900px) {
+      --grid-columns: 5;
+    }
+
+    @media (min-width: 1920px) {
+      --grid-columns: 6;
+    }
+  }
+}

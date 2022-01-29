@@ -1,0 +1,50 @@
+.Layout {
+  width: 100%;
+  height: calc(100% - var(--trackbar-height));
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  background: var(--browse-screen-background);
+  display: flex;
+  flex-direction: column;
+
+  &__contents {
+    width: 100%;
+    flex-grow: 1;
+
+    // OverlayScrollbars
+    :global {
+      .os-scrollbar {
+        .os-scrollbar-handle {
+          background: var(--scrollbar-handle-color);
+
+          &.active {
+            background: var(--scrollbar-handle-active-color);
+          }
+        }
+
+        &:hover .os-scrollbar-handle {
+          background: var(--scrollbar-handle-hover-color);
+        }
+      }
+    }
+  }
+}
+
+.FakeLoadingBar {
+  --loading-percent: 0;
+  width: var(--loading-percent);
+  height: 3px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: var(--browse-screen-fake-loader-color);
+  transition: 0.2s ease-out;
+}
+
+
+.Contents {
+  width: 100%;
+}

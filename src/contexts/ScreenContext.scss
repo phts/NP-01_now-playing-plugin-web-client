@@ -1,0 +1,165 @@
+.Viewport {
+  width: 100%;
+  height: calc(100% - var(--trackbar-height));
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.Screen--inactive {
+  display: none !important;
+}
+
+.Screen--underFloat {
+  filter: var(--screen-underFloat-filter);
+}
+
+.Screen--active {
+  z-index: 10;
+}
+
+.Screen--fadeIn {
+  &-enter {
+    opacity: 0;
+    will-change: opacity;
+
+    &-active {
+      opacity: 1;
+      transition: opacity 200ms;
+    }
+  }
+
+  &-exit {
+    opacity: 1;
+    will-change: opacity;
+
+    &-active {
+      opacity: 0;
+      transition: opacity 200ms;
+    }
+
+    &-done {
+      display: none !important;
+    }
+  }
+}
+
+.Screen--slideUp {
+  &-enter {
+    transform: translateY(100vh);
+
+    &-active {
+      transform: translateY(0);
+      transition: transform 200ms;
+    }
+  }
+
+  &-exit {
+    transform: translateY(0);
+
+    &-active {
+      transform: translateY(100vh);
+      transition: transform 200ms;
+    }
+
+    &-done {
+      display: none !important;
+    }
+  }
+}
+
+.Screen--slideLeft {
+  &-enter {
+    transform: translateX(100vw);
+
+    &-active {
+      transform: translateX(0);
+      transition: transform 200ms;
+    }
+  }
+
+  &-exit {
+    transform: translateX(0);
+
+    &-active {
+      transform: translateX(100vw);
+      transition: transform 200ms;
+    }
+
+    &-done {
+      display: none !important;
+    }
+  }
+}
+
+.Screen--slideRight {
+  &-enter {
+    transform: translateX(-100vw);
+
+    &-active {
+      transform: translateX(0);
+      transition: transform 200ms;
+    }
+  }
+
+  &-exit {
+    transform: translateX(0);
+
+    &-active {
+      transform: translateX(-100vw);
+      transition: transform 200ms;
+    }
+
+    &-done {
+      display: none !important;
+    }
+  }
+}
+
+.Screen--underFloatExit {
+  &-enter {
+    filter: var(--screen-underFloatExit-enter-filter);
+
+    &-active,
+    &-done {
+      filter: var(--screen-underFloatExit-enter-active-filter);
+      transition: filter 200ms;
+    }
+  }
+
+  &-exit {
+    filter: var(--screen-underFloatExit-exit-filter);
+
+    &-active,
+    &-done {
+      filter: var(--screen-underFloatExit-exit-active-filter);
+      transition: filter 200ms;
+    }
+  }
+}
+
+.TrackBar--slideUp {
+  &-enter {
+    transform: translateY(calc(100% + 10px));
+
+    &-active {
+      transform: translateY(0);
+      transition: transform 200ms;
+    }
+  }
+
+  &-exit {
+    transform: translateY(0);
+
+    &-active {
+      transform: translateY(calc(100% + 10px));
+      transition: transform 200ms;
+    }
+
+    &-done {
+      display: none !important;
+    }
+  }
+}

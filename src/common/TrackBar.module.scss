@@ -1,0 +1,173 @@
+.Layout {
+  position: absolute;
+  width: 100%;
+  height: var(--trackbar-height);
+  bottom: 0;
+  left: 0;
+  background: var(--trackbar-background);
+  z-index: 60;
+
+  &--noSeek {
+    border-top: var(--trackbar-border-top);
+  }
+
+  &--inactive {
+    display: none;
+  }
+}
+
+.Layout__contents {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  padding: var(--trackbar-padding);
+  box-sizing: border-box;
+}
+
+.AlbumArt {
+  cursor: pointer;
+
+  &__image {
+    --size: calc(var(--trackbar-height) - calc(var(--trackbar-padding) * 2));
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    object-fit: cover;
+    border-radius: var(--trackbar-image-border-radius);
+  }
+
+  @media all and (max-width: 319px) {
+    display: none;
+  }
+}
+
+@import "../common/TrackInfoText";
+
+.TrackInfoText {
+  height: 100%;
+  justify-content: space-around;
+  margin-left: 10px;
+  cursor: pointer;
+
+  &__title {
+    color: var(--trackbar-title-color);
+    font-family: var(--trackbar-title-font-family);
+    font-size: var(--trackbar-title-font-size);
+    line-height: normal;
+    -webkit-line-clamp: 1;
+  }
+
+  &__artistAlbum {
+    color: var(--trackbar-artist-album-color);
+    font-family: var(--trackbar-artist-album-font-family);
+    font-size: var(--trackbar-artist-album-font-size);
+  }
+
+  &__format {
+    line-height: var(--trackbar-format-line-height);
+    margin-top: auto;
+  }
+
+  &__formatIcon {
+    height: var(--trackbar-format-line-height);
+  }
+
+  &__formatResolution {
+    font-family: var(--trackbar-format-resolution-font-family);
+    font-size: var(--trackbar-format-resolution-font-size);
+    color: var(--trackbar-format-resolution-color);
+  }
+}
+
+@import "../common/Seekbar";
+
+.Seekbar {
+  --seekbar-height: var(--trackbar-seekbar-height);
+  --seekbar-thumb-size: var(--trackbar-seekbar-thumb-size);
+  --seekbar-track-border-radius: 0;
+
+  position: absolute;
+  width: 100%;
+  top: calc(-1 * (var(--trackbar-seekbar-height) / 2));
+}
+
+@import "../common/PlayerButtonGroup";
+
+.PlayerButtonGroup {
+  gap: 16px;
+  padding: 0 8px;
+  margin-left: auto;
+}
+
+@import "../common/Button";
+
+.Button {
+  --button-color: var(--trackbar-player-button-color);
+  --button-font-size: var(--trackbar-player-button-font-size);
+  --button-toggled-color: var(--trackbar-player-button-toggled-color);
+  --button-hover-color: var(--trackbar-player-button-hover-color);
+
+  width: var(--trackbar-player-button-width);
+  height: var(--trackbar-player-button-height);
+
+  @media all and (max-width: 479px) {
+    &--next {
+      display: none;
+    }
+  }
+
+  @media all and (max-width: 580px) {
+    &--previous {
+      display: none;
+    }
+  }
+}
+
+.VolumeBarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 200;
+}
+
+.VolumeBarWrapper {
+  outline: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - var(--trackbar-height) - 5px);
+  overflow: hidden;
+  pointer-events: none;
+
+  .VolumeBar {
+    --volume-slider-background: var(--trackbar-volumebar-background);
+
+    position: absolute;
+    right: 0.8em;
+    max-height: 320px;
+    height: 80%;
+    bottom: -100%;
+    opacity: 0;
+    transition: bottom 200ms ease-out, opacity 200ms ease-in;
+    backdrop-filter: blur(10px);
+  }
+
+  &--after-open {
+    .VolumeBar {
+      bottom: 0;
+      opacity: 1;
+    }
+  }
+
+  &--before-close {
+    .VolumeBar {
+      bottom: -100%;
+      opacity: 0;
+    }  
+  }
+}

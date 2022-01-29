@@ -1,0 +1,76 @@
+.Seekbar {
+  &__slider {
+    --seek-percent: 0;
+
+    position: relative;
+    width: calc(100% - var(--seekbar-thumb-size));
+    margin-left: auto;
+    margin-right: auto;
+    height: var(--seekbar-height);
+    margin-bottom: 3px;
+    background: var(--seekbar-track-remaining-color);
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    @mixin track-ext($position) {
+      content: '';
+      width: calc(var(--seekbar-thumb-size) / 2); 
+      height: 100%;
+      position: absolute;
+      top: 0;
+      @if $position == start {
+        left: calc(var(--seekbar-thumb-size) / -2);
+        background: var(--seekbar-track-played-color);
+        border-top-left-radius: var(--seekbar-track-border-radius);
+        border-bottom-left-radius: var(--seekbar-track-border-radius);
+      }
+      @else if $position == end {
+        right: calc(var(--seekbar-thumb-size) / -2);
+        background: var(--seekbar-track-remaining-color);
+        border-top-right-radius: var(--seekbar-track-border-radius);
+        border-bottom-right-radius: var(--seekbar-track-border-radius);
+        z-index: -1;
+      }
+    }
+
+    &:before {
+      @include track-ext(start);
+    }
+
+    &:after {
+      @include track-ext(end);
+    }
+  }
+
+  &__track {
+    width: var(--seek-percent);
+    height: var(--seekbar-height);
+    background: var(--seekbar-track-played-color);
+    position: absolute;
+  }
+  
+  &__thumb {
+    background: var(--seekbar-thumb-color);
+    width: var(--seekbar-thumb-size);
+    height: var(--seekbar-thumb-size);
+    border-radius: 50%;
+    outline: none;
+  }
+
+  &__seek {
+    display: inline-block;
+    width: 50%;
+    font-family: var(--seekbar-text-font-family);
+    font-size: var(--seekbar-text-font-size);
+    font-weight: 100;
+    color: var(--seekbar-text-color);
+    margin-top: 0.5em;
+  }
+  
+  &__duration {
+    @extend .Seekbar__seek;
+    text-align: right;
+  }
+}

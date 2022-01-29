@@ -1,0 +1,135 @@
+@import '../../common/Button';
+
+@mixin text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Item {
+  width: 100%;
+  min-width: 0;
+
+  display: block;
+  cursor: pointer;
+  //transition: 0.2s ease;
+  color: var(--browse-screen-grid-item-color);
+  text-align: center;
+
+  > :not(:first-child) {
+    padding: 0.5em 0px;
+  }
+
+  &:hover {
+    .Item__image,
+    .Item__icon {
+      filter: brightness(0.6);
+    }
+    .Item__button--play {
+      display: flex;
+    }
+  }
+
+  &__albumart {
+    width: 100%;
+    background: var(--browse-screen-grid-item-albumart-background);
+    border-radius: 0.5em;
+    overflow: hidden;
+    position: relative;
+
+    &:before {
+      /* 1:1 */
+      content: "";
+      display: block;
+      width: 100%;
+      padding-top: 100%;
+    }
+  }
+
+  &__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: 0.2s;
+    transition-property: filter, width, height;
+  }
+  
+  &__icon {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: 0.2s;
+    transition-property: filter, width, height;
+  }
+
+  &__title {
+    @include text();
+  }
+  
+  &__artist {
+    @include text();
+    font-family: var(--browse-screen-grid-item-artist-font-family);
+    color: var(--browse-screen-grid-item-artist-color);
+    font-size: var(--browse-screen-grid-item-artist-font-size);
+  }
+  
+  &__album,
+  &__albumArtist,
+  &__duration,
+  &__ellipsis {
+    display: none;
+  }
+
+  &__ellipsis {
+    width: var(--ellipsis-width);
+  }
+
+  &__button--play {
+    @extend .Button;
+
+    --play-button-diameter: 3em;
+    --play-button-margin: 0.6em;
+
+    position: absolute;
+    width: var(--play-button-diameter);
+    height: var(--play-button-diameter);
+    bottom: var(--play-button-margin);
+    left: var(--play-button-margin);
+    border-radius: 50%;
+    background: var(--browse-screen-grid-item-play-button-background);
+    transition-property: opacity, color, width, height;
+    display: none;
+    
+    &:hover {
+      color: var(--browse-screen-grid-item-play-button-hover-color);
+    }
+
+    @media (max-width: 479px) {
+      --play-button-diameter: 2em;
+      --play-button-margin: 0.3em;
+    }
+
+    @media (min-width: 480px) and (max-width: 719px) {
+      --play-button-diameter: 2.5em;
+      --play-button-margin: 0.4em;
+    }
+
+    @media (min-width: 1120px) {
+      --play-button-margin: 8px;
+    }
+
+    @media (hover: none) {
+      display: flex;
+    }
+  }
+}

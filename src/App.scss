@@ -1,0 +1,70 @@
+@charset "UTF-8";
+@import url(https://fonts.googleapis.com/css2?Noto+Sans+Display:wght@100;700&family=Roboto:wght@400;700&display=swap);
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/assets/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.5em;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+body {
+  font-family: var(--app-font-family);
+  background: var(--app-background);
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: contain;
+}
+
+.App {
+  font-family: var(--app-font-family);
+  overflow: hidden;
+}
+
+/*.App__screenWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transition: filter 0.1s ease-in;
+
+  &.blur {
+    filter: blur(30px);
+  }
+
+  .screens > .screen:not(.active):not(.visible-under-active) {
+    display: none;
+  }
+
+  .screens > .screen:not(.active).visible-under-active {
+    filter: brightness(0.5);
+  }
+}
+*/

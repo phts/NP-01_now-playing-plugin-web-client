@@ -1,0 +1,71 @@
+.Layout {
+  min-width: 15em;
+  max-width: 60vw;
+  padding: 1em;
+  margin: 0em auto 1em auto;
+  background: var(--toast-background);
+  border-radius: var(--toast-border-radius);
+  display: flex;
+  align-items: center;
+  filter: drop-shadow(0 0 8px var(--toast-shadow-color));
+  backdrop-filter: blur(10px);
+
+  &__contents {
+    flex-grow: 1;
+    padding: 0 1em;
+    text-align: left;
+    user-select: none;
+    overflow: hidden;
+  }
+}
+
+.Icon {
+  > .material-icons {
+    display: block;
+  }
+
+  &--success {
+    color: var(--toast-icon-success-color);
+  }
+  &--info {
+    color: var(--toast-icon-info-color);
+  }
+  &--warning {
+    color: var(--toast-icon-warning-color);
+  }
+  &--error,
+  &--stickyerror {
+    color: var(--toast-icon-error-color);
+  }
+}
+
+@mixin toast-text($color) {
+  color: $color;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Title {
+  @include toast-text(var(--toast-title-color));
+  font-family: var(--toast-title-font-family);
+  font-weight: 700;
+  margin-bottom: 0.4em;
+}
+
+.Message {
+  @include toast-text(var(--toast-message-color));
+  font-family: var(--toast-message-font-family);
+}
+
+@import './Button';
+
+.Button {
+  --button-color: var(--toast-button-color);
+  --button-font-size: 1.2em;
+  --button-hover-color: var(--toast-button-hover-color);
+}
+
+.Toaster__manager-bottom .Toaster__message:last-of-type {
+  margin-bottom: 4em;
+}

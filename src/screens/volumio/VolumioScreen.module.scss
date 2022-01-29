@@ -1,0 +1,41 @@
+.Layout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.Layout__header {
+  font-size: 12px;
+  background: var(--volumio-screen-header-background);
+  border-bottom: 1px solid var(--volumio-screen-header-border-bottom);
+  padding: 5px 10px;
+  text-align: right;
+}
+
+.CloseLink {
+  color: var(--volumio-screen-link-color);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--volumio-screen-link-hover-color);
+  }
+}
+
+.Layout__contents {
+  flex-grow: 1;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.VolumioFrame {
+  width: 100%;
+  height: 100%;
+  border: 0px;
+  padding: 0;
+  margin: 0;
+}

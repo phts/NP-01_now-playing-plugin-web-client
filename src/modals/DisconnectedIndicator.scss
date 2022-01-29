@@ -1,0 +1,38 @@
+@import '../common/animations';
+
+.DisconnectedIndicatorOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  background: var(--disconnected-indicator-overlay-background);
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+
+  &--after-open {
+    opacity: 1;
+  }
+
+  &--before-close {
+    opacity: 0;
+  }
+}
+
+.DisconnectedIndicator {
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__icon {
+    color: var(--disconnected-indicator-icon-color);
+    opacity: var(--disconnected-indicator-icon-opacity);
+    font-size: var(--disconnected-indicator-icon-font-size);
+  }
+
+  &--after-open {
+    @extend .spin;
+  }
+}

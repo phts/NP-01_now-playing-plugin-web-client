@@ -1,0 +1,66 @@
+.Dock {
+  padding: 0.5em;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  z-index: 2;
+}
+
+.Dock--topLeft,
+.Dock--top,
+.Dock--topRight,
+.Dock--bottomLeft,
+.Dock--bottom,
+.Dock--bottomRight {
+  flex-direction: row;
+}
+
+.Dock--topLeft {
+  top: 0;
+  left: 0;
+}
+
+.Dock--top {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.Dock--topRight {
+  top: 0;
+  right: 0;
+}
+
+.Dock--bottomLeft {
+  bottom: 0;
+  left: 0;
+}
+
+.Dock--bottom {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.Dock--bottomRight {
+  bottom: 0;
+  right: 0;
+}
+
+.Dock--left,
+.Dock--right {
+  flex-direction: column;
+}
+
+.Dock--left {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.Dock--right {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}

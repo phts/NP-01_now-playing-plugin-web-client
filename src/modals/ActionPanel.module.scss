@@ -1,0 +1,72 @@
+.Overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  //background-color: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+
+  &--after-open {
+    opacity: 1;
+  }
+
+  &--before-close {
+    opacity: 0;
+  }
+}
+
+.Layout {
+  --left: calc(50vw - 50%);
+
+  position: absolute;
+  background: var(--action-panel-background);
+  overflow: auto;
+  border-radius: var(--action-panel-border-radius);
+  outline: none;
+  transform: translate(var(--left), -150%);
+  transition: transform 200ms;
+  width: 80vw;
+  max-width: 40rem;
+  margin-top: 2em;
+
+  &--after-open {
+    transform: translate(var(--left), 0);
+  }
+
+  &--before-close {
+    transform: translate(var(--left), -150%);
+  }
+
+  @media (min-width: 580px) {
+    font-size: 1.3em;
+  }
+}
+
+.Layout__row {
+  margin-top: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5em;
+}
+
+.Layout__extraButtonsWrapper {
+  display: flex;
+  gap: 0.5em;
+}
+
+@import '../common/Button';
+
+.ExtraButton {
+  @extend .Button;
+  width: var(--action-panel-extra-button-size);
+  height: var(--action-panel-extra-button-size);
+  border-radius: var(--action-panel-extra-button-border-radius);
+  background: var(--action-panel-extra-button-background);
+
+  &__image {
+    width: var(--action-panel-extra-button-image-size);
+    height: var(--action-panel-extra-button-image-size);
+  }
+}

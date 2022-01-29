@@ -1,0 +1,73 @@
+.Layout {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: var(--toolbar-border-bottom);
+
+  &__screen {
+    display: flex;
+    align-items: center;
+    margin-left: 1em;
+    gap: 0.5em;
+
+    @media all and (max-width: 359px) {
+      margin-left: 0.5em;
+    }
+  }
+
+  &__main {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    padding: 1em;
+    box-sizing: border-box;
+    column-gap: 1em;
+  }
+}
+
+.Title {
+  display: inline-block;
+
+  &--primary {
+    font-family: var(--toolbar-title-font-family);
+    font-size: var(--toolbar-title-font-size);
+    color: var(--toolbar-title-color);
+    font-weight: 700;
+  }
+
+  &--secondary {
+    font-family: var(--toolbar-secondary-title-font-family);
+    font-size: var(--toolbar-secondary-title-font-size);
+    color: var(--toolbar-secondary-title-color);
+  }
+
+  @media all and (min-width: 360px) {
+    padding-left: 0.5em;
+  }
+}
+
+@import "../../common/PlayerButtonGroup";
+
+.PlayerButtonGroup {
+  display: flex;
+  gap: 1em;
+}
+
+@import "../../common/Button";
+
+.Button {
+  --button-color: var(--toolbar-button-color);
+  --button-hover-color: var(--toolbar-button-hover-color);
+  --button-toggled-color: var(--toolbar-button-toggled-color);
+  
+  width: var(--toolbar-button-size);
+  height: var(--toolbar-button-size);
+
+  &--clear {
+    --button-hover-color: #aa4a44;
+    --button-active-color: #aa4a44;
+  }
+}

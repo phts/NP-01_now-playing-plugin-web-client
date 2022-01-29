@@ -1,0 +1,55 @@
+$switchCount: 3;
+
+.Layout {
+  display: flex;
+  pointer-events: auto;
+  min-width: 0;
+}
+
+.LabelWrapper {
+  background: var(--screen-switcher-label-background);
+  width: var(--screen-switcher-switch-width);
+  border-top-left-radius: var(--screen-switcher-border-radius);
+  border-bottom-left-radius: var(--screen-switcher-border-radius);
+  padding-left: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Label {
+  color: var(--screen-switcher-label-color);
+  margin-left: -0.25em;
+  display: flex;
+}
+
+.SwitchesWrapper {
+  background: var(--screen-switcher-background);
+  border-top-right-radius: var(--screen-switcher-border-radius);
+  border-bottom-right-radius: var(--screen-switcher-border-radius);
+  padding: 0.5em;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--screen-switcher-switch-width));
+  grid-row-gap: 0.5em;
+  justify-content: space-evenly;
+  width: calc(#{$switchCount} * var(--screen-switcher-switch-width));
+}
+
+@import './Button';
+
+.Switch {
+  @extend .Button;
+  position: relative;
+  width: var(--screen-switcher-switch-width);
+  height: var(--screen-switcher-switch-height);
+
+  &--active:before {
+    content: "";
+    position: absolute;
+    top: -0.1em;
+    width: 0.3em;
+    height: 0.3em;
+    background: var(--screen-switcher-active-color);
+    border-radius: 50%;
+  }
+}

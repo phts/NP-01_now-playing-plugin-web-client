@@ -1,0 +1,64 @@
+.VolumeIndicator {
+  --volume-level: 0px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+
+  &__dialWrapper {
+    width: var(--volume-indicator-size);
+    height: var(--volume-indicator-size);
+    background: var(--volume-indicator-background);
+    border-radius: var(--volume-indicator-border-radius);
+
+    @supports (backdrop-filter: none) {
+      background: var(--volume-indicator-backdrop-background);
+      backdrop-filter: var(--volume-indicator-backdrop-filter);
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__dial {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 0.7em;
+    stroke-linecap: round;
+    
+    &--primary {
+      stroke: var(--volume-indicator-dial-stroke-base-color);
+    }
+
+    &--highlight {
+      stroke-dasharray: 100;
+      stroke-dashoffset: calc(100px - var(--volume-level));
+      stroke: var(--volume-indicator-dial-stroke-highlight-color);
+    }
+
+    &--muted {
+      stroke: var(--volume-indicator-dial-stroke-muted-color);
+    }
+  }
+
+  &__text {
+    position: absolute;
+    color: var(--volume-indicator-text-color);
+    font-size: var(--volume-indicator-text-font-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--muted {
+      font-size: var(--volume-indicator-text-muted-font-size);
+    }
+
+    &--noDial {
+      position: unset;
+    }
+  }
+}

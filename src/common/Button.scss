@@ -1,0 +1,65 @@
+.Button {
+  border: var(--button-border);
+  padding: 0;
+  font-size: 1em;
+  background: var(--button-background);
+  display: flex;
+  align-items: center;;
+  justify-content: center;
+  gap: 0.3em;
+  cursor: pointer;
+  transition: 0.2s;
+  color: var(--button-color);
+  border-radius: var(--button-border-radius);
+
+  &:focus {
+    outline: none;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:global(.Button--toggleable)),
+    &:hover:not(.Button--toggleable) {
+      color: var(--button-hover-color);
+    }
+  }
+
+  &:active:not(:global(.Button--toggleable)),
+  &:active:not(.Button--toggleable) {
+    color: var(--button-active-color);
+  }
+   
+  &__icon {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: var(--button-font-size);
+    display: inline-block;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+  
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+  
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+  
+    /* Support for IE. */
+    font-feature-settings: 'liga';
+  }
+
+  &__text {
+    font-family: var(--button-font-family);
+    font-size: var(--button-font-size);
+  }
+
+  &--toggled {
+    background: var(--button-toggled-background);
+    border: var(--button-toggled-border);
+    color: var(--button-toggled-color);
+  }
+}

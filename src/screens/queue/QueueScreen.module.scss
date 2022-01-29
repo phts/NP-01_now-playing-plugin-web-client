@@ -1,0 +1,48 @@
+.LayoutWrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+
+  @media (min-width: 1024px) {
+    padding: 2em 10%;
+  }
+}
+
+.Layout {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--queue-screen-background);
+
+  @media (min-width: 1024px) {
+    border-radius: 0.5em;
+  }
+
+  &__contents {
+    width: 100%;
+    flex-grow: 1;
+
+    // OverlayScrollbars
+    :global {
+      .os-scrollbar {
+        .os-scrollbar-handle {
+          background: var(--scrollbar-handle-color);
+
+          &.active {
+            background: var(--scrollbar-handle-active-color);
+          }
+        }
+
+        &:hover .os-scrollbar-handle {
+          background: var(--scrollbar-handle-hover-color);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+.TrackInfoText {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+
+  &__title,
+  &__artist,
+  &__album,
+  &__artistAlbum {
+    display: -webkit-box;
+    color: var(--track-info-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+  }
+
+  &__title {
+    line-height: 1.5em;
+  }
+
+  &__artist {
+    line-height: 1.4em;
+    max-height: 1.4em;
+  }
+
+  &__album {
+    line-height: 1.2em;
+    max-height: 1.2em;
+  }
+
+  &__formatIcon {
+    margin-right: 5px;
+  }
+
+  &__formatResolution {
+    font-weight: normal;
+    font-family: sans-serif;
+  }
+}

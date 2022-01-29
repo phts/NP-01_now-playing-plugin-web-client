@@ -1,0 +1,175 @@
+@import '../../common/Button';
+
+@mixin text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--browse-screen-list-item-font-family);
+}
+
+.Item {
+  display: flex;
+  padding: 0.7em 1em;
+  cursor: pointer;
+  align-items: center;
+  color: var(--browse-screen-list-item-color);
+  background: var(--browse-screen-list-item-background);
+  transition: 0.2s ease;
+  //transition-property: background;
+
+  &:hover {
+    background: var(--browse-screen-list-item-hover-background);
+
+    .Item__image,
+    .Item__icon,
+    .Item__button--play {
+      filter: var(--browse-screen-list-item-hover-filter);
+    }
+  }
+
+  &:not(:last-of-type) {
+    border-bottom: var(--browse-screen-list-item-divider);
+  }
+
+  @media (min-width: 1024px) {
+    &:first-of-type {
+      border-top-left-radius: var(--browse-screen-list-border-radius);
+      border-top-right-radius: var(--browse-screen-list-border-radius);
+    }
+
+    &:last-of-type {
+      border-bottom-left-radius: var(--browse-screen-list-border-radius);
+      border-bottom-right-radius: var(--browse-screen-list-border-radius);
+    }
+  }
+
+  &__albumart {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  &__titleAlbumArtist {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    min-width: 0;
+  }
+
+  @media (max-width: 599px) {
+    --title-width: 100%;
+    --album-width: unset;
+    --artist-width: unset;
+
+    &__titleAlbumArtist {
+      flex-wrap: wrap;
+      gap: 0;
+    }
+  }
+
+  &__image {
+    display: block;
+    width: var(--albumart-width);
+    height: var(--albumart-height);
+    object-fit: cover;
+    border-radius: 0.2em;
+    transition: 0.2s ease;
+    transition-property: filter;
+  }
+  
+  &__icon {
+    display: flex;
+    width: var(--albumart-width);
+    height: var(--albumart-height);
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+    transition-property: filter;
+  }
+  
+  &__trackNumber {
+    display: flex;
+    width: var(--albumart-width);
+    height: var(--albumart-height);
+    align-items: center;
+    color: var(--browse-screen-list-item-track-number-color);
+  
+    &:after {
+      content: ".";
+    }
+  }
+  
+  &__title {
+    @include text();
+    flex-basis: var(--title-width);
+  }
+  
+  &__album {
+    @include text();
+    display: var(--display-album);
+    flex-basis: var(--album-width);
+    color: #7a848e;
+  }
+  
+  &__artist {
+    @include text();
+    display: var(--display-artist);
+    flex-basis: var(--artist-width);
+    color: #7a848e;
+  }
+  
+  &__albumArtist {
+    @include text();
+    color: #7a848e;
+    display: none;
+  }
+  
+  &__duration {
+    @include text();
+    display: var(--display-duration);
+    padding-left: 0.5em;
+    min-width: var(--duration-width);
+  }
+  
+  &__ellipsis {
+    display: var(--display-menu);
+    width: var(--ellipsis-width);
+  }
+ 
+  &__button {
+    @extend .Button;
+    width: 2em;;
+    height: 2em;
+    font-size: 0.6em;
+    padding: 0.5em;
+    margin-left: 0.2em;
+    margin-right: 0.5em;
+    opacity: 0.8;
+    transition: 0.2s ease;
+    transition-property: opacity, color, border-color, background;
+
+    &--play {
+      --button-color: var(--browse-screen-list-item-play-button-color);
+      border-radius: 50%;
+      border: 2px solid var(--browse-screen-list-item-play-button-color);
+
+      &:hover {
+        --button-color: var(--browse-screen-list-item-play-button-hover-color);
+        border-color: var(--browse-screen-list-item-play-button-hover-color);
+      }
+    }
+  }
+  
+  @media (max-width: 599px) {
+    &__album,
+    &__artist {
+      display: none;
+    }
+  
+    &__albumArtist {
+      display: block;
+    }
+  }
+}

@@ -1,0 +1,32 @@
+.ScreenWrapper {
+  height: calc(var(--vh, 1vh) * 100);
+  will-change: filter;
+}
+
+.ScreenWrapper--blur {
+  &-enter {
+    filter: blur(0) brightness(1);
+
+    &-active {
+      filter: blur(30px) brightness(0.85);
+      transition: filter 100ms ease-in;
+    }
+
+    &-done {
+      filter: blur(30px) brightness(0.85);
+    }
+  }
+
+  &-exit {
+    filter: blur(30px) brightness(0.85);
+
+    &-active {
+      filter: blur(0) brightness(1);
+      transition: filter 100ms ease-in;
+    }
+
+    &-done {
+      filter: blur(0) brightness(1);
+    }
+  }
+}

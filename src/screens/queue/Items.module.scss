@@ -1,0 +1,96 @@
+@import '../../common/Button';
+
+.Layout {
+  width: 100%;
+}
+
+@mixin text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: "Noto Sans Display", sans-serif;
+}
+
+.Item {
+  --albumart-width: 2.5em;
+  --albumart-height: 2.5em;
+  --ellipsis-width: 2em;
+  --display-menu: inherit;
+  
+  display: flex;
+  padding: 0.7em 1em;
+  cursor: pointer;
+  align-items: center;
+  color: var(--queue-screen-item-color);
+  border-bottom: var(--queue-screen-item-divider);
+  background: var(--queue-screen-item-background);
+  transition: 0.2s ease;
+
+  &:hover {
+    background: var(--queue-screen-item-hover-background);
+
+    .Item__image,
+    .Item__icon,
+    .Item__button--play {
+      filter: var(--queue-screen-item-hover-filter);
+    }
+  }
+
+  &__albumart {
+    display: flex;
+    align-items: center;
+    margin-right: 0.5em;
+  }
+
+  &__titleArtistAlbum {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    min-width: 0;
+  }
+
+  &__image {
+    display: block;
+    width: var(--queue-screen-item-image-width);
+    height: var(--queue-screen-item-image-height);
+    object-fit: cover;
+    border-radius: var(--queue-screen-item-image-border-radius);
+    transition: 0.2s ease;
+    transition-property: filter;
+  }
+  
+  &__title {
+    @include text();
+  }
+  
+  &__artistAlbum {
+    @include text();
+    color: #7a848e;
+  }
+ 
+  &__ellipsis {
+    display: var(--display-menu);
+    width: var(--ellipsis-width);
+  }
+
+  &__button {
+    --button-color: var(--queue-screen-item-button-color);
+
+    @extend .Button;
+
+    width: 2em;
+    height: 2em;
+    margin-left: 0.5em;
+    opacity: 0.8;
+    transition: 0.2s ease;
+
+    &--remove {
+      --button-hover-color: #aa4a44;
+      
+      &:hover {
+        opacity: 1; 
+      }
+    }
+  }
+}

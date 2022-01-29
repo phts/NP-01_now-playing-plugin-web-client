@@ -1,0 +1,104 @@
+$albumartHeight: 8em;
+
+.Layout {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+
+  &__background {
+    background: var(--browse-screen-header-background);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &__contents {
+    box-sizing: border-box;
+    margin: 1.5em auto;
+    padding: 0 1em;
+    display: flex;
+    position: relative;
+    align-items: center;
+
+    @media (min-width: 1024px) {
+      max-width: 80%;
+    }
+  }
+}
+
+.BackgroundImage {
+  display: var(--browse-screen-header-background-image-display);
+  width: 100%;
+  height: 100%;
+  filter: var(--browse-screen-header-background-image-filter);
+  transform: var(--browse-screen-header-background-image-transform);
+  object-fit: cover;
+  object-position: center;
+}
+
+.AlbumArt {
+  position: relative;
+
+  &__image {
+    display: block;
+    width: $albumartHeight;
+    height: $albumartHeight;
+    object-fit: cover;
+    border-radius: var(--browse-screen-header-image-border-radius);
+    filter: drop-shadow(0 0 8px #00000080);
+  }
+}
+
+.Info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  color: var(--browse-screen-header-info-color);
+  margin-left: 1em;
+  min-height: $albumartHeight;
+
+  &__title {
+    font-size: 1.5em;
+    font-weight: 700;
+  }
+
+  &__extra {
+    display: flex;
+    align-items: center;
+    margin-top: 0.3em;
+    font-size: 0.9em;
+
+    &--separator {
+      width: 1em;
+      text-align: center;
+
+      &:last-of-type {
+        display: none;
+      }
+    }
+  }
+}
+
+.Buttons {
+  margin-top: auto;
+}
+
+@import '../../common/Button';
+
+.Button {
+  &--play {
+    --button-background: var(--browse-screen-header-play-button-background);
+    --button-font-size: 1em;
+    --button-hover-color: inherit;
+    border-radius: 0.5em;
+    border: var(--browse-screen-header-play-button-border);
+    transition: 0.2s ease-out;
+    padding: 0.5em 1em 0.5em 0.6em;
+    
+    &:hover {
+      background: var(--browse-screen-header-play-button-hover-background);
+    }
+  }
+}

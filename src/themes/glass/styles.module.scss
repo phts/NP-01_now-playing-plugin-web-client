@@ -1,0 +1,72 @@
+@import '../default/styles.module.scss';
+
+.GlassTheme {
+  --common-background-color: rgba(72, 72, 72, 0.3);
+  --common-background-color-light: rgba(0, 0, 0, 0.2);
+  --common-accent-color: #ccc;
+
+  // Button
+  --button-toggled-border: 1px solid rgba(255, 255, 255, 0.3);
+  --button-toggled-background: rgba(0, 0, 0, 0.3);
+  --button-border-radius: 0.2em;
+
+  // Scrollbar
+  --scrollbar-handle-color: rgba(179, 179, 179, 0.3) !important;
+  --scrollbar-handle-active-color: rgba(143, 143, 143, 0.3) !important;
+  --scrollbar-handle-hover-color: rgba(143, 143, 143, 0.3) !important;
+
+  // Screen Context
+  $suf: blur(30px) brightness(0.8) contrast(0.8);
+  --screen-underFloat-filter: #{$suf};
+  --screen-underFloatExit-enter-filter: #{$suf};
+  --screen-underFloatExit-enter-active-filter: brightness(1);
+  --screen-underFloatExit-exit-filter: brightness(1);
+  --screen-underFloatExit-exit-active-filter: #{$suf};
+
+  // Toolbar
+  --toolbar-secondary-title-color: #7a848e;
+
+  // Browse Screen
+  --browse-screen-grid-item-albumart-background: rgba(0, 0, 0, 0.3);
+  --browse-screen-list-item-divider: 1px solid rgba(255, 255, 255, 0.1);
+  --browse-screen-list-item-background: rgba(0, 0, 0, 0.4);
+  --browse-screen-header-background: rgba(0, 0, 0, 0.3);
+  --browse-screen-header-background-image-display: none;
+  --browse-screen-header-background: rgba(0, 0, 0, 0.3);
+  --browse-screen-fake-loader-color: rgba(255, 255, 255, 0.7);
+
+  // Queue Screen
+  --queue-screen-background: rgba(0, 0, 0, 0.3);
+  --queue-screen-item-divider: 1px solid rgba(255, 255, 255, 0.1);
+  --queue-screen-item-background: none;
+
+  // Seekbar
+  --seekbar-track-remaining-color: rgba(255, 255, 255, 0.2);
+
+  // ScreenSwitcher 
+  --screen-switcher-label-background: rgba(0, 0, 0, 0.5);
+  --screen-switcher-background: rgba(0, 0, 0, 0.3);
+  --screen-switcher-active-color: #24a4f3;
+
+  // ActionPanel
+  --action-panel-extra-button-background: rgba(0, 0, 0, 0.3);
+
+  // Volume Slider
+  --volume-slider-background: rgba(0, 0, 0, 0.3);
+  --volume-slider-track-highlight-color: #24a4f3;
+
+  // VolumeIndicator
+  --volume-indicator-dial-stroke-highlight-color: #24a4f3;
+
+  // Toast
+  --toast-background: rgb(32, 32, 32, 0.7);
+
+  // Background
+  --browse-screen-background-filter-entering: blur(20px);
+  --browse-screen-background-filter: blur(20px);
+  --queue-screen-background-filter-entering: blur(20px);
+  --queue-screen-background-filter: blur(20px);
+
+  // TrackBar
+  --trackbar-volumebar-background: rgba(32, 32, 32, 0.7);
+}
