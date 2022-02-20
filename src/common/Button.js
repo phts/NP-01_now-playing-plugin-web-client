@@ -1,7 +1,8 @@
 import './Button.scss';
 import classNames from 'classnames';
+import React from 'react';
 
-function Button(props) {
+const Button = React.forwardRef((props, ref) => {
   const baseClassName = props.styles ? props.styles.baseClassName : null;
   const stylesBundle = baseClassName ? props.styles.bundle : null;
   const extraClassNames = (props.styles ? props.styles.extraClassNames : null) || [];
@@ -32,12 +33,20 @@ function Button(props) {
   }, {});
 
   return (
-    <button className={mainClassName} onClick={props.onClick} {...dataAttrs}>
-      { props.image ? <img className={getElementClassName('image')} src={props.image} alt=""/> : null }
-      { props.icon ? <span className={getElementClassName('icon')}>{ props.icon }</span> : null }
-      { props.text ? <span className={getElementClassName('text')}>{ props.text }</span> : null }
+    <button 
+      ref={ref} 
+      className={mainClassName} 
+      onClick={props.onClick} 
+      onKeyDown={props.onKeyDown}
+      onMouseDown={props.onMouseDown}
+      {...dataAttrs}>
+        { props.image ? <img className={getElementClassName('image')} src={props.image} alt=""/> : null }
+        { props.icon ? <span className={getElementClassName('icon')}>{ props.icon }</span> : null }
+        { props.text ? <span className={getElementClassName('text')}>{ props.text }</span> : null }
     </button>
   );
-}
+});
+
+Button.displayName = 'Button';
 
 export default Button;

@@ -160,6 +160,16 @@
         border-color: var(--browse-screen-list-item-play-button-hover-color);
       }
     }
+
+    &--menu {
+      font-size: 1em;
+      height: 100%;
+    }
+  }
+
+  &__menuItemIcon {
+    font-size: 1.2em;
+    margin-right: 0.5em;
   }
   
   @media (max-width: 599px) {

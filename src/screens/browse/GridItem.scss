@@ -9,6 +9,7 @@
 .Item {
   width: 100%;
   min-width: 0;
+  position: relative;
 
   display: block;
   cursor: pointer;
@@ -27,6 +28,16 @@
     }
     .Item__button--play {
       display: flex;
+    }
+
+    .Item__ellipsis {
+      display: var(--display-menu);
+    }
+  }
+
+  &--menuOpened {
+    .Item__ellipsis {
+      display: var(--display-menu);
     }
   }
 
@@ -85,13 +96,23 @@
   
   &__album,
   &__albumArtist,
-  &__duration,
-  &__ellipsis {
+  &__duration {
     display: none;
   }
 
   &__ellipsis {
-    width: var(--ellipsis-width);
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    @media (hover: none) {
+      display: var(--display-menu);
+    }
+
+    @media (max-width: 320px) {
+      padding: 0;
+    }
   }
 
   &__button--play {
@@ -131,5 +152,21 @@
     @media (hover: none) {
       display: flex;
     }
+  }
+
+  &__button--menu {
+    @extend .Button;
+
+    font-size: 1em;
+    padding: 5px;
+
+    @media (max-width: 320px) {
+      padding: 5px 0;
+    }
+  }
+
+  &__menuItemIcon {
+    font-size: 1.2em;
+    margin-right: 0.5em;
   }
 }

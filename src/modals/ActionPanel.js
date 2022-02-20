@@ -6,7 +6,7 @@ import ScreenSwitcher from "../common/ScreenSwitcher";
 import VolumeSlider from "../common/VolumeSlider";
 import { ModalStateContext } from "../contexts/ModalStateProvider";
 import { ScreenContext } from "../contexts/ScreenContextProvider";
-import { eventPathHasNoSwipe } from "../utils/swipe";
+import { eventPathHasNoSwipe } from "../utils/event";
 import styles from './ActionPanel.module.scss';
 import { VOLUME_INDICATOR } from "./CommonModals";
 import volumioIcon from "../assets/volumio-icon.png";

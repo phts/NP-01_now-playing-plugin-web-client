@@ -4,7 +4,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { PlayerStateContext } from '../../contexts/PlayerStateProvider';
 import classNames from 'classnames';
 import { useSwipeable } from 'react-swipeable';
-import { eventPathHasNoSwipe } from '../../utils/swipe';
+import { eventPathHasNoSwipe } from '../../utils/event';
 import { ScreenContext } from '../../contexts/ScreenContextProvider';
 import Toolbar from './Toolbar';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';

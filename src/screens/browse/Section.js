@@ -4,6 +4,7 @@ import Items from './Items';
 import styles from './Section.module.scss';
 import $ from 'cash-dom';
 import { AppContext } from '../../contexts/AppContextProvider';
+import { hasMenu } from './helper';
 
 function Section(props) {
   const {host} = useContext(AppContext);
@@ -37,7 +38,7 @@ function Section(props) {
       if (item.album) { result.album = true; }
       if (item.artist) { result.artist = true; }
       if (item.duration) { result.duration = true; }
-      //TODO: menu
+      if (hasMenu(item)) { result.menu = true; }
       if (result.album && result.artist && result.duration) {
         break;
       }
@@ -60,6 +61,12 @@ function Section(props) {
 
   const handlePlayClicked = (item, itemIndex) => {
     props.onPlayClick(item, props.list, itemIndex);
+  };
+
+  const handleMenuItemClicked = (e) => {
+    e.syntheticEvent.stopPropagation();
+    const {itemIndex, action} = e.value;
+    props.callItemAction(props.list.items[itemIndex], props.list, itemIndex, action);
   };
 
   /*
@@ -121,8 +128,10 @@ function Section(props) {
         <Items 
           styles={styles} 
           items={props.list.items} 
+          location={props.location}
           onItemClick={handleItemClicked} 
-          onPlayClick={handlePlayClicked} />
+          onPlayClick={handlePlayClicked}
+          onMenuItemClick={handleMenuItemClicked} />
       </div>
     </section>
   );

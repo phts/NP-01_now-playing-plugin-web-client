@@ -13,11 +13,13 @@ const Items = React.memo((props) => {
         key={index}
         styles={props.styles} 
         index={index} 
+        location={props.location}
         data={item} 
         onClick={props.onItemClick}
-        onPlayClick={props.onPlayClick} />
+        onPlayClick={props.onPlayClick} 
+        onMenuItemClick={props.onMenuItemClick} />
     ));
-  }, [props.items, props.styles, props.onItemClick, props.onPlayClick]);
+  }, [props.items, props.styles, props.onItemClick, props.onPlayClick, props.onMenuItemClick]);
 
   return (
     <>{getItems()}</>

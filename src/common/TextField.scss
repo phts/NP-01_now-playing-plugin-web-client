@@ -1,0 +1,34 @@
+@import '../App.scss';
+
+.TextField {
+  --border-color: var(--common-foreground-color);
+  --icon-color: var(--common-foreground-color);
+
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-bottom: 5px;
+  transition: border-color 200ms;
+
+  &__input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--common-foreground-color);
+    font-size: 1em;
+  }
+
+  &__icon {
+    @extend .material-icons;
+
+    font-size: 1em;
+    color: var(--icon-color);
+    transition: color 200ms;
+  }
+
+  &--focus {
+    --border-color: var(--common-accent-color);
+    --icon-color: var(--common-accent-color);
+  }
+}

@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 import CommonModals from './modals/CommonModals';
 import VolumioScreen from './screens/volumio/VolumioScreen';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ServiceProvider } from './contexts/ServiceProvider';
 
 function App() {
   const [height, setHeight] = useState(window.innerHeight);
@@ -44,23 +45,25 @@ function App() {
                   <VolumeChangeListener />
                   <NotificationListener />
                   <DisconnectedIndicator />
-                  <ScreenContextProvider>
-                    <NowPlayingScreen
-                      screenId="NowPlaying"
-                      defaultActive={true} />
-                    <BrowseScreen
-                      screenId="Browse"
-                      usesTrackBar={true} />
-                    <QueueScreen
-                      screenId="Queue"
-                      float={true}
-                      usesTrackBar={true} />
-                    <VolumioScreen
-                      screenId="Volumio"
-                      mountOnEnter={true}
-                      unmountOnExit={true} />
-                    <CommonModals />
-                  </ScreenContextProvider>
+                  <ServiceProvider>
+                    <ScreenContextProvider>
+                      <NowPlayingScreen
+                        screenId="NowPlaying"
+                        defaultActive={true} />
+                      <BrowseScreen
+                        screenId="Browse"
+                        usesTrackBar={true} />
+                      <QueueScreen
+                        screenId="Queue"
+                        float={true}
+                        usesTrackBar={true} />
+                      <VolumioScreen
+                        screenId="Volumio"
+                        mountOnEnter={true}
+                        unmountOnExit={true} />
+                      <CommonModals />
+                    </ScreenContextProvider>
+                  </ServiceProvider>
                 </ModalStateProvider>
               </NotificationProvider>
             </div>

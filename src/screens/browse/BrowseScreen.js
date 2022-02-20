@@ -14,21 +14,23 @@ import { isHome } from './helper';
 import { NotificationContext } from '../../contexts/NotificationProvider';
 import { ScreenContext } from '../../contexts/ScreenContextProvider';
 import classNames from 'classnames';
-import { eventPathHasNoSwipe } from '../../utils/swipe';
+import { eventPathHasNoSwipe } from '../../utils/event';
 import { useSwipeable } from 'react-swipeable';
-import { ACTION_PANEL } from '../../modals/CommonModals';
+import { ACTION_PANEL, ADD_TO_PLAYLIST_DIALOG, WEB_RADIO_DIALOG } from '../../modals/CommonModals';
+import { ServiceContext } from '../../contexts/ServiceProvider';
 
-const HOME = { 
-  type: 'browse', 
-  uri: '', 
-  service: null 
+const HOME = {
+  type: 'browse',
+  uri: '',
+  service: null
 };
 
 function BrowseScreen(props) {
   const socket = useContext(SocketContext);
-  const {host} = useContext(AppContext);
+  const { host } = useContext(AppContext);
   const showToast = useContext(NotificationContext);
-  const {openModal} = useContext(ModalStateContext);
+  const { openModal } = useContext(ModalStateContext);
+  const { playlistService, queueService } = useContext(ServiceContext);
   const [listView, setListView] = useState('grid');
   const [contents, setContents] = useState({});
   const browseSources = useRef([]);
@@ -38,8 +40,9 @@ function BrowseScreen(props) {
   const backHistory = useRef([]);
   const scrollbarsRef = useRef(null);
   const fakeLoadingBarRef = useRef(null);
-  const {switchScreen} = useContext(ScreenContext);
+  const { switchScreen } = useContext(ScreenContext);
   const toolbarEl = useRef(null);
+  const lastAction = useRef(null);
 
   const requestRestApi = (url, callback) => {
     fetch(url)
@@ -80,7 +83,7 @@ function BrowseScreen(props) {
     }
   }
 
-  const browse = useCallback((location) => {
+  const browse = useCallback((location, refresh = false) => {
     if (location.type !== 'browse') {
       return;
     }
@@ -92,10 +95,10 @@ function BrowseScreen(props) {
     }
     else {
       currentLoading.current = location;
-      let requestUrl = `${ host }/api/v1/browse?uri=${ encodeURIComponent(encodeURIComponent(location.uri)) }`;
+      let requestUrl = `${host}/api/v1/browse?uri=${encodeURIComponent(encodeURIComponent(location.uri))}`;
       startFakeLoadingBar();
       requestRestApi(requestUrl, data => {
-        if (currentLoading.current && currentLoading.current.type === 'browse' && 
+        if (currentLoading.current && currentLoading.current.type === 'browse' &&
           currentLoading.current.uri === location.uri) {
           if (data.error) {
             showToast({
@@ -106,13 +109,16 @@ function BrowseScreen(props) {
           }
           else {
             // Add to back history
-            if (!isHome(currentLocation.current)) {
+            if (!isHome(currentLocation.current) && !refresh) {
               currentLocation.current.contents.__scroll = getScrollPosition();
               addToBackHistory(currentLocation.current);
             }
             // Set current location, then update contents
             location.contents = data;
             currentLocation.current = location;
+            if (refresh) {
+              data.__scroll = getScrollPosition();
+            }
             setContents(data);
             resetCurrentLoading(true);
           }
@@ -163,7 +169,7 @@ function BrowseScreen(props) {
   }, [browse, setContents]);
 
   const toggleListView = useCallback(() => {
-    setListView(listView === 'grid' ? 'list': 'grid');
+    setListView(listView === 'grid' ? 'list' : 'grid');
   }, [setListView, listView]);
 
   const openActionPanel = useCallback(() => {
@@ -171,7 +177,7 @@ function BrowseScreen(props) {
   }, [openModal]);
 
   const handleToolbarButtonClicked = useCallback((action) => {
-    switch(action) {
+    switch (action) {
       case 'home':
         browse(HOME);
         break;
@@ -232,7 +238,6 @@ function BrowseScreen(props) {
       else {
         socket.emit('playItemsList', { item });
       }
-      
     }
   }, [socket]);
 
@@ -247,6 +252,7 @@ function BrowseScreen(props) {
     else {
       const targetLocation = {
         type: 'browse',
+        browseItem: item,
         uri: item.uri
       }
       if (!item.service && !item.plugin_name) {
@@ -258,7 +264,7 @@ function BrowseScreen(props) {
           prettyName: item.plugin_name !== 'mpd' ? item.name : 'Music Library'
         };
       }
-      else if (currentLocation.current.service === null || 
+      else if (currentLocation.current.service === null ||
         item.service !== currentLocation.current.service.name) {
         let prettyName;
         if (item.service === 'mpd') {
@@ -277,7 +283,7 @@ function BrowseScreen(props) {
         targetLocation.service = currentLocation.current.service;
       }
 
-      browse(targetLocation);      
+      browse(targetLocation);
     }
   }, [doPlayOnClick, browse]);
 
@@ -287,7 +293,7 @@ function BrowseScreen(props) {
 
   const updateBrowseSources = useCallback((sources) => {
     browseSources.current = sources;
-    if (isHome(currentLocation.current) || 
+    if (isHome(currentLocation.current) ||
       (currentLoading.current && isHome(currentLoading.current))) {
       showBrowseSources();
     }
@@ -305,7 +311,7 @@ function BrowseScreen(props) {
         addToBackHistory(currentLocation.current);
       }
       // Set current location, then update contents
-      const location = Object.assign({}, loading, { contents: data } );
+      const location = Object.assign({}, loading, { contents: data });
       currentLocation.current = location;
       setContents(data);
     }
@@ -313,43 +319,137 @@ function BrowseScreen(props) {
   }, [setContents, resetCurrentLoading]);
 
   const handlePushBrowseLibrary = useCallback((data) => {
-    // Only handle search results.
+    // Only handle certain cases.
     // For browsing library we use REST API
+    // -- Search results
     if (data.navigation && data.navigation.isSearchResult) {
       showSearchResults(data);
     }
+    // -- Actions that expect a pushBrowseLibrary response (and current 
+    // location has not changed)
+    else if (lastAction.current && 
+      lastAction.current.expectsPushBrowseLibrary &&
+      lastAction.current.originatingUri === currentLocation.current.uri) {
+        currentLocation.current.contents = data;
+        currentLocation.current.contents.__scroll = getScrollPosition();
+        setContents(data);
+      lastAction.current = null;
+    }
   }, [showSearchResults]);
+
+  const handlePushAddAWebRadio = useCallback((result) => {
+    if (result.success && currentLocation.current.uri === 'radio/myWebRadio') {
+      browse(currentLocation.current, true);
+    }
+  }, [browse])
 
   useEffect(() => {
     if (socket) {
       socket.on('pushBrowseSources', updateBrowseSources);
       socket.on('pushBrowseLibrary', handlePushBrowseLibrary);
+      socket.on('pushAddWebRadio', handlePushAddAWebRadio);
 
       return () => {
         socket.off('pushBrowseSources', updateBrowseSources);
         socket.off('pushBrowseLibrary', handlePushBrowseLibrary);
+        socket.off('pushAddWebRadio', handlePushAddAWebRadio);
       }
     }
-  }, [socket, updateBrowseSources, handlePushBrowseLibrary]);
+  }, [socket, updateBrowseSources, handlePushBrowseLibrary, handlePushAddAWebRadio]);
+
+  const callItemAction = useCallback((item, list, itemIndex, action) => {
+    let expectsPushBrowseLibrary = false;
+    if (action === 'play') {
+      queueService.play(item, list, itemIndex);
+    }
+    else if (action === 'addToQueue') {
+      queueService.addToQueue(item);
+    }
+    else if (action === 'addPlaylistToQueue') {
+      queueService.addToQueue(item, true);
+    }
+    else if (action === 'clearAndPlay') {
+      queueService.clearAndPlay(item);
+    }
+    else if (action === 'addToPlaylist') {
+      openModal(ADD_TO_PLAYLIST_DIALOG, { data: { item } });
+    }
+    else if (action === 'removeFromPlaylist') {
+      playlistService.removeFromPlaylist(item, currentLocation.current.browseItem.title);
+      expectsPushBrowseLibrary = true;
+    }
+    else if (action === 'deletePlaylist') {
+      playlistService.deletePlaylist(item.title);
+      expectsPushBrowseLibrary = true;
+    }
+    else if (action === 'removeDrive') {
+      socket.emit('safeRemoveDrive', item.title);
+      expectsPushBrowseLibrary = true;
+    }
+    else if (action === 'updateFolder') {
+      socket.emit('updateDb', item.uri);
+    }
+    else if (action === 'deleteFolder') {
+      socket.emit('deleteFolder', { 'curUri': currentLocation.current.uri, 'item': item });
+      expectsPushBrowseLibrary = true;
+    }
+    else if (action === 'addToFavorites') {
+      playlistService.addToFavorites(item);
+    }
+    else if (action === 'removeFromFavorites') {
+      playlistService.removeFromFavorites(item);
+      expectsPushBrowseLibrary = true;
+    }
+    else if (action === 'addWebRadio') {
+      openModal(WEB_RADIO_DIALOG, { data: { mode: 'add' } });
+    }
+    else if (action === 'editWebRadio') {
+      openModal(WEB_RADIO_DIALOG, { 
+        data: { 
+          mode: 'edit',
+          name: item.title,
+          url: item.uri
+        } 
+      });
+    }
+    else if (action === 'deleteWebRadio') {
+      playlistService.deleteWebRadio(item);
+      expectsPushBrowseLibrary = true;
+    }
+    else if (action === 'addWebRadioToFavorites') {
+      playlistService.addWebRadioToFavorites(item);
+    }
+    else if (action === 'removeWebRadioFromFavorites') {
+      playlistService.removeWebRadioFromFavorites(item);
+      expectsPushBrowseLibrary = true;
+    }
+    lastAction.current = {
+      action: action,
+      expectsPushBrowseLibrary,
+      originatingUri: currentLocation.current.uri
+    };
+  }, [queueService, playlistService, openModal, socket]);
 
   const sections = useMemo(() => {
     if (contents.navigation && Array.isArray(contents.navigation.lists)) {
       const keyPrefix = currentLocation.current.uri + '_section-';
-      const sections = contents.navigation.lists.map((list, index) => 
-        (
-          <Section 
-            key={keyPrefix + index} 
-            list={list}
-            preferredListView={listView} 
-            sectionIndex={index}
-            onItemClick={handleItemClicked} 
-            onPlayClick={handlePlayClicked} />
-        )
+      const sections = contents.navigation.lists.map((list, index) =>
+      (
+        <Section
+          key={keyPrefix + index}
+          list={list}
+          location={currentLocation.current}
+          preferredListView={listView}
+          sectionIndex={index}
+          onItemClick={handleItemClicked}
+          onPlayClick={handlePlayClicked}
+          callItemAction={callItemAction} />
+      )
       );
       return sections;
     }
     return null;
-  }, [contents.navigation, listView, handleItemClicked, handlePlayClicked]);
+  }, [contents.navigation, listView, handleItemClicked, handlePlayClicked, callItemAction]);
 
   const header = useMemo(() => {
     if (contents.navigation && contents.navigation.info) {
@@ -367,7 +467,7 @@ function BrowseScreen(props) {
   }, [contents]);
 
   // Swipe handling
-  const onToolbarSwiped = useCallback((e) => {  
+  const onToolbarSwiped = useCallback((e) => {
     if (toolbarEl.current === null || eventPathHasNoSwipe(e.event, toolbarEl.current)) {
       return;
     }
@@ -441,13 +541,13 @@ function BrowseScreen(props) {
   }, [browse, socket]);
 
   return (
-    <div 
+    <div
       className={layoutClasses}
       style={props.style}>
       <FakeLoadingBar ref={fakeLoadingBarRef} styles={styles} />
-      <Toolbar 
+      <Toolbar
         ref={toolbarRefPassthrough}
-        styles={styles} 
+        styles={styles}
         currentLocation={currentLocation.current}
         currentListView={listView}
         onButtonClick={handleToolbarButtonClicked}
@@ -455,9 +555,11 @@ function BrowseScreen(props) {
       <OverlayScrollbarsComponent
         ref={scrollbarsRef}
         className={styles.Layout__contents}
-        options={{ scrollbars: {
-          autoHide: supportsHover ? 'leave' : 'scroll'
-        } }}>
+        options={{
+          scrollbars: {
+            autoHide: supportsHover ? 'leave' : 'scroll'
+          }
+        }}>
         {header}
         <div className={styles.Contents}>{sections}</div>
       </OverlayScrollbarsComponent>

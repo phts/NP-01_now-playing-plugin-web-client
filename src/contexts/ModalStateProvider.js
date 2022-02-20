@@ -35,6 +35,13 @@ const ModalStateProvider = ({ children }) => {
       disabledModals.current = disabledModals.current.filter(m => m !== modal);
     }
   }, [isModalDisabled]);
+
+  const getModalData = useCallback(modal => {
+    if (!isModalOpened(modal) || isModalDisabled(modal)) {
+      return null;
+    }
+    return openedModals.find(m => m.key === modal).data;
+  }, [isModalOpened, isModalDisabled, openedModals]);
   
   const startAutoCloseTimer = useCallback((modal, autoClose) => {
     const timers = autoCloseTimers.current;
@@ -54,10 +61,11 @@ const ModalStateProvider = ({ children }) => {
     return false;
   };
 
-  const openModal = useCallback((modal, autoClose = 0) => {
+  const openModal = useCallback((modal, options = {}) => {
+    const opts = { autoClose: 0, data: null, ...options };
     if (!isModalDisabled(modal)) {
       if (!isModalOpened(modal)) {
-        const _openedModals = [...openedModals, { key: modal, autoClose }];
+        const _openedModals = [...openedModals, { ...opts, key: modal }];
         setOpenedModals(_openedModals);
       }
       else if (clearAutoCloseTimer(modal)) {
@@ -76,7 +84,7 @@ const ModalStateProvider = ({ children }) => {
 
   return (
     <ModalStateContext.Provider 
-      value={{ isModalOpened, openModal, closeModal, disableModal, enableModal, isModalDisabled }}>
+      value={{ isModalOpened, openModal, closeModal, disableModal, enableModal, isModalDisabled, getModalData }}>
       {children}
     </ModalStateContext.Provider>
   );

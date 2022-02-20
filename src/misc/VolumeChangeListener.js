@@ -24,7 +24,7 @@ function VolumeChangeListener() {
         mute: playerState.mute
       };
       if (oldVolume) {
-        openModal(VOLUME_INDICATOR, AUTO_CLOSE);
+        openModal(VOLUME_INDICATOR, { autoClose: AUTO_CLOSE });
       }
     }
   }, [playerState.volume, playerState.mute, openModal])

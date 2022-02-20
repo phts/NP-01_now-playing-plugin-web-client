@@ -8,7 +8,7 @@
   --common-foreground-color-light: #fff;
   --common-foreground-color-dark: #666;
   --common-accent-color: #24a4f3;
-
+  
   // Scrollbar
   --scrollbar-handle-color: #45454580 !important;
   --scrollbar-handle-active-color: #454545cc !important;
@@ -215,4 +215,15 @@
   --browse-screen-background-filter: none;
   //--queue-screen-background-filter-entering
   //--queue-screen-background-filter
+
+  // Menus
+  --menu-background: #202020;
+  --menu-item-color: var(--common-foreground-color);
+  --menu-item-hover-color: var(--common-accent-color);
+
+  // --Dialogs
+  --dialog-background: #202020;
+  --dialog-border: 1px solid #333;
+  --dialog-border-radius: 0.5em;
+  --dialog-overlay-background: rgba(0, 0, 0, 0.5);
 }

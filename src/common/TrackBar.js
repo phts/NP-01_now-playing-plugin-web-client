@@ -6,7 +6,7 @@ import { ModalStateContext } from '../contexts/ModalStateProvider';
 import { PlayerStateContext } from '../contexts/PlayerStateProvider';
 import { ScreenContext } from '../contexts/ScreenContextProvider';
 import { VOLUME_INDICATOR } from '../modals/CommonModals';
-import { eventPathHasNoSwipe } from '../utils/swipe';
+import { eventPathHasNoSwipe } from '../utils/event';
 import Button from './Button';
 import Image from './Image';
 import PlayerButtonGroup from './PlayerButtonGroup';

@@ -46,6 +46,8 @@
 }
 
 .Items {
+  --display-menu: inherit;
+
   &--list {
     --albumart-width: var(--browse-screen-list-item-albumart-width);
     --albumart-height: var(--browse-screen-list-item-albumart-width);
@@ -57,7 +59,6 @@
     --display-album: inherit;
     --display-artist: inherit;
     --display-duration: inherit;
-    --display-menu: inherit;
 
     display: block;
     margin-top: 0.5em;
