@@ -1,7 +1,6 @@
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { AppContext } from '../../contexts/AppContextProvider';
 import { SocketContext } from '../../contexts/SocketProvider';
 import styles from './BrowseScreen.module.scss';
 import Section from './Section';
@@ -10,7 +9,6 @@ import FakeLoadingBar from './FakeLoadingBar';
 import Toolbar from './Toolbar';
 import { ModalStateContext } from '../../contexts/ModalStateProvider';
 import Header from './Header';
-import { isHome } from './helper';
 import { NotificationContext } from '../../contexts/NotificationProvider';
 import { ScreenContext } from '../../contexts/ScreenContextProvider';
 import classNames from 'classnames';
@@ -18,6 +16,7 @@ import { eventPathHasNoSwipe } from '../../utils/event';
 import { useSwipeable } from 'react-swipeable';
 import { ACTION_PANEL, ADD_TO_PLAYLIST_DIALOG, WEB_RADIO_DIALOG } from '../../modals/CommonModals';
 import { ServiceContext } from '../../contexts/ServiceProvider';
+import { isPlayOnDirectClick } from './helper';
 
 const HOME = {
   type: 'browse',
@@ -27,50 +26,53 @@ const HOME = {
 
 function BrowseScreen(props) {
   const socket = useContext(SocketContext);
-  const { host } = useContext(AppContext);
   const showToast = useContext(NotificationContext);
   const { openModal } = useContext(ModalStateContext);
-  const { playlistService, queueService } = useContext(ServiceContext);
+  const { playlistService, queueService, browseService } = useContext(ServiceContext);
   const [listView, setListView] = useState('grid');
   const [contents, setContents] = useState({});
-  const browseSources = useRef([]);
   const currentLocation = useRef(HOME);
-  const currentLoading = useRef(null);
   const currentSearchQuery = useRef('');
-  const backHistory = useRef([]);
   const scrollbarsRef = useRef(null);
   const fakeLoadingBarRef = useRef(null);
   const { switchScreen } = useContext(ScreenContext);
   const toolbarEl = useRef(null);
-  const lastAction = useRef(null);
 
-  const requestRestApi = (url, callback) => {
-    fetch(url)
-      .then(res => res.json())
-      .then(
-        data => callback && callback(data)
-      );
-  };
 
-  const resetCurrentLoading = useCallback((completeFakeLoadingBar = false) => {
-    stopFakeLoadingBar(completeFakeLoadingBar);
-    currentLoading.current = null;
-  }, []);
+  // Browse / navigation handling
 
-  const showBrowseSources = useCallback(() => {
-    setContents({
-      navigation: {
-        lists: [{
-          items: browseSources.current,
-          availableListViews: ['grid']
-        }]
+  useEffect(() => {
+    const handleContentsLoaded = (data) => {
+      if (!data.isBack) {
+        browseService.addCurrentToHistory(getScrollPosition());
       }
-    });
-  }, [setContents]);
+      currentLocation.current = data.location;
+      setContents({...data.contents, __scroll: data.scrollPosition});
+      stopFakeLoadingBar(true);
+    };
 
-  const addToBackHistory = (location) => {
-    backHistory.current.push(location);
-  }
+    const handleContentsRefreshed = (data) => {
+      setContents({...data.contents, __scroll: getScrollPosition()});
+    };
+
+    const handleError = (data) => {
+      showToast({
+        type: 'error',
+        message: data.error
+      });
+      stopFakeLoadingBar();
+    };
+
+    browseService.on('contentsLoaded', handleContentsLoaded);
+    browseService.on('contentsRefreshed', handleContentsRefreshed);
+    browseService.on('error', handleError);
+
+    return () => {
+      browseService.off('contentsLoaded', handleContentsLoaded);
+      browseService.off('contentsRefreshed', handleContentsRefreshed);
+      browseService.off('error', handleError);
+    }
+  }, [setContents, browseService, showToast]);
 
   const getScrollPosition = () => {
     const zero = { x: 0, y: 0 };
@@ -81,72 +83,29 @@ function BrowseScreen(props) {
     else {
       return zero;
     }
-  }
+  };
 
   const browse = useCallback((location, refresh = false) => {
-    if (location.type !== 'browse') {
-      return;
-    }
-    resetCurrentLoading();
-    if (isHome(location)) {
-      currentLocation.current = HOME;
-      showBrowseSources();
-      backHistory.current = [];
-    }
-    else {
-      currentLoading.current = location;
-      let requestUrl = `${host}/api/v1/browse?uri=${encodeURIComponent(encodeURIComponent(location.uri))}`;
-      startFakeLoadingBar();
-      requestRestApi(requestUrl, data => {
-        if (currentLoading.current && currentLoading.current.type === 'browse' &&
-          currentLoading.current.uri === location.uri) {
-          if (data.error) {
-            showToast({
-              type: 'error',
-              message: data.error
-            });
-            resetCurrentLoading();
-          }
-          else {
-            // Add to back history
-            if (!isHome(currentLocation.current) && !refresh) {
-              currentLocation.current.contents.__scroll = getScrollPosition();
-              addToBackHistory(currentLocation.current);
-            }
-            // Set current location, then update contents
-            location.contents = data;
-            currentLocation.current = location;
-            if (refresh) {
-              data.__scroll = getScrollPosition();
-            }
-            setContents(data);
-            resetCurrentLoading(true);
-          }
-        }
-      });
-    }
-  }, [showBrowseSources, host, showToast, resetCurrentLoading, setContents]);
+    startFakeLoadingBar();
+    browseService.browse(location, refresh);
+  }, [browseService]);
 
   const search = useCallback((query) => {
-    // Volumio REST API for search does NOT have the same implementation as Websocket API!
-    // Must use Websocket because REST API does not allow for source-specific searching.
-    const payload = {
-      value: query
-      // In Volumio musiclibrary.js, the payload also has a 'uri' field - what is it used for???
-    }
-    const searchLocation = {
-      type: 'search',
-      query,
-      service: null
-    };
-    if (currentLocation.current.service) {
-      payload.service = currentLocation.current.service.name;
-      searchLocation.service = currentLocation.current.service;
-    }
-    currentLoading.current = searchLocation;
     startFakeLoadingBar();
-    socket.emit('search', payload);
-  }, [socket])
+    browseService.search(query);
+  }, [browseService]);
+
+  const goBack = useCallback(() => {
+    startFakeLoadingBar();
+    browseService.goBack();
+  }, [browseService]);
+
+
+  // Toolbar actions
+
+  const toggleListView = useCallback(() => {
+    setListView(listView === 'grid' ? 'list' : 'grid');
+  }, [setListView, listView]);
 
   const onSearchQuery = useCallback((query, commit) => {
     currentSearchQuery.current = query;
@@ -154,23 +113,6 @@ function BrowseScreen(props) {
       search(query);
     }
   }, [search]);
-
-  const goBack = useCallback(() => {
-    startFakeLoadingBar();
-    const prevLocation = backHistory.current.pop();
-    if (!prevLocation || isHome(prevLocation)) {
-      browse(HOME);
-    }
-    else if (prevLocation.type === 'browse' || prevLocation.type === 'search') {
-      currentLocation.current = prevLocation;
-      setContents(prevLocation.contents);
-    }
-    stopFakeLoadingBar(true);
-  }, [browse, setContents]);
-
-  const toggleListView = useCallback(() => {
-    setListView(listView === 'grid' ? 'list' : 'grid');
-  }, [setListView, listView]);
 
   const openActionPanel = useCallback(() => {
     openModal(ACTION_PANEL);
@@ -199,47 +141,48 @@ function BrowseScreen(props) {
     }
   }, [browse, goBack, toggleListView, openActionPanel, switchScreen]);
 
-  const isPlayOnDirectClick = (itemType) => {
-    const playOnDirectClickTypes = [
-      'song',
-      'webradio',
-      'mywebradio',
-      'cuesong'/*,
-      'cd' // What's this? Can see in Volumio UI code but not in the backend...Leaving it out until I know how it's actually used
-      */
-    ]
-    return playOnDirectClickTypes.includes(itemType);
-  };
 
-  const doPlayOnClick = useCallback((item, list, itemIndex) => {
-    if (item.type === 'cuesong') {
-      socket.emit('addPlayCue', {
-        uri: item.uri,
-        number: item.number,
-        service: (item.service || null)
-      });
+  // Item actions
+
+  const playItem = useCallback((item, list, itemIndex) => {
+    queueService.play(item, list, itemIndex);
+  }, [queueService]);
+
+  const getItemLocation = useCallback((item) => {
+    const targetLocation = {
+      type: 'browse',
+      browseItem: item,
+      uri: item.uri
     }
-    else if (item.type === 'playlist') {
-      socket.emit('playPlaylist', {
-        name: item.title
-      });
+    if (!item.service && !item.plugin_name) {
+      targetLocation.service = null;
     }
-    else {
-      const playEntireListTypes = [
-        'song'
-      ];
-      if (playEntireListTypes.includes(item.type) && list && itemIndex !== undefined) {
-        socket.emit('playItemsList', {
-          item,
-          list: list.items,
-          index: itemIndex
-        });
+    else if (item.plugin_name) { // item refers to a browse source
+      targetLocation.service = {
+        name: item.plugin_name,
+        prettyName: item.plugin_name !== 'mpd' ? item.name : 'Music Library'
+      };
+    }
+    else if (currentLocation.current.service === null ||
+      item.service !== currentLocation.current.service.name) {
+      let prettyName;
+      if (item.service === 'mpd') {
+        prettyName = 'Music Library';
       }
       else {
-        socket.emit('playItemsList', { item });
+        const itemService = browseService.getBrowseSources().find(source => source.plugin_name === item.service);
+        prettyName = itemService ? itemService.name : '';
       }
+      targetLocation.service = {
+        name: item.service,
+        prettyName
+      };
     }
-  }, [socket]);
+    else {
+      targetLocation.service = currentLocation.current.service;
+    }
+    return targetLocation;
+  }, [browseService]);
 
   const handleItemClicked = useCallback((item, list, itemIndex) => {
     if (!item.uri) {
@@ -247,118 +190,19 @@ function BrowseScreen(props) {
     }
 
     if (isPlayOnDirectClick(item.type)) {
-      doPlayOnClick(item, list, itemIndex);
+      playItem(item, list, itemIndex);
     }
     else {
-      const targetLocation = {
-        type: 'browse',
-        browseItem: item,
-        uri: item.uri
-      }
-      if (!item.service && !item.plugin_name) {
-        targetLocation.service = null;
-      }
-      else if (item.plugin_name) { // item refers to a browse source
-        targetLocation.service = {
-          name: item.plugin_name,
-          prettyName: item.plugin_name !== 'mpd' ? item.name : 'Music Library'
-        };
-      }
-      else if (currentLocation.current.service === null ||
-        item.service !== currentLocation.current.service.name) {
-        let prettyName;
-        if (item.service === 'mpd') {
-          prettyName = 'Music Library';
-        }
-        else {
-          const itemService = browseSources.current.find(source => source.plugin_name === item.service);
-          prettyName = itemService ? itemService.name : '';
-        }
-        targetLocation.service = {
-          name: item.service,
-          prettyName
-        };
-      }
-      else {
-        targetLocation.service = currentLocation.current.service;
-      }
-
-      browse(targetLocation);
+      browse(getItemLocation(item));
     }
-  }, [doPlayOnClick, browse]);
+  }, [playItem, browse, getItemLocation]);
 
   const handlePlayClicked = useCallback((item, list, itemIndex) => {
-    doPlayOnClick(item, list, itemIndex);
-  }, [doPlayOnClick]);
-
-  const updateBrowseSources = useCallback((sources) => {
-    browseSources.current = sources;
-    if (isHome(currentLocation.current) ||
-      (currentLoading.current && isHome(currentLoading.current))) {
-      showBrowseSources();
-    }
-  }, [showBrowseSources]);
-
-  const showSearchResults = useCallback((data) => {
-    const loading = currentLoading.current;
-    if (!loading || loading.type !== 'search' || loading.query !== currentSearchQuery.current) {
-      return;
-    }
-    if (data.navigation) {
-      // Add to back history
-      if (!isHome(currentLocation.current)) {
-        currentLocation.current.contents.__scroll = getScrollPosition();
-        addToBackHistory(currentLocation.current);
-      }
-      // Set current location, then update contents
-      const location = Object.assign({}, loading, { contents: data });
-      currentLocation.current = location;
-      setContents(data);
-    }
-    resetCurrentLoading(true);
-  }, [setContents, resetCurrentLoading]);
-
-  const handlePushBrowseLibrary = useCallback((data) => {
-    // Only handle certain cases.
-    // For browsing library we use REST API
-    // -- Search results
-    if (data.navigation && data.navigation.isSearchResult) {
-      showSearchResults(data);
-    }
-    // -- Actions that expect a pushBrowseLibrary response (and current 
-    // location has not changed)
-    else if (lastAction.current && 
-      lastAction.current.expectsPushBrowseLibrary &&
-      lastAction.current.originatingUri === currentLocation.current.uri) {
-        currentLocation.current.contents = data;
-        currentLocation.current.contents.__scroll = getScrollPosition();
-        setContents(data);
-      lastAction.current = null;
-    }
-  }, [showSearchResults]);
-
-  const handlePushAddAWebRadio = useCallback((result) => {
-    if (result.success && currentLocation.current.uri === 'radio/myWebRadio') {
-      browse(currentLocation.current, true);
-    }
-  }, [browse])
-
-  useEffect(() => {
-    if (socket) {
-      socket.on('pushBrowseSources', updateBrowseSources);
-      socket.on('pushBrowseLibrary', handlePushBrowseLibrary);
-      socket.on('pushAddWebRadio', handlePushAddAWebRadio);
-
-      return () => {
-        socket.off('pushBrowseSources', updateBrowseSources);
-        socket.off('pushBrowseLibrary', handlePushBrowseLibrary);
-        socket.off('pushAddWebRadio', handlePushAddAWebRadio);
-      }
-    }
-  }, [socket, updateBrowseSources, handlePushBrowseLibrary, handlePushAddAWebRadio]);
+    playItem(item, list, itemIndex);
+  }, [playItem]);
 
   const callItemAction = useCallback((item, list, itemIndex, action) => {
-    let expectsPushBrowseLibrary = false;
+    let expectsContentsRefresh = false;
     if (action === 'play') {
       queueService.play(item, list, itemIndex);
     }
@@ -376,29 +220,29 @@ function BrowseScreen(props) {
     }
     else if (action === 'removeFromPlaylist') {
       playlistService.removeFromPlaylist(item, currentLocation.current.browseItem.title);
-      expectsPushBrowseLibrary = true;
+      expectsContentsRefresh = true;
     }
     else if (action === 'deletePlaylist') {
       playlistService.deletePlaylist(item.title);
-      expectsPushBrowseLibrary = true;
+      expectsContentsRefresh = true;
     }
     else if (action === 'removeDrive') {
       socket.emit('safeRemoveDrive', item.title);
-      expectsPushBrowseLibrary = true;
+      expectsContentsRefresh = true;
     }
     else if (action === 'updateFolder') {
       socket.emit('updateDb', item.uri);
     }
     else if (action === 'deleteFolder') {
       socket.emit('deleteFolder', { 'curUri': currentLocation.current.uri, 'item': item });
-      expectsPushBrowseLibrary = true;
+      expectsContentsRefresh = true;
     }
     else if (action === 'addToFavorites') {
       playlistService.addToFavorites(item);
     }
     else if (action === 'removeFromFavorites') {
       playlistService.removeFromFavorites(item);
-      expectsPushBrowseLibrary = true;
+      expectsContentsRefresh = true;
     }
     else if (action === 'addWebRadio') {
       openModal(WEB_RADIO_DIALOG, { data: { mode: 'add' } });
@@ -414,21 +258,24 @@ function BrowseScreen(props) {
     }
     else if (action === 'deleteWebRadio') {
       playlistService.deleteWebRadio(item);
-      expectsPushBrowseLibrary = true;
+      expectsContentsRefresh = true;
     }
     else if (action === 'addWebRadioToFavorites') {
       playlistService.addWebRadioToFavorites(item);
     }
     else if (action === 'removeWebRadioFromFavorites') {
       playlistService.removeWebRadioFromFavorites(item);
-      expectsPushBrowseLibrary = true;
+      expectsContentsRefresh = true;
     }
-    lastAction.current = {
-      action: action,
-      expectsPushBrowseLibrary,
-      originatingUri: currentLocation.current.uri
-    };
-  }, [queueService, playlistService, openModal, socket]);
+    browseService.registerAction({
+      action,
+      expectsContentsRefresh,
+      originatingLocation: currentLocation.current
+    });
+  }, [queueService, playlistService, browseService, openModal, socket]);
+
+
+  // View components
 
   const sections = useMemo(() => {
     if (contents.navigation && Array.isArray(contents.navigation.lists)) {
@@ -466,7 +313,9 @@ function BrowseScreen(props) {
     }
   }, [contents]);
 
+
   // Swipe handling
+
   const onToolbarSwiped = useCallback((e) => {
     if (toolbarEl.current === null || eventPathHasNoSwipe(e.event, toolbarEl.current)) {
       return;
@@ -485,14 +334,14 @@ function BrowseScreen(props) {
     toolbarEl.current = el;
   };
 
+
   // Fake loading bar
+
   const startFakeLoadingBar = () => {
     if (!fakeLoadingBarRef.current) {
       return;
     }
-    if (currentLoading.current) {
-      fakeLoadingBarRef.current.start();
-    }
+    fakeLoadingBarRef.current.start();
   };
 
   const stopFakeLoadingBar = (complete = false) => {
@@ -501,6 +350,7 @@ function BrowseScreen(props) {
     }
     fakeLoadingBarRef.current.stop(complete);
   };
+
 
   const supportsHover = !window.matchMedia('(hover: none)').matches;
   const layoutClasses = classNames([
@@ -549,6 +399,7 @@ function BrowseScreen(props) {
         ref={toolbarRefPassthrough}
         styles={styles}
         currentLocation={currentLocation.current}
+        currentContents={contents}
         currentListView={listView}
         onButtonClick={handleToolbarButtonClicked}
         onSearchQuery={onSearchQuery} />

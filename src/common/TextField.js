@@ -39,8 +39,8 @@ const TextField = React.forwardRef((props, ref) => {
       className={mainClassName}>
         { props.icon ? <span className={getElementClassName('icon')}>{ props.icon }</span> : null }
         <input
-          type="text"
           ref={ref} 
+          type="text"
           className={getElementClassName('input')}
           placeholder={props.placeholder}
           value={props.value}

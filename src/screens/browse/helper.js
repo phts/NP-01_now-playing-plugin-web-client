@@ -1,7 +1,20 @@
+const PLAY_ON_DIRECT_CLICK_TYPES = [
+  'song',
+  'webradio',
+  'mywebradio',
+  'cuesong'/*,
+  'cd' // What's this? Can see in Volumio UI code but not in the backend...Leaving it out until I know how it's actually used
+  */
+];
+
+export function isPlayOnDirectClick(itemType) {
+  return PLAY_ON_DIRECT_CLICK_TYPES.includes(itemType);
+}
+
 export function isHome(location) {
   return location.type === 'browse' && 
-    (location.uri === '/' || location.uri === '');
-};
+      (location.uri === '/' || location.uri === '');
+}
 
 // Based on:
 // https://github.com/volumio/Volumio2-UI/blob/master/src/app/browse-music/browse-music.controller.js

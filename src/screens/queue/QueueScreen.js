@@ -9,13 +9,26 @@ import { ScreenContext } from '../../contexts/ScreenContextProvider';
 import Toolbar from './Toolbar';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import Items from './Items';
+import { ServiceContext } from '../../contexts/ServiceProvider';
 
 function QueueScreen(props) {
   const playerState = useContext(PlayerStateContext);
-  const socket = useContext(SocketContext);
-  const [items, setItems] = useState([]);
+  const { queueService } = useContext(ServiceContext);
+  const [items, setItems] = useState(queueService.getQueue());
   const {exitActiveScreen} = useContext(ScreenContext);
   const toolbarEl = useRef(null);
+
+  useEffect(() => {
+    const handleQueueChanged = (data) => {
+      setItems(data);
+    };
+
+    queueService.on('queueChanged', handleQueueChanged);
+
+    return () => {
+      queueService.off('queueChanged', handleQueueChanged);
+    }
+  }, [queueService, setItems]);
 
   const closeScreen = useCallback(() => {
     exitActiveScreen({
@@ -36,33 +49,19 @@ function QueueScreen(props) {
         closeScreen();
         break;
       case 'clear':
-        socket.emit('clearQueue');
+        queueService.clearQueue();
         break;
       default:
     }
-  }, [closeScreen, socket]);
+  }, [closeScreen, queueService]);
 
   const handleItemClicked = useCallback((position) => {
-    socket.emit('play', { value: position });
-  }, [socket]);
+    queueService.playQueue(position);
+  }, [queueService]);
 
   const handleRemoveClicked = useCallback((position) => {
-    socket.emit('removeFromQueue', { value: position });
-  }, [socket]);
-
-  const handlePushQueue = useCallback((data) => {
-    setItems(data);
-  }, [setItems]);
-
-  useEffect(() => {
-    if (socket) {
-      socket.on('pushQueue', handlePushQueue);
-
-      return () => {
-        socket.off('pushQueue', handlePushQueue);
-      }
-    }
-  }, [socket, handlePushQueue]);
+    queueService.removeFromQueue(position);
+  }, [queueService]);
 
   // Swipe handling
   const onToolbarSwiped = useCallback((e) => {  

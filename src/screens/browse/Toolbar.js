@@ -27,7 +27,7 @@ const Toolbar = React.forwardRef((props, ref) => {
   }, [props.currentListView]);
 
   const supportsMultipleListViews = () => {
-    const contents = props.currentLocation.contents || {};
+    const contents = props.currentContents || {};
     if (contents.navigation && Array.isArray(contents.navigation.lists)) {
       return contents.navigation.lists.find( list => 
         Array.isArray(list.availableListViews) && 

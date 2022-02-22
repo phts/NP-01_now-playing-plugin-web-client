@@ -6,6 +6,7 @@
 
   &__main {
     flex-grow: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -61,7 +62,6 @@
   width: 12em;
   height: 1.8em;
   margin-left: auto;
-  overflow: hidden;
 
   @media all and (min-width: 1024px) {
     width: 20em;
