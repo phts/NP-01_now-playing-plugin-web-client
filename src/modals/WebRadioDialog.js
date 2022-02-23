@@ -14,7 +14,7 @@ function WebRadioDialog(props) {
   const urlInputRef = useRef(null);
   const okButtonRef = useRef(null);
   const { closeDialog } = props;
-  const mode = props.data ? (props.data.mode || 'add') : 'add';
+  const mode = props.modalData ? (props.modalData.mode || 'add') : 'add';
 
   const modalOverlayClassNames = {
     base: styles.Overlay,
@@ -42,10 +42,10 @@ function WebRadioDialog(props) {
     }
     else {
       if (nameInputRef.current) {
-        nameInputRef.current.value = props.data.name || '';
+        nameInputRef.current.value = props.modalData.name || '';
       }
       if (urlInputRef.current) {
-        urlInputRef.current.value = props.data.url || '';
+        urlInputRef.current.value = props.modalData.url || '';
       }
     }
   };

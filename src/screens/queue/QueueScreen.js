@@ -10,9 +10,12 @@ import Toolbar from './Toolbar';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import Items from './Items';
 import { ServiceContext } from '../../contexts/ServiceProvider';
+import { ADD_TO_PLAYLIST_DIALOG } from '../../modals/CommonModals';
+import { ModalStateContext } from '../../contexts/ModalStateProvider';
 
 function QueueScreen(props) {
   const playerState = useContext(PlayerStateContext);
+  const { openModal } = useContext(ModalStateContext);
   const { queueService } = useContext(ServiceContext);
   const [items, setItems] = useState(queueService.getQueue());
   const {exitActiveScreen} = useContext(ScreenContext);
@@ -47,6 +50,13 @@ function QueueScreen(props) {
     switch(action) {
       case 'close':
         closeScreen();
+        break;
+      case 'addToPlaylist':
+        openModal(ADD_TO_PLAYLIST_DIALOG, {
+          data: {
+            addType: 'queue'
+          }
+        });
         break;
       case 'clear':
         queueService.clearQueue();

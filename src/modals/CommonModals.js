@@ -46,13 +46,13 @@ function CommonModals() {
         contentLabel="dialog"
         onRequestClose={closeAddToPlaylistDialog}
         closeDialog={closeAddToPlaylistDialog}
-        data={getModalData(ADD_TO_PLAYLIST_DIALOG)} />
+        modalData={getModalData(ADD_TO_PLAYLIST_DIALOG)} />
       <WebRadioDialog
         isOpen={isModalOpened(WEB_RADIO_DIALOG) && !isModalDisabled(WEB_RADIO_DIALOG)}
         contentLabel="dialog"
         onRequestClose={closeWebRadioDialog}
         closeDialog={closeWebRadioDialog}
-        data={getModalData(WEB_RADIO_DIALOG)} />
+        modalData={getModalData(WEB_RADIO_DIALOG)} />
     </>
   );
 }

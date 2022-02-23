@@ -42,23 +42,33 @@ function AddToPlaylistDialog(props) {
     beforeClose: styles['Layout--before-close']
   };
 
+  const doAdd = useCallback((playlist) => {
+    const addType = props.modalData.addType;
+    if (addType === 'item' && props.modalData.item) {
+      playlistService.addToPlaylist(props.modalData.item, playlist);
+    }
+    else if (addType === 'queue') {
+      playlistService.addQueueToPlaylist(playlist);
+    }
+  }, [props.modalData, playlistService]);
+
   const addToPlaylist = useCallback((e) => {
-    playlistService.addToPlaylist(props.data.item, e.target.dataset.playlist);
+    doAdd(e.target.dataset.playlist);
     closeDialog();
-  }, [playlistService, props.data, closeDialog]);
+  }, [doAdd, closeDialog]);
 
   const createAndAddToPlaylist = useCallback(() => {
     const playlist = createPlaylistTextBoxRef.current ? createPlaylistTextBoxRef.current.value : null;
     if (playlist) {
-      playlistService.addToPlaylist(props.data.item, playlist);
+      doAdd(playlist);
       closeDialog();
     }
-  }, [playlistService, props.data, closeDialog]);
+  }, [doAdd, closeDialog]);
 
   const addToFavorites = useCallback(() => {
-    playlistService.addToFavorites(props.data.item);
+    playlistService.addToFavorites(props.modalData.item);
     closeDialog();
-  }, [playlistService, props.data, closeDialog]);
+  }, [playlistService, props.modalData, closeDialog]);
 
   const getPlaylists = useCallback(() => {
     return (<ul className={styles.Playlists}>

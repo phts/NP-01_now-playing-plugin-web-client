@@ -20,6 +20,15 @@ const Toolbar = React.forwardRef((props, ref) => {
     extraClassNames: [styles[`Button--${buttonName}`]]
   });
 
+  const addToPlaylistButton = (
+    <Button 
+      key="addToPlaylist"
+      styles={getButtonStyles('addToPlaylist')}
+      icon="playlist_add"
+      data-action="addToPlaylist"
+      onClick={handleButtonClicked} />
+  );
+
   const clearButton = (
     <Button 
       key="clear"
@@ -51,7 +60,7 @@ const Toolbar = React.forwardRef((props, ref) => {
       <PlayerButtonGroup
           className={buttonGroupClassNames}
           buttonStyles={baseButtonStyles}
-          buttons={['random', 'repeat', clearButton]}
+          buttons={['random', 'repeat', addToPlaylistButton, clearButton]}
           playerState={props.playerState} />
       </div>
     </div>

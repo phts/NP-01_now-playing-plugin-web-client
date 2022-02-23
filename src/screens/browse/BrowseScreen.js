@@ -216,7 +216,12 @@ function BrowseScreen(props) {
       queueService.clearAndPlay(item);
     }
     else if (action === 'addToPlaylist') {
-      openModal(ADD_TO_PLAYLIST_DIALOG, { data: { item } });
+      openModal(ADD_TO_PLAYLIST_DIALOG, { 
+        data: { 
+          addType: 'item',
+          item 
+        } 
+      });
     }
     else if (action === 'removeFromPlaylist') {
       playlistService.removeFromPlaylist(item, currentLocation.current.browseItem.title);
