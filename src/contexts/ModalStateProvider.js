@@ -6,6 +6,7 @@ const ModalStateProvider = ({ children }) => {
   const [openedModals, setOpenedModals] = useState([]);
   const autoCloseTimers = useRef({});
   const disabledModals = useRef([]);
+  const cachedModalData = useRef({});
 
   const isModalOpened = useCallback(modal => {
     return openedModals.find(m => m.key === modal) ? true : false;
@@ -38,7 +39,7 @@ const ModalStateProvider = ({ children }) => {
 
   const getModalData = useCallback(modal => {
     if (!isModalOpened(modal) || isModalDisabled(modal)) {
-      return null;
+      return cachedModalData.current[modal] || null;
     }
     return openedModals.find(m => m.key === modal).data;
   }, [isModalOpened, isModalDisabled, openedModals]);
@@ -66,6 +67,7 @@ const ModalStateProvider = ({ children }) => {
     if (!isModalDisabled(modal)) {
       if (!isModalOpened(modal)) {
         const _openedModals = [...openedModals, { ...opts, key: modal }];
+        cachedModalData.current[modal] = opts.data || null;
         setOpenedModals(_openedModals);
       }
       else if (clearAutoCloseTimer(modal)) {

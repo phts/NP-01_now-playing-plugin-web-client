@@ -12,6 +12,7 @@
   transition: border-color 200ms;
 
   &__input {
+    min-width: 0;
     border: none;
     outline: none;
     background: transparent;
