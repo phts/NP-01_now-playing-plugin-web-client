@@ -4,13 +4,17 @@ $switchCount: 3;
   display: flex;
   pointer-events: auto;
   min-width: 0;
+  border: var(--screen-switcher-border);
+  border-radius: var(--screen-switcher-border-radius);
+  box-shadow: var(--common-box-shadow);
+  overflow: hidden;
 }
 
 .LabelWrapper {
   background: var(--screen-switcher-label-background);
   width: var(--screen-switcher-switch-width);
-  border-top-left-radius: var(--screen-switcher-border-radius);
-  border-bottom-left-radius: var(--screen-switcher-border-radius);
+  /*border-top-left-radius: var(--screen-switcher-border-radius);
+  border-bottom-left-radius: var(--screen-switcher-border-radius);*/
   padding-left: 0.5em;
   display: flex;
   align-items: center;
@@ -25,8 +29,8 @@ $switchCount: 3;
 
 .SwitchesWrapper {
   background: var(--screen-switcher-background);
-  border-top-right-radius: var(--screen-switcher-border-radius);
-  border-bottom-right-radius: var(--screen-switcher-border-radius);
+  /*border-top-right-radius: var(--screen-switcher-border-radius);
+  border-bottom-right-radius: var(--screen-switcher-border-radius);*/
   padding: 0.5em;
   display: grid;
   grid-template-columns: repeat(auto-fill, var(--screen-switcher-switch-width));

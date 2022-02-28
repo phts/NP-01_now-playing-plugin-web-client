@@ -17,9 +17,9 @@
   color: var(--browse-screen-grid-item-color);
   text-align: center;
 
-  > :not(:first-child) {
+  /*> :not(:first-child) {
     padding: 0.5em 0px;
-  }
+  }*/
 
   &:hover {
     .Item__image,
@@ -100,26 +100,31 @@
     display: none;
   }
 
+  &__titleAlbumArtist {
+    padding: 0.5em 0;
+  }
+
   &__ellipsis {
     display: none;
     position: absolute;
     top: 0;
     right: 0;
+    padding: 0;
 
     @media (hover: none) {
       display: var(--display-menu);
     }
 
-    @media (max-width: 320px) {
+    /*@media (max-width: 320px) {
       padding: 0;
-    }
+    }*/
   }
 
   &__button--play {
     @extend .Button;
 
-    --play-button-diameter: 3em;
-    --play-button-margin: 0.6em;
+    --play-button-diameter: 2em;
+    --play-button-margin: 0.3em;
 
     position: absolute;
     width: var(--play-button-diameter);
@@ -135,18 +140,29 @@
       color: var(--browse-screen-grid-item-play-button-hover-color);
     }
 
-    @media (max-width: 479px) {
-      --play-button-diameter: 2em;
-      --play-button-margin: 0.3em;
+    @media (min-width: 300px) and (max-width: 389px) {
+      --play-button-diameter: 2.5em;
+      --play-button-margin: 0.6em;
+    }
+
+    @media (min-width: 390px) and (max-width: 479px) {
+      --play-button-diameter: 2.4em;
+      --play-button-margin: 0.5em;
     }
 
     @media (min-width: 480px) and (max-width: 719px) {
       --play-button-diameter: 2.5em;
-      --play-button-margin: 0.4em;
+      --play-button-margin: 0.6em;
+    }
+
+    @media (min-width: 720px) and (max-width: 1119px) {
+      --play-button-diameter: 2.8em;
+      --play-button-margin: 0.7em;
     }
 
     @media (min-width: 1120px) {
-      --play-button-margin: 8px;
+      --play-button-diameter: 3em;
+      --play-button-margin: 0.7em;
     }
 
     @media (hover: none) {
@@ -158,11 +174,16 @@
     @extend .Button;
 
     font-size: 1em;
-    padding: 5px;
+    width: 2.5em;
+    height: 3em;
+    /*padding: 5px;
+    min-width: 1em;*/
 
-    @media (max-width: 320px) {
-      padding: 5px 0;
+    @media (max-width: 300px) {
+      width: 2em;
+      height: 2.5em;
     }
+
   }
 
   &__menuItemIcon {

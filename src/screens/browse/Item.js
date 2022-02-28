@@ -1,5 +1,5 @@
 import { ControlledMenu, MenuItem, useMenuState } from "@szhsin/react-menu";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Button from "../../common/Button";
 import Image from "../../common/Image";
 import { secondsToString } from "../../utils/track";
@@ -13,10 +13,9 @@ import classNames from "classnames";
 function Item(props) {
   const itemRef = useRef(null);
   const menuButtonRef = useRef();
+  const menuOverlayRef = useRef();
   const { toggleMenu, ...menuProps } = useMenuState({ transition: true });
-  const styles = props.styles;
-  const data = props.data;
-  const index = props.index;
+  const {styles, data, index} = props;
 
   const getAlbumArtContents = useCallback((data) => {
     if (data.albumart || (!data.icon && data.tracknumber === undefined)) {
@@ -72,7 +71,8 @@ function Item(props) {
       onClick={handlePlayClicked} />
   ) : null;
 
-  const openMenu = useCallback(() => {
+  const openMenu = useCallback((e) => {
+    e.preventDefault();
     toggleMenu(true);
   }, [toggleMenu]);
 
@@ -80,7 +80,7 @@ function Item(props) {
     toggleMenu(false);
   }, [toggleMenu]);
 
-  const menuOpened = menuProps.state !== 'closed';
+  const menuOpened = menuProps.state !== undefined && menuProps.state !== 'closed';
 
   const getMenu = () => {
     const menuItems = getMenuItems(props.location, props.data);
@@ -93,6 +93,7 @@ function Item(props) {
         {...menuProps}
         anchorRef={menuButtonRef}
         onClose={closeMenu}
+        unmountOnClose
         theming='dark'
         align='start'
         position='anchor'
@@ -121,7 +122,31 @@ function Item(props) {
   };
 
   const menu = getMenu();
- 
+
+  const supportsHover = !window.matchMedia('(hover: none)').matches;
+  const menuOverlay = !supportsHover && menuOpened && menuProps.state !== 'closing';
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      closeMenu();
+    };
+
+    const menuOverlayEl = menuOverlayRef.current;
+    if (menuOverlay && menuOverlayEl) {
+      menuOverlayEl.addEventListener('touchstart', handler, {passive: false});
+
+      return () => {
+        menuOverlayEl.removeEventListener('touchstart', handler);
+      }
+    }
+  }, [menuOverlay, closeMenu]);
+
+  const onMenuOverlay = props.onMenuOverlay;
+  useEffect(() => {
+    onMenuOverlay && onMenuOverlay(menuOverlay);
+  }, [onMenuOverlay, menuOverlay]);
+
   return (
     <div
       ref={itemRef}
@@ -136,8 +161,8 @@ function Item(props) {
         <div className={styles.Item__albumArtist} dangerouslySetInnerHTML={{ __html: albumArtist }} />
       </div>
       <div className={styles.Item__duration}>{duration}</div>
-      {menu ? 
-        <div className={styles.Item__ellipsis}>
+      {menu ?
+        <div className={classNames(styles.Item__ellipsis, 'menu-button')}>
           <Button 
             ref={menuButtonRef}
             styles={{
@@ -146,8 +171,11 @@ function Item(props) {
               extraClassNames: [styles['Item__button--menu'], 'menu-button']
             }}
             icon="more_vert"
-            onKeyDown={openMenu}
-            onMouseDown={openMenu} />
+            onKeyDown={!menuOpened ? openMenu : closeMenu}
+            onMouseDown={!menuOpened ? openMenu : closeMenu} />
+          {menuOverlay ? 
+            <div ref={menuOverlayRef} className={styles.MenuOverlay}></div> 
+          : null}
           {menu}
         </div>
       : null}

@@ -24,7 +24,8 @@ function Section(props) {
   
   const titleClassNames = classNames([
     styles.Title,
-    props.sectionIndex === 0 ? styles['Title--first'] : null
+    props.sectionIndex === 0 ? styles['Title--first'] : null,
+    !title ? styles['Title--empty'] : null
   ]);
 
   const itemsContain = useMemo(() => {
@@ -118,12 +119,10 @@ function Section(props) {
   }, [host]);
 
   return (
-    <section className={styles.Layout}>
-      { title ?
-        <div 
-          className={titleClassNames} 
-          dangerouslySetInnerHTML={{ __html: formatRichTitle(title)}} />
-        : null }
+    <section className={classNames(styles.Layout, styles[`Layout--${listView}`])}>
+      <div 
+        className={titleClassNames} 
+        dangerouslySetInnerHTML={{ __html: formatRichTitle(title)}} />
       <div className={itemsClassNames}>
         <Items 
           styles={styles} 
@@ -131,7 +130,8 @@ function Section(props) {
           location={props.location}
           onItemClick={handleItemClicked} 
           onPlayClick={handlePlayClicked}
-          onMenuItemClick={handleMenuItemClicked} />
+          onMenuItemClick={handleMenuItemClicked}
+          onItemMenuOverlay={props.onItemMenuOverlay} />
       </div>
     </section>
   );

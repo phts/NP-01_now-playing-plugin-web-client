@@ -42,7 +42,7 @@ function Header(props) {
           extraClassNames: [styles['Button--play']]
         }}
         icon="play_arrow"
-        text="Play"
+        
         data-action="play" 
         onClick={handlePlayClicked} />
     ));

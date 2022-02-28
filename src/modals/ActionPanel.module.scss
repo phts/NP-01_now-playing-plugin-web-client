@@ -27,7 +27,8 @@
   transition: transform 200ms;
   width: 80vw;
   max-width: 40rem;
-  margin-top: 2em;
+  margin-top: 1em;
+  padding: 1em;
 
   &--after-open {
     transform: translate(var(--left), 0);
@@ -62,8 +63,10 @@
   @extend .Button;
   width: var(--action-panel-extra-button-size);
   height: var(--action-panel-extra-button-size);
+  border: var(--action-panel-extra-button-border);
   border-radius: var(--action-panel-extra-button-border-radius);
   background: var(--action-panel-extra-button-background);
+  box-shadow: var(--common-box-shadow);
 
   &__image {
     width: var(--action-panel-extra-button-image-size);

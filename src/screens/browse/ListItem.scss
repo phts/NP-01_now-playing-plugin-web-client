@@ -16,6 +16,7 @@
   background: var(--browse-screen-list-item-background);
   transition: 0.2s ease;
   //transition-property: background;
+  border-bottom: var(--browse-screen-list-item-divider);
 
   &:hover {
     background: var(--browse-screen-list-item-hover-background);
@@ -27,9 +28,9 @@
     }
   }
 
-  &:not(:last-of-type) {
+  /*&:not(:last-of-type) {
     border-bottom: var(--browse-screen-list-item-divider);
-  }
+  }*/
 
   @media (min-width: 1024px) {
     &:first-of-type {
@@ -40,6 +41,7 @@
     &:last-of-type {
       border-bottom-left-radius: var(--browse-screen-list-border-radius);
       border-bottom-right-radius: var(--browse-screen-list-border-radius);
+      border-bottom: none;
     }
   }
 

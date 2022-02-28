@@ -1,5 +1,4 @@
-import classNames from 'classnames';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import TextField from '../../common/TextField';
 import styles from './SearchBox.module.scss';
 

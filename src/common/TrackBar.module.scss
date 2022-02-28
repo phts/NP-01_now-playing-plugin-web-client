@@ -146,6 +146,7 @@
 
   .VolumeBar {
     --volume-slider-background: var(--trackbar-volumebar-background);
+    --volume-slider-backdrop-filter: var(--trackbar-volumebar-backdrop-filter);
 
     position: absolute;
     right: 0.8em;
@@ -154,7 +155,6 @@
     bottom: -100%;
     opacity: 0;
     transition: bottom 200ms ease-out, opacity 200ms ease-in;
-    backdrop-filter: blur(10px);
   }
 
   &--after-open {

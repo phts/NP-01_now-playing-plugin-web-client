@@ -1,5 +1,4 @@
 import styles from './QueueScreen.module.scss';
-import { SocketContext } from '../../contexts/SocketProvider';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { PlayerStateContext } from '../../contexts/PlayerStateProvider';
 import classNames from 'classnames';
@@ -63,7 +62,7 @@ function QueueScreen(props) {
         break;
       default:
     }
-  }, [closeScreen, queueService]);
+  }, [closeScreen, openModal, queueService]);
 
   const handleItemClicked = useCallback((position) => {
     queueService.playQueue(position);

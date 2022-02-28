@@ -37,6 +37,7 @@ function BrowseScreen(props) {
   const fakeLoadingBarRef = useRef(null);
   const { switchScreen } = useContext(ScreenContext);
   const toolbarEl = useRef(null);
+  const [itemMenuOverlay, setItemMenuOverlay] = useState(false);
 
 
   // Browse / navigation handling
@@ -295,13 +296,14 @@ function BrowseScreen(props) {
           sectionIndex={index}
           onItemClick={handleItemClicked}
           onPlayClick={handlePlayClicked}
-          callItemAction={callItemAction} />
+          callItemAction={callItemAction}
+          onItemMenuOverlay={setItemMenuOverlay} />
       )
       );
       return sections;
     }
     return null;
-  }, [contents.navigation, listView, handleItemClicked, handlePlayClicked, callItemAction]);
+  }, [contents.navigation, listView, handleItemClicked, handlePlayClicked, callItemAction, setItemMenuOverlay]);
 
   const header = useMemo(() => {
     if (contents.navigation && contents.navigation.info) {
@@ -414,6 +416,9 @@ function BrowseScreen(props) {
         options={{
           scrollbars: {
             autoHide: supportsHover ? 'leave' : 'scroll'
+          },
+          overflowBehavior: {
+            y: itemMenuOverlay ? 'hidden' : 'scroll'
           }
         }}>
         {header}

@@ -1,9 +1,13 @@
-$albumartHeight: 8em;
+$albumartHeight: 10em;
 
 .Layout {
   width: 100%;
   position: relative;
   overflow: hidden;
+
+  @media (min-width: 1024px) {
+    margin-bottom: 1em;
+  }
 
   &__background {
     background: var(--browse-screen-header-background);
@@ -21,9 +25,14 @@ $albumartHeight: 8em;
     display: flex;
     position: relative;
     align-items: center;
+    gap: 1em;
 
     @media (min-width: 1024px) {
       max-width: 80%;
+    }
+
+    @media (max-width: 419px) {
+      flex-direction: column;
     }
   }
 }
@@ -52,12 +61,19 @@ $albumartHeight: 8em;
 }
 
 .Info {
+  --info-align: inherit;
+
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  gap: 0.5em;
   color: var(--browse-screen-header-info-color);
-  margin-left: 1em;
   min-height: $albumartHeight;
+  text-align: var(--info-align);
+
+  @media (max-width: 419px) {
+    --info-align: center;
+  }
 
   &__title {
     font-size: 1.5em;
@@ -67,7 +83,7 @@ $albumartHeight: 8em;
   &__extra {
     display: flex;
     align-items: center;
-    margin-top: 0.3em;
+    justify-content: var(--info-align);
     font-size: 0.9em;
 
     &--separator {
@@ -83,6 +99,9 @@ $albumartHeight: 8em;
 
 .Buttons {
   margin-top: auto;
+  padding-top: 1em;
+  display: flex;
+  justify-content: var(--info-align);
 }
 
 @import '../../common/Button';
@@ -90,12 +109,15 @@ $albumartHeight: 8em;
 .Button {
   &--play {
     --button-background: var(--browse-screen-header-play-button-background);
-    --button-font-size: 1em;
+    --button-font-size: 1.5em;
     --button-hover-color: inherit;
-    border-radius: 0.5em;
+    --button-border-radius: 50%;
+    //border-radius: 0.5em;
     border: var(--browse-screen-header-play-button-border);
     transition: 0.2s ease-out;
-    padding: 0.5em 1em 0.5em 0.6em;
+//    padding: 0.5em 1em 0.5em 0.6em;
+    width: 3em;
+    height: 3em;
     
     &:hover {
       background: var(--browse-screen-header-play-button-hover-background);

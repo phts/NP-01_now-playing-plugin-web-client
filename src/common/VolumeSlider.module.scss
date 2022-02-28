@@ -4,12 +4,15 @@
 
   box-sizing: border-box;
   background: var(--volume-slider-background);
+  border: var(--volume-slider-border);
   border-radius: var(--volume-slider-border-radius);
   display: flex;
   align-items: center;
   padding: 1em;
   pointer-events: auto;
   position: relative;
+  backdrop-filter: var(--volume-slider-backdrop-filter);
+  box-shadow: var(--common-box-shadow);
 
   &--disabled:after {
     content: "\e14b";

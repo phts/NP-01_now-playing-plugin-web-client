@@ -33,7 +33,7 @@ const Toolbar = React.forwardRef((props, ref) => {
     <Button 
       key="clear"
       styles={getButtonStyles('clear')}
-      icon="clear_all"
+      icon="delete_sweep"
       data-action="clear"
       onClick={handleButtonClicked} />
   );

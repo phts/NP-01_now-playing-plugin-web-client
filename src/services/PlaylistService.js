@@ -158,11 +158,4 @@ export default class PlaylistService {
     }
     this.removeFromFavorites(item);
   }
-
-  addQueueToPlaylist(playlist) {
-    if (!this.socket) {
-      return;
-    }
-    this.socket.emit('saveQueueToPlaylist', { name: playlist });
-  }
 }

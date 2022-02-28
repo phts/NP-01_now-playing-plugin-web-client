@@ -17,9 +17,10 @@ const Items = React.memo((props) => {
         data={item} 
         onClick={props.onItemClick}
         onPlayClick={props.onPlayClick} 
-        onMenuItemClick={props.onMenuItemClick} />
+        onMenuItemClick={props.onMenuItemClick}
+        onMenuOverlay={props.onItemMenuOverlay} />
     ));
-  }, [props.items, props.styles, props.onItemClick, props.onPlayClick, props.onMenuItemClick]);
+  }, [props.items, props.styles, props.location, props.onItemClick, props.onPlayClick, props.onMenuItemClick, props.onItemMenuOverlay]);
 
   return (
     <>{getItems()}</>

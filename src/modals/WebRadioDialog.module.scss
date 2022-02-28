@@ -17,7 +17,7 @@
 
 .Layout {
   --left: calc(50vw - 50%);
-  --top: calc(50vh - 50%);
+  --top: calc(calc(50vh - 3em) - 50%);
   --min-vmargin: 12em;
 
   position: absolute;
@@ -27,7 +27,7 @@
   overflow: hidden;
   border: var(--dialog-border);
   border-radius: var(--dialog-border-radius);
-  box-shadow: 0 2px 9px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--dialog-box-shadow);
   outline: none;
   transform: translate(var(--left), var(--top));
   transition: opacity 200ms;
@@ -37,12 +37,15 @@
   height: auto;
   max-height: calc(100% - var(--min-vmargin));
   opacity: 0;
+  backdrop-filter: var(--dialog-backdrop-filter);
 
   @media (max-height: 479px) {
+    --top: calc(50vh - 50%);
     --min-vmargin: 4em;
   }
 
   @media (max-height: 319px) {
+    --top: calc(50vh - 50%);
     --min-vmargin: 2em;
   }
 
