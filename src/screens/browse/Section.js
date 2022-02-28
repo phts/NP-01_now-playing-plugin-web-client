@@ -131,7 +131,7 @@ function Section(props) {
           onItemClick={handleItemClicked} 
           onPlayClick={handlePlayClicked}
           onMenuItemClick={handleMenuItemClicked}
-          onItemMenuOverlay={props.onItemMenuOverlay} />
+          onMenuOverlay={props.onMenuOverlay} />
       </div>
     </section>
   );

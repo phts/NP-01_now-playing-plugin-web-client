@@ -64,69 +64,69 @@ export function canAddToPlaylist(item) {
   return ret;
 }
 
-export function getMenuItems(location, item) {
+export function getItemActions(location, item) {
   if (!hasMenu(item)) {
     return null;
   }
-  const menuItems = [];
+  const itemActions = [];
   if (hasPlayButton(item)) {
-    menuItems.push({
+    itemActions.push({
       title: 'Play',
       icon: 'play_arrow',
       action: 'play'
     });
   }
   if (canAddToQueue(item)) {
-    menuItems.push({
+    itemActions.push({
       title: 'Add to Queue',
       icon: 'add_to_queue',
       action: location.uri === 'playlists' ? 'addPlaylistToQueue' : 'addToQueue',
     });
   }
   if (hasPlayButton(item)) {
-    menuItems.push({
+    itemActions.push({
       title: 'Clear and Play',
       icon: 'playlist_play',
       action: 'clearAndPlay'
     });
   }
   if (canAddToPlaylist(item)) {
-    menuItems.push({
+    itemActions.push({
       title: 'Add to Playlist',
       icon: 'playlist_add',
       action: 'addToPlaylist'
     });
   }
   if (location.browseItem && location.browseItem.type === 'playlist') {
-    menuItems.push({
+    itemActions.push({
       title: 'Remove from Playlist',
       icon: 'playlist_remove',
       action: 'removeFromPlaylist'
     });
   }
   if (item.type === 'playlist') {
-    menuItems.push({
+    itemActions.push({
       title: 'Delete Playlist',
       icon: 'delete_outline',
       action: 'deletePlaylist'
     });
   }
   if (item.type === 'remdisk') {
-    menuItems.push({
+    itemActions.push({
       title: 'Safely Eject',
       icon: 'eject',
       action: 'removeDrive'
     });
   }
   if (item.type === 'folder' || item.type === 'internal-folder') {
-    menuItems.push({
+    itemActions.push({
       title: 'Update Folder',
       icon: 'sync',
       action: 'updateFolder'
     });
   }
   if (item.type === 'internal-folder') {
-    menuItems.push({
+    itemActions.push({
       title: 'Delete Folder',
       icon: 'folder_delete',
       action: 'deleteFolder'
@@ -134,54 +134,54 @@ export function getMenuItems(location, item) {
   }
 
   if ((item.type === 'song' || item.type === 'folder-with-favourites') && location.uri !== 'favourites' && !item.favourite) {
-    menuItems.push({
+    itemActions.push({
       title: 'Add to Favorites',
       icon: 'favorite',
       action: 'addToFavorites'
     });
   }
   if (location.uri === 'favourites' || item.favourite) {
-    menuItems.push({
+    itemActions.push({
       title: 'Remove from Favorites',
       icon: 'favorite_border',
       action: 'removeFromFavorites'
     });
   }
   if (item.type === 'mywebradio-category') {
-    menuItems.push({
+    itemActions.push({
       title: 'Add Web Radio',
       icon: 'add',
       action: 'addWebRadio'
     });
   }
   if (item.type === 'mywebradio') {
-    menuItems.push({
+    itemActions.push({
       title: 'Edit Web Radio',
       icon: 'edit',
       action: 'editWebRadio'
     });
   }
   if (item.type === 'mywebradio' && location.uri === 'radio/myWebRadio') {
-    menuItems.push({
+    itemActions.push({
       title: 'Delete Web Radio',
       icon: 'delete',
       action: 'deleteWebRadio'
     });
   }
   if (location.uri !== 'radio/favourites' && (item.type === 'webradio' || item.type === 'mywebradio')) {
-    menuItems.push({
+    itemActions.push({
       title: 'Add to Favorite Radios',
       icon: 'favorite',
       action: 'addWebRadioToFavorites'
     });
   }
   if (location.uri === 'radio/favourites' && (item.type === 'webradio' || item.type === 'mywebradio')) {
-    menuItems.push({
+    itemActions.push({
       title: 'Remove from Favorite Radios',
       icon: 'favorite_border',
       action: 'removeWebRadioFromFavorites'
     });
   }
 
-  return menuItems;
+  return itemActions;
 }

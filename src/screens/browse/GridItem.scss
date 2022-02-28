@@ -1,4 +1,5 @@
 @import '../../common/Button';
+@import '../../common/PopupMenu';
 
 @mixin text {
   overflow: hidden;
@@ -30,13 +31,7 @@
       display: flex;
     }
 
-    .Item__ellipsis {
-      display: var(--display-menu);
-    }
-  }
-
-  &--menuOpened {
-    .Item__ellipsis {
+    .PopupMenu {
       display: var(--display-menu);
     }
   }
@@ -104,22 +99,6 @@
     padding: 0.5em 0;
   }
 
-  &__ellipsis {
-    display: none;
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 0;
-
-    @media (hover: none) {
-      display: var(--display-menu);
-    }
-
-    /*@media (max-width: 320px) {
-      padding: 0;
-    }*/
-  }
-
   &__button--play {
     @extend .Button;
 
@@ -169,10 +148,20 @@
       display: flex;
     }
   }
+}
 
-  &__button--menu {
-    @extend .Button;
+.PopupMenu {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
 
+  @media (hover: none) {
+    display: var(--display-menu);
+  }
+  
+  &__menuButton {
     font-size: 1em;
     width: 2.5em;
     height: 3em;
@@ -183,11 +172,9 @@
       width: 2em;
       height: 2.5em;
     }
-
   }
 
-  &__menuItemIcon {
-    font-size: 1.2em;
-    margin-right: 0.5em;
+  &--opened {
+    display: var(--display-menu);
   }
 }

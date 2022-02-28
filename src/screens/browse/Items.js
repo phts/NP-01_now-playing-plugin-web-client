@@ -18,9 +18,9 @@ const Items = React.memo((props) => {
         onClick={props.onItemClick}
         onPlayClick={props.onPlayClick} 
         onMenuItemClick={props.onMenuItemClick}
-        onMenuOverlay={props.onItemMenuOverlay} />
+        onMenuOverlay={props.onMenuOverlay} />
     ));
-  }, [props.items, props.styles, props.location, props.onItemClick, props.onPlayClick, props.onMenuItemClick, props.onItemMenuOverlay]);
+  }, [props.items, props.styles, props.location, props.onItemClick, props.onPlayClick, props.onMenuItemClick, props.onMenuOverlay]);
 
   return (
     <>{getItems()}</>
