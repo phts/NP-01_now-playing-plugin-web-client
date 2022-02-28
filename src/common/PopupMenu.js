@@ -32,6 +32,8 @@ function PopupMenu(props) {
       align={props.align || 'start'}
       position={props.position || 'anchor'}
       direction={props.direction || 'left'}
+      boundingBoxRef={props.boundingBoxRef}
+      boundingBoxPadding="8"
       onItemClick={onMenuItemClick}
     >
       {menuItems.map(item => {

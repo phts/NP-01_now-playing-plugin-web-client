@@ -37,8 +37,8 @@ function BrowseScreen(props) {
   const fakeLoadingBarRef = useRef(null);
   const { switchScreen } = useContext(ScreenContext);
   const toolbarEl = useRef(null);
+  const screenRef = useRef(null);
   const [menuOverlay, setMenuOverlay] = useState(false);
-
 
   // Browse / navigation handling
 
@@ -308,11 +308,14 @@ function BrowseScreen(props) {
   const header = useMemo(() => {
     if (contents.navigation && contents.navigation.info) {
       return (
-        <Header info={contents.navigation.info} onPlayClick={handlePlayClicked} />
+        <Header 
+          screenRef={screenRef}
+          info={contents.navigation.info} 
+          callItemAction={callItemAction} />
       );
     }
     return null;
-  }, [contents.navigation, handlePlayClicked]);
+  }, [contents.navigation, callItemAction]);
 
   useEffect(() => {
     if (scrollbarsRef.current) {
@@ -399,6 +402,7 @@ function BrowseScreen(props) {
 
   return (
     <div
+      ref={screenRef}
       className={layoutClasses}
       style={props.style}>
       <FakeLoadingBar ref={fakeLoadingBarRef} styles={styles} />

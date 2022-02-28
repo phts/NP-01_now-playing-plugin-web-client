@@ -1,7 +1,7 @@
 import Button from '../../common/Button';
 import Image from '../../common/Image';
+import PopupMenu from '../../common/PopupMenu';
 import styles from './Header.module.scss';
-import { hasPlayButton } from './helper';
 
 function Header(props) {
   const data = props.info;
@@ -26,27 +26,60 @@ function Header(props) {
     return prev;
   }, []);
 
-  const handlePlayClicked = (e) => {
+  const handleButtonClicked = (e) => {
     e.stopPropagation();
-    props.onPlayClick(data);
+    const action = e.currentTarget.dataset.action;
+    props.callItemAction(data, null, null, action);
   };
 
-  const buttons = [];
-  if (hasPlayButton(data)) {
-    buttons.push((
-      <Button 
-        key="play"
-        styles={{
-          baseClassName: 'Button',
-          bundle: styles,
-          extraClassNames: [styles['Button--play']]
-        }}
-        icon="play_arrow"
-        
-        data-action="play" 
-        onClick={handlePlayClicked} />
-    ));
-  }
+  const handleMenuItemClicked = (e) => {
+    e.syntheticEvent.stopPropagation();
+    const {action} = e.value;
+    props.callItemAction(data, null, null, action);
+  };
+
+  const actionComponents = [];
+  actionComponents.push((
+    <Button 
+      key="play"
+      styles={{
+        baseClassName: 'Button',
+        bundle: styles,
+        extraClassNames: [styles['Button--play']]
+      }}
+      icon="play_arrow"
+      data-action="play" 
+      onClick={handleButtonClicked} />
+  ));
+
+  const menuItems = [];
+  menuItems.push({
+    key: 'addToPlaylist',
+    title: 'Add to Playlist',
+    icon: 'playlist_add',
+    value: { action: 'addToPlaylist' },
+  });
+  menuItems.push({
+    key: 'addToQueue',
+    title: 'Add to Queue',
+    icon: 'add_to_queue',
+    value: { action: 'addToQueue' },
+  });
+
+  actionComponents.push((
+    <PopupMenu
+      key='headerMenu'
+      styles={{
+        baseClassName: 'PopupMenu',
+        bundle: styles
+      }}
+      direction="bottom"
+      boundingBoxRef={props.screenRef}
+      menuButtonIcon="more_horiz"
+      menuItems={menuItems}
+      onMenuItemClick={handleMenuItemClicked}
+      onMenuOverlay={props.onMenuOverlay} />
+  ));
 
   return (
     <div className={styles.Layout}>
@@ -61,7 +94,7 @@ function Header(props) {
           <div className={styles.Info__title}>{titleText}</div>
           <div className={styles.Info__artist}>{artistText}</div>
           <div className={styles.Info__extra}>{extra}</div>
-          <div className={styles.Buttons}>{buttons}</div>
+          <div className={styles.Buttons}>{actionComponents}</div>
         </div>
       </div>
     </div>
