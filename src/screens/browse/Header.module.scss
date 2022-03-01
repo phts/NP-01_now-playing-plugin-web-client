@@ -71,11 +71,14 @@ $albumartHeight: 10em;
   flex-direction: column;
   gap: 0.5em;
   color: var(--browse-screen-header-info-color);
-  min-height: $albumartHeight;
   text-align: var(--info-align);
 
   @media (max-width: 479px) {
     --info-align: center;
+  }
+
+  @media (orientation: landscape) {
+    min-height: $albumartHeight;
   }
 
   &__title {
