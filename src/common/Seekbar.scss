@@ -73,4 +73,8 @@
     @extend .Seekbar__seek;
     text-align: right;
   }
+
+  &--disabled {
+    visibility: hidden;
+  }
 }

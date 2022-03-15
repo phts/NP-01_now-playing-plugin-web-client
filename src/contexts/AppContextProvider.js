@@ -1,13 +1,14 @@
 import { createContext, useState } from "react";
-import { getInitialHost } from "../utils/init";
+import { getApiPath, getInitialHost } from "../utils/init";
 
 const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
   const [host, setHost] = useState(getInitialHost());
+  const apiPath = getApiPath();
 
   return (
-    <AppContext.Provider value={{host, setHost}}>
+    <AppContext.Provider value={{host, setHost, apiPath}}>
       {children}
     </AppContext.Provider>
   );

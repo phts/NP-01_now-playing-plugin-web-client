@@ -41,11 +41,7 @@ function Seekbar(props) {
   const duration = (playerState.duration || 0) * 1000;
   const durationText = millisecondsToString(duration);
   const seekPercent = (duration > 0) ? ((seek / duration) * 100) + '%' : 0;
-  const hidden = playerState.duration === 0 || playerState.status === 'stop';
-  const seekbarStyles = {};
-  if (hidden) {
-    seekbarStyles['visibility'] = 'hidden';
-  }
+  const disabled = playerState.duration === 0 || playerState.status === 'stop';
 
   const beginSeek = useCallback(beginVal => {
     trackTimerRef.current.pause();
@@ -76,12 +72,14 @@ function Seekbar(props) {
   const mainClassName = (baseClassName && stylesBundle) ? 
     classNames(
       stylesBundle[baseClassName] || 'Seekbar',
+      disabled ? (stylesBundle[`${baseClassName}--disabled`] || 'Seekbar--disabled') : null,
       'no-swipe',
       [...extraClassNames]
     )
     :
     classNames(
       'Seekbar',
+      disabled ? 'Seekbar--disabled' : null,
       'no-swipe',
       [...extraClassNames]
     );
@@ -119,7 +117,7 @@ function Seekbar(props) {
   const showText = props.showText !== undefined ? props.showText : true;
 
   return (
-    <div className={mainClassName} style={seekbarStyles}>
+    <div className={mainClassName}>
       <Range 
         values={[Math.min(seek, duration)]}
         max={Math.max(duration, 1)}

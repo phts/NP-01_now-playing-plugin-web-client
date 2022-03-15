@@ -1,6 +1,6 @@
 import './PopupMenu.scss';
 import classNames from 'classnames';
-import { ControlledMenu, MenuItem, useMenuState } from '@szhsin/react-menu';
+import { ControlledMenu, MenuDivider, MenuHeader, MenuItem, useMenuState } from '@szhsin/react-menu';
 import { useCallback, useEffect, useRef } from 'react';
 import Button from './Button';
 
@@ -22,34 +22,54 @@ function PopupMenu(props) {
 
   const menuOpened = menuProps.state !== undefined && menuProps.state !== 'closed';
   
-  const getMenu = () => (
-    <ControlledMenu 
-      {...menuProps}
-      anchorRef={menuButtonRef}
-      onClose={closeMenu}
-      unmountOnClose
-      theming="dark"
-      align={props.align || 'start'}
-      position={props.position || 'anchor'}
-      direction={props.direction || 'left'}
-      boundingBoxRef={props.boundingBoxRef}
-      boundingBoxPadding="8"
-      onItemClick={onMenuItemClick}
-    >
-      {menuItems.map(item => {
-        return (
-          <MenuItem 
-            key={item.key}
-            value={item.value}>
-              {item.icon ? 
-                (<span className={classNames('material-icons', getElementClassName('menuItemIcon'))}>{item.icon}</span>) 
-                : null }
-              {item.title}
-          </MenuItem>
-        )
-      })}
-    </ControlledMenu>
-  );
+  const getMenu = () => {
+    const getIcon = (item) => item.icon ? 
+      (<span className={classNames('material-icons', getElementClassName('menuItemIcon'))}>{item.icon}</span>) 
+      : null;
+
+    return (
+      <ControlledMenu 
+        {...menuProps}
+        anchorRef={menuButtonRef}
+        onClose={closeMenu}
+        unmountOnClose
+        theming="dark"
+        align={props.align || 'start'}
+        position={props.position || 'anchor'}
+        direction={props.direction || 'left'}
+        boundingBoxRef={props.boundingBoxRef}
+        boundingBoxPadding="8"
+        overflow="auto"
+        onItemClick={onMenuItemClick}
+      >
+        {menuItems.map(item => {
+          if (item.type === 'header') {
+            return (
+              <MenuHeader key={item.key}>
+                {getIcon(item)}
+                {item.title}
+              </MenuHeader>
+            )
+          }
+          else if (item.type === 'divider') {
+            return (
+              <MenuDivider key={item.key} />
+            )
+          }
+          else {
+            return (
+              <MenuItem 
+                key={item.key}
+                value={item.value}>
+                  {getIcon(item)}
+                  {item.title}
+              </MenuItem>
+            )
+          }
+        })}
+      </ControlledMenu>
+    )
+  };
 
   const supportsHover = !window.matchMedia('(hover: none)').matches;
   const menuOverlay = !supportsHover && menuOpened && menuProps.state !== 'closing';

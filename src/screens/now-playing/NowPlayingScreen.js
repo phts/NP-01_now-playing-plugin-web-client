@@ -2,9 +2,6 @@ import styles from './NowPlayingScreen.module.scss';
 import Dock from '../../common/Dock';
 import { SocketContext } from '../../contexts/SocketProvider';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import TrackInfoText from '../../common/TrackInfoText';
-import PlayerButtonGroup from '../../common/PlayerButtonGroup';
-import Seekbar from '../../common/Seekbar';
 import { PlayerStateContext } from '../../contexts/PlayerStateProvider';
 import Button from '../../common/Button';
 import { ModalStateContext } from '../../contexts/ModalStateProvider';
@@ -14,8 +11,10 @@ import { useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
 import { ScreenContext } from '../../contexts/ScreenContextProvider';
 import { ACTION_PANEL, VOLUME_INDICATOR } from '../../modals/CommonModals';
-import Image from '../../common/Image';
 import { getInitialCustomStyles } from '../../utils/init';
+import PopupMenu from '../../common/PopupMenu';
+import BasicView from './BasicView';
+import DetailsView from './DetailsView';
 
 function NowPlayingScreen(props) {
   const playerState = useContext(PlayerStateContext);
@@ -24,6 +23,7 @@ function NowPlayingScreen(props) {
   const [customStyles, setCustomStyles] = useState(getInitialCustomStyles());
   const screenEl = useRef(null);
   const {activeScreenId, switchScreen} = useContext(ScreenContext);
+  const [view, setView] = useState('basic');
 
   const applyCustomStyles = useCallback( styles => {
     setCustomStyles(styles);
@@ -66,6 +66,10 @@ function NowPlayingScreen(props) {
 
     if (customStyles.textAlignmentV) {
       _css['--text-alignment-v'] = customStyles.textAlignmentV;
+    }
+
+    if (customStyles.textAlignmentLyrics) {
+      _css['--text-alignment-lyrics'] = customStyles.textAlignmentLyrics;
     }
   
     if (customStyles.textMargins === 'custom') { 
@@ -194,16 +198,60 @@ function NowPlayingScreen(props) {
     screenEl.current = el;
   };
 
-  // Vertically center-align PlayerButtonGroup if there's no TrackInfoText
-  const emptyTrackInfoText = 
-    (playerState.title === undefined || playerState.title === '') &&
-    (playerState.artist === undefined || playerState.artist === '') &&
-    (playerState.album === undefined || playerState.album === '');
-  const playerButtonGroupClasses = classNames({
-    [`${ styles.PlayerButtonGroup }`]: true,
-    [`${ styles['PlayerButtonGroup--vcenter'] }`]: emptyTrackInfoText,
-    'no-swipe': true
-  });
+  const handleMenuItemClicked = (e) => {
+    e.syntheticEvent.stopPropagation();
+    const {action} = e.value;
+    if (action === 'toggleView') {
+      setView(view === 'basic' ? 'details' : 'basic');
+    }
+  };
+
+  // Menu
+  const getMenu = () => {
+    const menuItems = [
+      {
+        key: 'toggleView',
+        value: {
+          action: 'toggleView'
+        },
+        icon: view === 'basic' ? 'newspaper' : 'art_track',
+        title: view === 'basic' ? 'Details View' : 'Basic View'
+      },
+      {
+        type: 'divider',
+        key: 'divider1',
+      },
+      {
+        key: 'gotoArtist',
+        value: {
+          action: 'gotoArtist'
+        },
+        icon: 'person',
+        title: 'Go to Artist'
+      },
+      {
+        key: 'gotoAlbum',
+        value: {
+          action: 'gotoAlbum'
+        },
+        icon: 'album',
+        title: 'Go to Album'
+      }
+    ];
+
+    return (
+      <PopupMenu
+        styles={{
+          baseClassName: 'PopupMenu',
+          bundle: styles,
+          extraClassNames: ['no-swipe']
+        }}
+        align="end"
+        direction="bottom"
+        onMenuItemClick={handleMenuItemClicked}
+        menuItems={menuItems} />
+    );
+  }
 
   const layoutClasses = classNames([
     styles.Layout,
@@ -227,41 +275,20 @@ function NowPlayingScreen(props) {
           icon="expand_more" />
         { getDockChildren('top') }
       </Dock>
-      <Dock position="topRight">{ getDockChildren('top-right') }</Dock>
+      <Dock position="topRight">
+        { getDockChildren('top-right') }
+        { getMenu() }
+      </Dock>
       <Dock position="left">{ getDockChildren('left') }</Dock>
       <Dock position="right">{ getDockChildren('right') }</Dock>
       <Dock position="bottomLeft">{ getDockChildren('bottom-left') }</Dock>
       <Dock position="bottom">{ getDockChildren('bottom') }</Dock>
       <Dock position="bottomRight">{ getDockChildren('bottom-right') }</Dock>
-      <div className={ styles.Layout__contents }>
-        <div className={styles.AlbumArt}>
-          <Image className={styles.AlbumArt__image} src={playerState.albumart} preload={true} />
-        </div>
-        <div className={ styles.Layout__main }>
-          { !emptyTrackInfoText ? 
-            <TrackInfoText 
-              styles={{
-                baseClassName: 'TrackInfoText',
-                bundle: styles
-              }} 
-              playerState={ playerState } /> 
-            : null }
-          <PlayerButtonGroup 
-            className={ playerButtonGroupClasses }
-            buttonStyles={{
-              baseClassName: 'PlayerButton',
-              bundle: styles
-            }}
-            playerState={ playerState } />
-          { !emptyTrackInfoText ? 
-            <Seekbar 
-              styles={{
-                baseClassName: 'Seekbar',
-                bundle: styles
-              }}
-              playerState={ playerState } /> 
-            : null }
-        </div>
+      <div className={ styles.Layout__view }>
+        {view === 'basic' ? 
+          <BasicView playerState={playerState} />
+          :
+          <DetailsView playerState={playerState} />}
       </div>
     </div>
   );

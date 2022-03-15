@@ -1,3 +1,5 @@
+@import '../../common/PopupMenu';
+
 .Layout {
   /* Default styles */
   --default-base-font-size: 10px;
@@ -11,6 +13,7 @@
   --default-media-info-font-color: #ccc;
   --default-text-alignment-h: unset;
   --default-text-alignment-v: unset;
+  --default-text-alignment-lyrics: center;
   --default-title-margin: 0px 0px 0.2em 0px;
   --default-artist-margin: unset;
   --default-album-margin: unset;
@@ -48,6 +51,7 @@
   --media-info-font-color: var(--default-media-info-font-color);
   --text-alignment-h: var(--default-text-alignment-h);
   --text-alignment-v: var(--default-text-alignment-v);
+  --text-alignment-lyrics: var(--default-text-alignment-lyrics);
   --title-margin: var(--default-title-margin);
   --artist-margin: var(--default-artist-margin);
   --album-margin: var(--default-album-margin);
@@ -87,26 +91,9 @@
   background-size: 100% 100%;
   font-size: var(--base-font-size);
 
-  &__contents {
-    display: flex;
+  &__view {
     width: 100%;
     height: 100%;
-    align-items: center;
-  }
-
-  &__main {
-    //z-index: 1;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    color: #ccc;
-    font-weight: 700;
-    width: var(--track-info-width);
-    height: var(--track-info-height);
-    min-width: var(--track-info-min-width);
-    min-height: var(--track-info-min-height);
-    max-width: var(--track-info-max-width);
-    max-height: var(--track-info-max-height);
   }
 
   @media all and (orientation: landscape) {
@@ -262,189 +249,17 @@
   }
 }
 
-.AlbumArt {
-  display: var(--albumart-visibility);
-  margin-right: 12px;
-
-  &__image {
-    filter: drop-shadow(0 0 8px #00000080);
-    display: block;
-    object-fit: var(--albumart-fit);
-    width: var(--albumart-width);
-    height: var(--albumart-height);
-    border-radius: var(--albumart-border-radius);
-  }
-
-  @media all and (orientation: portrait) {
-    margin-right: 0px;
-    margin-bottom: 12px;
-  }
-}
-
-@import "../../common/TrackInfoText";
-
-.TrackInfoText {
-  justify-content: var(--text-alignment-v);
-  text-align: var(--text-alignment-h);
-
-  &__title {
-    color: var(--title-font-color);
-    font-family: "Noto Sans Display", sans-serif;
-    font-size: var(--title-font-size);
-    margin: var(--title-margin);
-    -webkit-line-clamp: var(--max-title-lines);
-  }
-
-  &__artist {
-    color: var(--artist-font-color);
-    font-size: var(--artist-font-size);
-    margin: var(--artist-margin);
-    -webkit-line-clamp: var(--max-artist-lines);
-  }
-
-  &__album {
-    color: var(--album-font-color);
-    font-size: var(--album-font-size);
-    margin: var(--album-margin);
-    -webkit-line-clamp: var(--max-album-lines);
-  }
-
-  &__format {
-    margin: var(--media-info-margin);
-  }
-
-  &__formatIcon {
-    height: var(--media-info-font-size);
-  }
-
-  &__formatResolution {
-    font-size: var(--media-info-font-size);
-    color: var(--media-info-font-color);
-  }
-}
-
-@import "../../common/PlayerButtonGroup";
-
-.PlayerButtonGroup {
-  display: var(--playback-buttons-visibility);
-  margin: var(--playback-buttons-margin);
-
-  &--vcenter {
-    margin-top: auto;
-    margin-bottom: auto;
-  }
-
-  @media all and (orientation: landscape) {
-    @media (max-width: 579px) {
-      gap: 1em;
-    }
-    @media (min-width: 768px) {
-      gap: 24px;
-    }
-  }
-  
-  @media all and (orientation: portrait) and (max-width: 279px) {
-    gap: 1em;
-  }
-}
-
-@import "../../common/Button";
-
-.PlayerButton {
-  --button-color: var(--widget-primary-color);
-  --button-hover-color: var(--widget-highlight-color);
-  --button-active-color: var(--widget-highlight-color);
-  --button-border: none;
-  --button-toggled-color: var(--widget-highlight-color);
-  --button-toggled-background: none;
-  --button-toggled-border: none;
-
-  @extend .Button;
-
-  font-size: var(--playback-buttons-size);
-  width: 1.5em;
-  height: 1.5em;
-
-  &__icon {
-    @extend .Button__icon;
-    line-height: 1.5em;
-    font-size: 1em;
-    width: 1.5em;
-    z-index: 1;
-  }
-
-  &--repeat,
-  &--random {
-    display: none;
-  }
-
-  &--play {
-    --button-color: var(--widget-highlight-color);
-    position: relative;
-
-    &:before {
-      content: "";
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      left: -2px;
-      top: -2px;
-      border: 2px solid var(--widget-highlight-color);
-      border-radius: 50%;
-      transition: 0.2s;
-    }
-
-    @media (hover: hover) {
-      &:hover {
-        color: var(--widget-primary-color) !important;
-
-        &:before {
-          background: var(--widget-highlight-color);
-        }
-      }
-    }
-    &:active {
-      color: var(--widget-primary-color) !important;
-
-      &:before {
-        background: var(--widget-highlight-color);
-      }
-    }
-  }
-
-  @media (hover: hover) {
-    &--previous:hover,
-    &--next:hover {
-      color: var(--widget-highlight-color);
-    }
-  }
-
-  @media all and (orientation: landscape) and (min-width: 340px) {
-    &--repeat,
-    &--random {
-      display: inline-block;
-    }
-  }
-
-  @media all and (orientation: portrait) and (min-width: 240px) and (min-height: 400px) {
-    &--repeat,
-    &--random {
-      display: inline-block;
-    }
-  }
-}
-
-@import "../../common/Seekbar";
-
-.Seekbar {
-  --seekbar-thumb-color: var(--widget-highlight-color);
-  --seekbar-track-played-color: var(--widget-highlight-color);
-  --seekbar-track-remaining-color: var(--widget-primary-color);
-}
-
 .ActionPanelTrigger {
   --button-color: var(--widget-primary-color);
   @extend .Button;
   font-size: 1em;
   opacity: 0.5;
+}
+
+.PopupMenu {
+  font-size: 1em;
+
+  &__menuButton {
+    font-size: var(--default-base-font-size);
+  }
 }
