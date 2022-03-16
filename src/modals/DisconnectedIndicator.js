@@ -5,7 +5,7 @@ import './DisconnectedIndicator.scss';
 
 function DisconnectedIndicator() {
 
-  const socket = useContext(SocketContext);
+  const {socket} = useContext(SocketContext);
   const [visible, setVisible] = useState();
 
   const onConnect = useCallback(() => {

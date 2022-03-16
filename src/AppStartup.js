@@ -1,16 +1,28 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import Modal from "react-modal/lib/components/Modal";
+import { AppContext } from "./contexts/AppContextProvider";
 import { SocketContext } from "./contexts/SocketProvider";
-import { getInitialData } from "./utils/init";
+import io from "socket.io-client";
 
 const refresh = () => {
   window.location.reload();
 };
 
 function AppStartup() {
-  const socket = useContext(SocketContext);
-  const pluginVersion = getInitialData('pluginVersion');
-  const appPort = getInitialData('appPort');
+  const {host, pluginInfo, setPluginInfo} = useContext(AppContext);
+  const {socket, setSocket} = useContext(SocketContext);
+  const currentPluginInfo = useRef(null);
+
+  useEffect(() => {
+    if (host) {
+      const _socket = io.connect(host, { autoConnect: false });
+      setSocket(_socket);
+
+      return (() => {
+        _socket.disconnect();
+      });
+    }
+  }, [host, setSocket]);
 
   useEffect(() => {
     if (socket) {
@@ -20,19 +32,17 @@ function AppStartup() {
         socket.emit('getQueue');
         socket.emit("callMethod", {
           endpoint: "user_interface/now_playing",
-          method: "broadcastPluginInfo",
+          method: "getPluginInfo",
         });
       };
 
       const onPluginInfo = (info) => {
-        if (appPort && `${info.appPort}` !== `${appPort}`) {
-          const href = window.location.href.replace(
-            `:${ appPort }`,
-            `:${ info.appPort }`
-          );
-          window.location.href = href;
-        } else if (pluginVersion && info.pluginVersion !== pluginVersion) {
-          refresh();
+        const current = currentPluginInfo.current;
+        if (!current || (`${info.appPort}` !== `${current.appPort}` ||
+          info.version !== current.version ||
+          info.appUrl !== current.appUrl ||
+          info.apiPath !== current.apiPath)) {
+            setPluginInfo(info);
         }
       };
 
@@ -52,9 +62,24 @@ function AppStartup() {
 
         socket.off('nowPlayingPluginInfo', onPluginInfo);
         socket.off("nowPlayingRefresh", refresh);
+      };
+    }
+  }, [socket, setPluginInfo]);
+
+  useEffect(() => {
+    // Plugin info updated - compare and decide whether to reload
+    if (pluginInfo && currentPluginInfo.current) {
+      const current = currentPluginInfo.current;
+      if (pluginInfo.appUrl !== current.appUrl && 
+        window.location.href.startsWith(current.appUrl)) {
+          window.location.href = pluginInfo.appUrl;
+      }
+      else if (pluginInfo.version !== current.version) {
+        refresh();
       }
     }
-  }, [socket, appPort, pluginVersion]);
+    currentPluginInfo.current = pluginInfo;
+  }, [pluginInfo, socket]);
 
   Modal.setAppElement('#root');
 

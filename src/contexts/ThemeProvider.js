@@ -1,7 +1,9 @@
 import { createContext, useState, useEffect, useCallback, useRef, useContext } from "react";
 import defaultTheme from '../themes/default';
 import glassTheme from '../themes/glass';
+import { requestPluginApiEndpoint } from "../utils/api";
 import { getInitialThemeName } from "../utils/init";
+import { AppContext } from "./AppContextProvider";
 import { SocketContext } from "./SocketProvider";
 
 const ThemeContext = createContext();
@@ -12,7 +14,8 @@ const themes = {
 };
 
 const ThemeProvider = ({ children }) => {
-  const socket = useContext(SocketContext);
+  const {socket} = useContext(SocketContext);
+  const {pluginInfo} = useContext(AppContext);
   const [theme, applyTheme] = useState(themes[getInitialThemeName()] || defaultTheme);
   const currentTheme = useRef(theme);
 
@@ -22,13 +25,34 @@ const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     if (socket) {
-      socket.on('nowPlayingSetTheme', setTheme)
+      socket.on('nowPlayingSetTheme', setTheme);
 
       return () => {
-        socket.off('nowPlayingSetTheme', setTheme)
+        socket.off('nowPlayingSetTheme', setTheme);
       };
     }
   }, [socket, setTheme]);
+
+  const apiPath = pluginInfo ? pluginInfo.apiPath : null;
+
+  useEffect(() => {
+    let aborted = false;
+
+    const fetchAndSetTheme = async() => {
+      const result = await requestPluginApiEndpoint(apiPath, '/settings/getTheme');
+      if (result.success && !aborted) {
+        setTheme(result.data);
+      }
+    };
+
+    if (apiPath) {
+      fetchAndSetTheme();
+
+      return () => {
+        aborted = true;
+      };
+    }
+  }, [apiPath, setTheme]);
 
   useEffect(() => {
     document.body.classList.remove(...currentTheme.current.className.split(' '))

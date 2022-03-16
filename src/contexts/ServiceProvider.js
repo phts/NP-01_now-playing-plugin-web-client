@@ -13,7 +13,7 @@ const initServices = (socket = null, host = null, apiPath = null) => {
     playlistService: new PlaylistService(socket),
     queueService: new QueueService(socket),
     browseService: new BrowseService(socket, host),
-    metadataService: new MetadataService(apiPath)
+    metadataService: apiPath ? new MetadataService(apiPath) : null
   };
 };
 
@@ -21,19 +21,23 @@ const destroyServices = (services) => {
   services.playlistService.destroy();
   services.queueService.destroy();
   services.browseService.destroy();
-  services.metadataService.destroy();
+  if (services.metadataService) {
+    services.metadataService.destroy();
+  }
 };
 
 const initialServices = initServices();
 
 const ServiceProvider = ({ children }) => {
-  const socket = useContext(SocketContext);
-  const {host, apiPath} = useContext(AppContext);
+  const {socket} = useContext(SocketContext);
+  const {host, pluginInfo} = useContext(AppContext);
   const [services, setServices] = useState(initialServices);
+
+  const apiPath = pluginInfo ? pluginInfo.apiPath : null;
 
   useEffect(() => {
     setServices(initServices(socket, host, apiPath));
-  }, [socket, host, apiPath]);
+  }, [setServices, socket, host, apiPath]);
 
   useEffect(() => {
     return () => {

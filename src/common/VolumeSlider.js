@@ -7,7 +7,7 @@ import Button from "./Button";
 import styles from "./VolumeSlider.module.scss";
 
 function VolumeSlider(props) {
-  const socket = useContext(SocketContext);
+  const {socket} = useContext(SocketContext);
   const playerState = useContext(PlayerStateContext);
   const changeVolumeTimer = useRef(null);
   const changeVolumeValue = useRef(playerState.volume);

@@ -1,4 +1,5 @@
 import { EventEmitter } from "eventemitter3";
+import { requestPluginApiEndpoint } from "../utils/api";
 
 export default class MetadataService {
   constructor(apiPath) {
@@ -24,17 +25,8 @@ export default class MetadataService {
    * }
    */
   async getSongInfo(params) {
-    const url = `${this.apiPath}/metadata/fetchInfo`;
-    const payload = {...params, type: 'song'}
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-    const data = await res.json();
+    const payload = {...params, type: 'song'};
+    const data = await requestPluginApiEndpoint(this.apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
       this._pushFetched(params, data.data);
     }

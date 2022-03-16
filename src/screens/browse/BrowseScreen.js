@@ -25,7 +25,7 @@ const HOME = {
 };
 
 function BrowseScreen(props) {
-  const socket = useContext(SocketContext);
+  const {socket} = useContext(SocketContext);
   const showToast = useContext(NotificationContext);
   const { openModal } = useContext(ModalStateContext);
   const { playlistService, queueService, browseService } = useContext(ServiceContext);

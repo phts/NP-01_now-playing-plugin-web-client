@@ -1,6 +1,5 @@
 import styles from './NowPlayingScreen.module.scss';
 import Dock from '../../common/Dock';
-import { SocketContext } from '../../contexts/SocketProvider';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { PlayerStateContext } from '../../contexts/PlayerStateProvider';
 import Button from '../../common/Button';
@@ -11,33 +10,18 @@ import { useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
 import { ScreenContext } from '../../contexts/ScreenContextProvider';
 import { ACTION_PANEL, VOLUME_INDICATOR } from '../../modals/CommonModals';
-import { getInitialCustomStyles } from '../../utils/init';
 import PopupMenu from '../../common/PopupMenu';
 import BasicView from './BasicView';
 import DetailsView from './DetailsView';
+import { StylesContext } from '../../contexts/StylesProvider';
 
 function NowPlayingScreen(props) {
   const playerState = useContext(PlayerStateContext);
-  const socket = useContext(SocketContext);
   const {openModal, disableModal, enableModal} = useContext(ModalStateContext);
-  const [customStyles, setCustomStyles] = useState(getInitialCustomStyles());
+  const {customStyles} = useContext(StylesContext);
   const screenEl = useRef(null);
   const {activeScreenId, switchScreen} = useContext(ScreenContext);
   const [view, setView] = useState('basic');
-
-  const applyCustomStyles = useCallback( styles => {
-    setCustomStyles(styles);
-  }, [setCustomStyles]);
-
-  useEffect(() => {
-    if (socket) {
-      socket.on('nowPlayingSetCustomCSS', applyCustomStyles)
-
-      return () => {
-        socket.off('nowPlayingSetCustomCSS', applyCustomStyles)
-      };
-    }
-  }, [socket, applyCustomStyles]);
 
   const openActionPanel = useCallback(() => {
     openModal(ACTION_PANEL);

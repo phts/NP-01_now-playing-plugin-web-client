@@ -1,14 +1,14 @@
 import { createContext, useState } from "react";
-import { getApiPath, getInitialHost } from "../utils/init";
+import { getInitialHost, getInitialPluginInfo } from "../utils/init";
 
 const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
   const [host, setHost] = useState(getInitialHost());
-  const apiPath = getApiPath();
+  const [pluginInfo, setPluginInfo] = useState(getInitialPluginInfo());
 
   return (
-    <AppContext.Provider value={{host, setHost, apiPath}}>
+    <AppContext.Provider value={{host, setHost, pluginInfo, setPluginInfo}}>
       {children}
     </AppContext.Provider>
   );

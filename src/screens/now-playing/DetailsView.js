@@ -20,44 +20,56 @@ function DetailsView(props) {
   const scrollbarsRef = useRef(null);
 
   useEffect(() => {
-    const handleMetadataFetched = (data) => {
-      const { params, info } = data;
-      console.log('metadata fetched: ', params, info);
-      if (params.name !== undefined && params.name === title &&
-        params.artist !== undefined && params.artist === artist &&
-        params.album !== undefined && params.album === album) {
-        setState({ status: 'fetched', info });
-      }
-    };
+    if (metadataService) {
+      const handleMetadataFetched = (data) => {
+        const { params, info } = data;
+        if (params.name !== undefined && params.name === title &&
+          params.artist !== undefined && params.artist === artist &&
+          params.album !== undefined && params.album === album) {
+            setState({ status: 'fetched', info });
+        }
+      };
 
-    const handleError = (message) => {
-      showToast({
-        type: 'error',
-        message
-      });
-      setState({ status: 'error', error: {message} });
-    };
-    metadataService.on('fetched', handleMetadataFetched);
-    metadataService.on('error', handleError);
+      const handleError = (message) => {
+        showToast({
+          type: 'error',
+          message
+        });
+        setState({ status: 'error', error: {message} });
+      };
+      
+      metadataService.on('fetched', handleMetadataFetched);
+      metadataService.on('error', handleError);
 
-    return () => {
-      metadataService.off('fetched', handleMetadataFetched);
-      metadataService.off('error', handleError);
-    };
+      return () => {
+        metadataService.off('fetched', handleMetadataFetched);
+        metadataService.off('error', handleError);
+      };
+    }
   }, [metadataService, title, artist, album, setState, showToast]);
 
   useEffect(() => {
-    if (title) {
-      const params = {
-        name: title,
-        artist,
-        album
-      };
-      metadataService.getSongInfo(params);
-      setState({ status: 'loading' })
+    if (metadataService) {
+      if (title) {
+        const params = {
+          name: title,
+          artist,
+          album
+        };
+        metadataService.getSongInfo(params);
+        setState({ status: 'loading' })
+      }
+      else {
+        setState({ status: 'idle' });
+      }
     }
     else {
-      setState({ status: 'idle' });
+      setState({
+        status: 'error',
+        error: {
+          message: 'Metadata service unavailable. Check that you have the latest version of the Now Playing plugin installed.'
+        }
+      });
     }
   }, [metadataService, title, artist, album, setState]);
 

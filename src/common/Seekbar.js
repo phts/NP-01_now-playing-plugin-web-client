@@ -6,7 +6,7 @@ import { millisecondsToString, TrackTimer } from "../utils/track";
 import './Seekbar.scss';
 
 function Seekbar(props) {
-  const socket = useContext(SocketContext);
+  const {socket} = useContext(SocketContext);
   const playerState = props.playerState;
   const [seek, setSeek] = useState(playerState.seek || 0);
   const trackTimerRef = useRef();

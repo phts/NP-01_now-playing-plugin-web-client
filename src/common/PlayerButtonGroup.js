@@ -5,7 +5,7 @@ import { useCallback, useContext } from 'react';
 import { SocketContext } from '../contexts/SocketProvider';
 
 function PlayerButtonGroup(props) {
-  const socket = useContext(SocketContext);
+  const {socket} = useContext(SocketContext);
   const playerState = props.playerState;
 
   // Button event handlers

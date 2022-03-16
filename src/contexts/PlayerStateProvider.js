@@ -6,7 +6,7 @@ const PlayerStateContext = createContext();
 const PlayerStateProvider = ({ children }) => {
 
   const [playerState, setPlayerState] = useState({});
-  const socket = useContext(SocketContext);
+  const {socket} = useContext(SocketContext);
 
   const handlePushState = useCallback(state => {
     setPlayerState(state);

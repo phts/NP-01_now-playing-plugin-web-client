@@ -16,14 +16,9 @@ export function getInitialHost() {
   return host;
 };
 
-export function getApiPath() {
-  const apiPath = getInitialData('apiPath');
-  if (!apiPath) {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    return urlSearchParams.get('apiPath') || null;
-  }
-  return apiPath;
-};
+export function getInitialPluginInfo() {
+  return getInitialData('pluginInfo', null);
+}
 
 export function getInitialThemeName() {
   return getInitialData('theme', 'default');

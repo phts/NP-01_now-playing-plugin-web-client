@@ -1,5 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState, useReducer } from "react";
-import { SocketContext } from "../contexts/SocketProvider";
+import { useCallback, useContext, useEffect, useRef, useReducer } from "react";
 import './Background.scss';
 import './animations.scss';
 import { CSSTransition } from "react-transition-group";
@@ -9,7 +8,7 @@ import { PlayerStateContext } from "../contexts/PlayerStateProvider";
 import Image from "./Image";
 import { preloadImage } from "../utils/image";
 import classNames from "classnames";
-import { getInitialCustomStyles } from "../utils/init";
+import { StylesContext } from "../contexts/StylesProvider";
 
 /**
    * Transition state phases:
@@ -36,9 +35,8 @@ import { getInitialCustomStyles } from "../utils/init";
 
 function Background(props) {
   const {host} = useContext(AppContext);
-  const socket = useContext(SocketContext);
   const playerState = useContext(PlayerStateContext);
-  const [customStyles, setCustomStyles] = useState(getInitialCustomStyles());
+  const {customStyles} = useContext(StylesContext);
   const fallbackSrc = host + '/albumart';
   const pendingTargetSrc = useRef(null);
 
@@ -51,20 +49,6 @@ function Background(props) {
   const isWebkit = navigator.userAgent.indexOf('AppleWebKit') >= 0;
   const isTransitionable = (customStyles.backgroundType !== 'volumioBackground' || 
     customStyles.volumioBackgroundImage === '') && customStyles.backgroundType !== 'color';
-
-  const applyCustomStyles = useCallback( styles => {
-    setCustomStyles(styles);
-  }, [setCustomStyles]);
-
-  useEffect(() => {
-    if (socket) {
-      socket.on('nowPlayingSetCustomCSS', applyCustomStyles)
-
-      return () => {
-        socket.off('nowPlayingSetCustomCSS', applyCustomStyles)
-      };
-    }
-  }, [socket, applyCustomStyles]);
 
   // Handle change in playerState albumart
   useEffect(() => {
