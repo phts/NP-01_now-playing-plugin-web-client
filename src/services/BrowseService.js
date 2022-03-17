@@ -87,9 +87,18 @@ export default class BrowseService {
   _handlePushBrowseLibrary(data) {
     // Only handle certain cases.
     // For browsing library we use REST API
+    // We try to avoid using sockets for sending requests and receiving responses,
+    // because with Volumio's implementation there is no way to associate a response with
+    // a request. For example, we could be sending multiple search requests due to the 
+    // 'search-as-you-type' feature. There is no guarantee that the responses will be 
+    // received in the order they were sent and we have no way of finding out of which 
+    // response is to which request. If the responses arrive out of order, then the search
+    // results will not be accurate and there is nothing we can do about it.
+
     // -- Search results
-    if (data.navigation && data.navigation.isSearchResult) {
-      this._pushSearchResults(data);
+    if (data.navigation && data.navigation.isSearchResult && 
+      this.currentLoading && this.currentLoading.type === 'search') {
+        this._pushLoad(this.currentLoading, data);
     }
     // -- 'Goto' results
     else if (this.currentLoading && this.currentLoading.type === 'goto') {
@@ -135,17 +144,6 @@ export default class BrowseService {
   _pushError(message) {
     this.currentLoading = null;
     this.emitter.emit('error', {message})
-  }
-
-  _pushSearchResults(data) {
-    const loading = this.currentLoading;
-    if (!loading || loading.type !== 'search' || loading.query !== this.currentSearchQuery) {
-      return;
-    }
-    if (data.navigation) {
-      this.currentLoading = null;
-      this._pushLoad(loading, data);
-    }
   }
 
   _pushLoading(location) {
@@ -215,7 +213,6 @@ export default class BrowseService {
         searchLocation.service = service;
       }
     }
-    this.currentSearchQuery = query;
     this.currentLoading = searchLocation;
     this._pushLoading(searchLocation);
     this.socket.emit('search', payload);
