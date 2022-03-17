@@ -30,6 +30,7 @@ export default class BrowseService {
       for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
         this.socket.on(event, handler);
       }
+      this.socket.emit('getBrowseSources');
     }
     this.currentLoading = null;
     this.lastAction = null;
@@ -138,6 +139,10 @@ export default class BrowseService {
     }
   }
 
+  _pushLoading(location) {
+    this.emitter.emit('contentsLoading', {location});
+  }
+
   _requestRestApi(url) {
     return fetch(url).then(res => res.json());
   };
@@ -146,6 +151,7 @@ export default class BrowseService {
     if (location.type !== 'browse') {
       return;
     }
+    this._pushLoading(location);
     if (isHome(location)) {
       this.backHistory = [];
       // Push browse sources
@@ -202,6 +208,7 @@ export default class BrowseService {
     }
     this.currentSearchQuery = query;
     this.currentLoading = searchLocation;
+    this._pushLoading(searchLocation);
     this.socket.emit('search', payload);
   }
 
@@ -222,6 +229,7 @@ export default class BrowseService {
   }
 
   goBack() {
+    this._pushLoading();
     const prev = this.backHistory.pop();
     if (!prev || isHome(prev.location)) {
       this.browse(HOME);

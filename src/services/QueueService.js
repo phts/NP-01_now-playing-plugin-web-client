@@ -20,6 +20,7 @@ export default class QueueService {
       for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
         this.socket.on(event, handler);
       }
+      this.socket.emit('getQueue');
     }
   }
 

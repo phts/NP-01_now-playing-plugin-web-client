@@ -8,19 +8,20 @@ const PlayerStateProvider = ({ children }) => {
   const [playerState, setPlayerState] = useState({});
   const {socket} = useContext(SocketContext);
 
-  const handlePushState = useCallback(state => {
-    setPlayerState(state);
-  }, []);
-
   useEffect(() => {
     if (socket) {
+      const handlePushState = (state) => {
+        setPlayerState(state);
+      };
+
       socket.on('pushState', handlePushState);
+      socket.emit('getState');
 
       return () => {
         socket.off('pushState', handlePushState);
       };
     }
-  }, [socket, handlePushState]);
+  }, [socket, setPlayerState]);
 
   return (
     <PlayerStateContext.Provider value={playerState}>

@@ -27,9 +27,6 @@ function AppStartup() {
   useEffect(() => {
     if (socket) {
       const onSocketConnected = () => {
-        socket.emit('getState');
-        socket.emit('getBrowseSources');
-        socket.emit('getQueue');
         socket.emit("callMethod", {
           endpoint: "user_interface/now_playing",
           method: "getPluginInfo",

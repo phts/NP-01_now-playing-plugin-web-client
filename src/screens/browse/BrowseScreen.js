@@ -43,6 +43,10 @@ function BrowseScreen(props) {
   // Browse / navigation handling
 
   useEffect(() => {
+    const handleContentsLoading = () => {
+      startFakeLoadingBar();
+    };
+
     const handleContentsLoaded = (data) => {
       if (!data.isBack) {
         browseService.addCurrentToHistory(getScrollPosition());
@@ -64,11 +68,13 @@ function BrowseScreen(props) {
       stopFakeLoadingBar();
     };
 
+    browseService.on('contentsLoading', handleContentsLoading);
     browseService.on('contentsLoaded', handleContentsLoaded);
     browseService.on('contentsRefreshed', handleContentsRefreshed);
     browseService.on('error', handleError);
 
     return () => {
+      browseService.off('contentsLoading', handleContentsLoading);
       browseService.off('contentsLoaded', handleContentsLoaded);
       browseService.off('contentsRefreshed', handleContentsRefreshed);
       browseService.off('error', handleError);
@@ -87,17 +93,14 @@ function BrowseScreen(props) {
   };
 
   const browse = useCallback((location, refresh = false) => {
-    startFakeLoadingBar();
     browseService.browse(location, refresh);
   }, [browseService]);
 
   const search = useCallback((query) => {
-    startFakeLoadingBar();
     browseService.search(query);
   }, [browseService]);
 
   const goBack = useCallback(() => {
-    startFakeLoadingBar();
     browseService.goBack();
   }, [browseService]);
 
