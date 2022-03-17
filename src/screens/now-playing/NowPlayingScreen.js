@@ -14,9 +14,11 @@ import PopupMenu from '../../common/PopupMenu';
 import BasicView from './BasicView';
 import DetailsView from './DetailsView';
 import { StylesContext } from '../../contexts/StylesProvider';
+import { ServiceContext } from '../../contexts/ServiceProvider';
 
 function NowPlayingScreen(props) {
   const playerState = useContext(PlayerStateContext);
+  const {browseService} = useContext(ServiceContext);
   const {openModal, disableModal, enableModal} = useContext(ModalStateContext);
   const {customStyles} = useContext(StylesContext);
   const screenEl = useRef(null);
@@ -185,8 +187,18 @@ function NowPlayingScreen(props) {
   const handleMenuItemClicked = (e) => {
     e.syntheticEvent.stopPropagation();
     const {action} = e.value;
-    if (action === 'toggleView') {
-      setView(view === 'basic' ? 'details' : 'basic');
+    switch (action) {
+      case 'toggleView':
+        setView(view === 'basic' ? 'details' : 'basic');
+        break;
+      case 'gotoArtist':
+      case 'gotoAlbum':
+        browseService.gotoCurrentPlaying(action === 'gotoArtist' ? 'artist' : 'album', playerState);
+        switchScreen({
+          screenId: 'Browse',
+          enterTransition: 'slideLeft'
+        });
+        break;
     }
   };
 

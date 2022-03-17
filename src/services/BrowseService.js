@@ -91,6 +91,15 @@ export default class BrowseService {
     if (data.navigation && data.navigation.isSearchResult) {
       this._pushSearchResults(data);
     }
+    // -- 'Goto' results
+    else if (this.currentLoading && this.currentLoading.type === 'goto') {
+      if (data.error) {
+        this._pushError(data.error);
+      }
+      else {
+        this._pushLoad(this.currentLoading, data);
+      }
+    }
     // -- Previously performed action that expects a pushBrowseLibrary 
     // response (and current location has not changed)
     // * Call registerAction() to set previously performed action
@@ -212,6 +221,11 @@ export default class BrowseService {
     this.socket.emit('search', payload);
   }
 
+  resetContents() {
+    this.backHistory = [];
+    this._pushLoad(HOME, {});
+  }
+
   /**
    * data: {
    *  location
@@ -234,9 +248,30 @@ export default class BrowseService {
     if (!prev || isHome(prev.location)) {
       this.browse(HOME);
     }
-    else if (prev.location.type === 'browse' || prev.location.type === 'search') {
+    else if (['browse', 'search', 'goto'].includes(prev.location.type)) {
       this._pushLoad(prev.location, prev.contents, prev.scrollPosition, true);
     }
+  }
+
+  gotoCurrentPlaying(type, playerState) {
+    if (!this.socket) {
+      return;
+    }
+    this.resetContents();
+    const payload = {
+      type,
+      value: playerState[type],
+      artist: playerState.artist,
+      album: playerState.album
+    };
+    const gotoLocation = {
+      type: 'goto',
+      params: payload,
+      service: null
+    };
+    this.currentLoading = gotoLocation;
+    this._pushLoading();
+    this.socket.emit('goTo', payload);
   }
 
   /**
