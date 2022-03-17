@@ -3,14 +3,14 @@ import PlayerButtonGroup from '../../common/PlayerButtonGroup';
 import Seekbar from '../../common/Seekbar';
 import classNames from 'classnames';
 import Image from '../../common/Image';
-import styles from './DetailsView.module.scss';
+import styles from './InfoView.module.scss';
 import { ServiceContext } from '../../contexts/ServiceProvider';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { NotificationContext } from '../../contexts/NotificationProvider';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import Button from '../../common/Button';
 
-function DetailsView(props) {
+function InfoView(props) {
   const { playerState } = props;
   const { metadataService } = useContext(ServiceContext);
   const showToast = useContext(NotificationContext);
@@ -252,4 +252,4 @@ function DetailsView(props) {
   );
 }
 
-export default DetailsView;
+export default InfoView;

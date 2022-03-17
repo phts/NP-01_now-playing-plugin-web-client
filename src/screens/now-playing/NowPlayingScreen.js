@@ -12,7 +12,7 @@ import { ScreenContext } from '../../contexts/ScreenContextProvider';
 import { ACTION_PANEL, VOLUME_INDICATOR } from '../../modals/CommonModals';
 import PopupMenu from '../../common/PopupMenu';
 import BasicView from './BasicView';
-import DetailsView from './DetailsView';
+import InfoView from './InfoView';
 import { StylesContext } from '../../contexts/StylesProvider';
 import { ServiceContext } from '../../contexts/ServiceProvider';
 
@@ -189,7 +189,7 @@ function NowPlayingScreen(props) {
     const {action} = e.value;
     switch (action) {
       case 'toggleView':
-        setView(view === 'basic' ? 'details' : 'basic');
+        setView(view === 'basic' ? 'info' : 'basic');
         break;
       case 'gotoArtist':
       case 'gotoAlbum':
@@ -213,7 +213,7 @@ function NowPlayingScreen(props) {
           action: 'toggleView'
         },
         icon: view === 'basic' ? 'newspaper' : 'art_track',
-        title: view === 'basic' ? 'Details View' : 'Basic View'
+        title: view === 'basic' ? 'Info View' : 'Basic View'
       },
       {
         type: 'divider',
@@ -286,7 +286,7 @@ function NowPlayingScreen(props) {
         {view === 'basic' ? 
           <BasicView playerState={playerState} />
           :
-          <DetailsView playerState={playerState} />}
+          <InfoView playerState={playerState} />}
       </div>
     </div>
   );
