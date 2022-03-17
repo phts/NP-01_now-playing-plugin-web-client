@@ -199,6 +199,8 @@ function NowPlayingScreen(props) {
           enterTransition: 'slideLeft'
         });
         break;
+      default:
+        return;
     }
   };
 
