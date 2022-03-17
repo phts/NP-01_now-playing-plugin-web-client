@@ -14,7 +14,7 @@ export default class MetadataService {
 
   destroy() {
     this.emitter.removeAllListeners();
-    this.emitter = null;
+    //this.emitter = null;  <-- commenting out for react refresh to work
   }
 
   /**

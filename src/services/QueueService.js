@@ -34,7 +34,7 @@ export default class QueueService {
     this.socketEventHandlers = null;
     this._setQueue([]);
     this.emitter.removeAllListeners();
-    this.emitter = null;
+    //this.emitter = null;  <-- commenting out for react refresh to work
   }
 
   // Event:

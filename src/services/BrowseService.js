@@ -48,7 +48,7 @@ export default class BrowseService {
     this.socketEventHandlers = null;
     this._setBrowseSources([]);
     this.emitter.removeAllListeners();
-    this.emitter = null;
+    //this.emitter = null; <-- commenting out for react refresh to work
     this.currentDisplayed = null;
     this.currentLoading = null; // location
     this.lastAction = null;
@@ -75,7 +75,7 @@ export default class BrowseService {
 
   _setBrowseSources(data) {
     this.browseSources = data;
-    if (isHome(this.currentDisplayed.location)) {
+    if (this.currentDisplayed && isHome(this.currentDisplayed.location)) {
       this.browse(HOME);
     }
   }

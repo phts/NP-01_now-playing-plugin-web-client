@@ -22,8 +22,8 @@ export default class PlaylistService {
     }
     this.socket = null;
     this.emitter.removeAllListeners();
-    this.emitter = null;
-    this.setPlaylists(null);
+    //this.emitter = null;  <-- commenting out for react refresh to work
+    this.setPlaylists([]);
   }
 
   on(event, handler) {
