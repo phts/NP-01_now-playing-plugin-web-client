@@ -6,150 +6,32 @@
 
   width: 100%;
   height: 100%;
-  padding-top: 1.2em;
   font-size: 0.9em;
   box-sizing: border-box;
 
   @media (orientation: portrait) {
     --art-width: #{'min(40vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
     --art-height: #{'min(40vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
-
-    padding-top: 0;
   }
 }
 
-.TitleBar {
-  display: flex;
-  width: 100%;
-  height: 5em;
-  font-weight: 700;
+@import '../../common/MetadataPanel';
 
-  @media (orientation: portrait) {
-    height: auto;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-}
+.MetadataPanel {
+  --title-primary-color: var(--title-font-color);
+  --title-primary-font-family: "Noto Sans Display", sans-serif;
+  --title-primary-font-size: var(--default-title-font-size);
+  --title-secondary-font-color: var(--artist-font-color);
+  --title-secondary-font-size: var(--default-artist-font-size);
+  --info-chooser-button-color: var(--widget-primary-color);
+  --info-chooser-button-hover-color: var(--widget-highlight-color);
+  --info-chooser-button-active-color: var(--widget-highlight-color);
+  --info-chooser-button-border: none;
+  --info-chooser-button-toggled-color: var(--widget-highlight-color);
+  --info-chooser-button-toggled-background: none;
+  --info-chooser-button-toggled-border: none;
 
-.Contents {
-  display: flex;
-  height: calc(100% - 10em);
-  padding-bottom: 1em;
-  overflow:hidden;
-  box-sizing: border-box;
-
-  @media (orientation: portrait) {
-    flex-direction: column;
-    padding-top: 1em;
-    height: calc(100% - 12em);
-    gap: 1em;
-  }
-}
-
-.Art {
-  margin-right: 12px;
-
-  &__image {
-    filter: drop-shadow(0 0 8px #00000080);
-    display: block;
-    object-fit: var(--albumart-fit);
-    width: var(--art-width);
-    height: var(--art-height);
-    border-radius: var(--albumart-border-radius);
-  }
-
-  @media all and (orientation: portrait) {
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-.Info {
-  //z-index: 1;
-  flex-grow: 1;
-  color: #ccc;
-  overflow: hidden;
-  min-width: 0;
-  white-space: pre-wrap;
-  line-height: 1.5em;
-
-  @media all and (orientation: portrait) {
-    min-height: 0;
-  }
-
-  &--loading,
-  &--empty {
-    display: flex;
-    gap: 0.5em;
-    height: var(--art-height);
-    align-items: center;
-    justify-content: center;
-    margin-top: -1em;
-
-    :global(.material-icons) {
-      font-size: 1.8em;
-    }
-
-    @media all and (orientation: portrait) {
-      height: auto;
-      margin-top: 0;
-    }
-  }
-
-  &--loading {
-    :global(.material-icons) {
-      @extend .spin;
-    }
-  }
-}
-
-.Lyrics {
-  white-space: normal;
-  text-align: var(--text-alignment-lyrics);
-
-  :global {
-    a {
-      color: inherit !important;
-      text-decoration: none;
-      pointer-events: none;
-    }
-
-    .rg_embed_header {
-      text-align: right;
-      padding-right: 0.8em;
-      font-size: 0.8em;
-      opacity: 0.6;
-    }
-
-    .rg_embed_body > p {
-      margin-top: 0;
-    }
-
-    .rg_embed_footer {
-      font-style: italic;
-      font-size: 0.9em;
-
-      .song_title {
-        display: inline-block;
-
-        &:after {
-          content: ' - ';
-        }
-      }
-
-      &:before {
-        content: '(';
-      }
-      &:after {
-        content: ')';
-      }
-    }
-
-    iframe {
-      display: none;
-    }
-  }
+  height: calc(100% - 5em);
 }
 
 .BottomBar {
@@ -157,40 +39,6 @@
   flex-direction: column;
   justify-content: center;
   height: 5em;
-}
-
-@import "../../common/TrackInfoText";
-
-.TrackInfoText {
-  //justify-content: var(--text-alignment-v);
-  //text-align: var(--text-alignment-h);
-  justify-content: initial;
-  height: 4.5em;
-  padding-right: 2em;
-
-  @media (orientation: portrait) {
-    align-items: center;
-    padding-right: 0;
-  }
-
-  &__title {
-    color: var(--title-font-color);
-    font-family: "Noto Sans Display", sans-serif;
-    font-size: var(--default-title-font-size);
-    -webkit-line-clamp: 1;
-    min-width: 0;
-  }
-
-  &__artistAlbum {
-    color: var(--artist-font-color);
-    font-size: var(--default-artist-font-size);
-    -webkit-line-clamp: 1;
-    min-width: 0;
-  }
-
-  &__format {
-    display: none;
-  }
 }
 
 @import "../../common/PlayerButtonGroup";
@@ -316,50 +164,5 @@
 
   &--disabled {
     display: none;
-  }
-}
-
-
-.InfoTypeChooser {
-  height: 4.5em;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 1em;
-
-  @media (orientation: portrait) {
-    margin-right: auto;
-    height: 2.5em;
-  }
-  
-  &__button {
-    --button-color: var(--widget-primary-color);
-    --button-hover-color: var(--widget-highlight-color);
-    --button-active-color: var(--widget-highlight-color);
-    --button-border: none;
-    --button-toggled-color: var(--widget-highlight-color);
-    --button-toggled-background: none;
-    --button-toggled-border: none;
-
-    @extend .Button;
-
-    //font-size: var(--default-playback-buttons-size);
-    font-size: 1.8em;
-    width: 1.5em;
-    height: 1.5em;
-
-    &__icon {
-      @extend .Button__icon;
-      line-height: 1.5em;
-      font-size: 1em;
-      width: 1.5em;
-      z-index: 1;
-    }
-
-    &--toggled {
-      background: var(--button-toggled-background);
-      border: var(--button-toggled-border);
-      color: var(--button-toggled-color);
-    }
   }
 }

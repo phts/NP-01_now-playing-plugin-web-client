@@ -28,7 +28,11 @@ export default class MetadataService {
     const payload = {...params, type: 'song'};
     const data = await requestPluginApiEndpoint(this.apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
-      this._pushFetched(params, data.data);
+      this._pushFetched({
+        song: params.name,
+        album: params.album,
+        artist: params.artist
+      }, data.data);
     }
     else {
       this._pushError(data.error);
