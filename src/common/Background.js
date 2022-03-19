@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useReducer } from "react";
 import './Background.scss';
 import './animations.scss';
-import { CSSTransition } from "react-transition-group";
 import { sanitizeImageUrl } from "../utils/track";
 import { AppContext } from "../contexts/AppContextProvider";
 import { PlayerStateContext } from "../contexts/PlayerStateProvider";
@@ -9,6 +8,7 @@ import Image from "./Image";
 import { preloadImage } from "../utils/image";
 import classNames from "classnames";
 import { StylesContext } from "../contexts/StylesProvider";
+import ContextualCSSTransition from "./ContextualCSSTransition";
 
 /**
    * Transition state phases:
@@ -39,6 +39,8 @@ function Background(props) {
   const {customStyles} = useContext(StylesContext);
   const fallbackSrc = host + '/albumart';
   const pendingTargetSrc = useRef(null);
+  const {isKiosk} = useContext(AppContext);
+  const disableTransitions = isKiosk;
 
   const transitionStateReducer = (state, transitionProps = {}) => {
     return {...state, ...transitionProps};
@@ -239,10 +241,10 @@ function Background(props) {
 
   return (
     <div 
-      className={classNames(['Background', isWebkit ? 'Background--webkit' : null])}
+      className={classNames(['Background', isWebkit && !disableTransitions ? 'Background--webkit' : null])}
       style={css}>
       { isTransitionable && !isWebkit && (transitionState.phase === 'beforeTransition' || transitionState.phase === 'transition') ? 
-      <CSSTransition
+      <ContextualCSSTransition
         in={transitionState.phase === 'transition'}
         classNames="bg-fadein"
         timeout={1000}
@@ -251,7 +253,7 @@ function Background(props) {
           src={transitionState.loadedSrc || ''}
           className="Background__transitioning" 
             />
-      </CSSTransition>
+      </ContextualCSSTransition>
       : null }
     </div>
   );

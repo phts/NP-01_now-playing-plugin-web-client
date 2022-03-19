@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import Modal from 'react-modal/lib/components/Modal';
 import { useSwipeable } from 'react-swipeable';
 import { ModalStateContext } from '../contexts/ModalStateProvider';
 import { PlayerStateContext } from '../contexts/PlayerStateProvider';
@@ -8,6 +7,7 @@ import { ScreenContext } from '../contexts/ScreenContextProvider';
 import { VOLUME_INDICATOR } from '../modals/CommonModals';
 import { eventPathHasNoSwipe } from '../utils/event';
 import Button from './Button';
+import ContextualModal from './ContextualModal';
 import Image from './Image';
 import PlayerButtonGroup from './PlayerButtonGroup';
 import Seekbar from './Seekbar';
@@ -116,7 +116,8 @@ function TrackBar(props) {
   const mainClassNames = classNames([
     styles.Layout,
     !seekbarVisible ? styles['Layout--noSeek'] : null,
-    props.state === 'inactive' ? styles['Layout--inactive'] : null
+    props.state === 'inactive' ? styles['Layout--inactive'] : null,
+    props.className
   ]);
 
   const volumeBarClassNames = {
@@ -165,7 +166,7 @@ function TrackBar(props) {
           playerState={playerState} />
       </div>
     </div>
-    <Modal 
+    <ContextualModal 
       isOpen={volumeBarVisible}
       closeTimeoutMS={200}
       overlayClassName={styles.VolumeBarOverlay}
@@ -175,7 +176,7 @@ function TrackBar(props) {
       <div className={styles.VolumeBar}>
         <VolumeSlider orientation="vertical" />
       </div>
-    </Modal>
+    </ContextualModal>
     </>
   );
 }

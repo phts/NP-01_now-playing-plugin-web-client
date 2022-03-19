@@ -70,3 +70,13 @@ body {
   }
 
 }
+
+.no-transitions {
+  transition: none !important;
+}
+
+.ReactModalPortal.no-transitions {
+  * {
+    transition: none !important;
+  }
+}

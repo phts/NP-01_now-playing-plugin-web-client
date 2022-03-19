@@ -1,4 +1,7 @@
 import './App.scss';
+import '@szhsin/react-menu/dist/index.css';
+import '@szhsin/react-menu/dist/theme-dark.css';
+import '@szhsin/react-menu/dist/transitions/slide.css';
 import NowPlayingScreen from './screens/now-playing/NowPlayingScreen';
 import { AppContextProvider } from "./contexts/AppContextProvider";
 import { SocketProvider } from "./contexts/SocketProvider";

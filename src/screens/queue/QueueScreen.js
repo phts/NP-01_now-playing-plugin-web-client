@@ -98,7 +98,7 @@ function QueueScreen(props) {
 
   const layoutWrapperClasses = classNames([
     styles.LayoutWrapper,
-    ...props.className
+    props.className
   ]);
 
   return (

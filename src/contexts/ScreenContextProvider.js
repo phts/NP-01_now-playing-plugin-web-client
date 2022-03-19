@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { Children, cloneElement, createContext, isValidElement, useCallback, useMemo, useReducer, useRef } from "react";
-import { CSSTransition } from "react-transition-group";
 import Background from "../common/Background";
+import ContextualCSSTransition from "../common/ContextualCSSTransition";
 import TrackBar from "../common/TrackBar";
 import ScreenWrapper from "../screens/ScreenWrapper";
 import './ScreenContext.scss';
@@ -163,14 +163,14 @@ const ScreenContextProvider = ({ children }) => {
     return params;
   };
 
-  const getChildClassNames = (state) => {
+  const getChildClassNames = (child, state) => {
     if (state.status === 'inactive') {
-      return [state.inactiveClassName];
+      return classNames(child.props.className, state.inactiveClassName);
     }
     else if (state.status === 'active') {
-      return [state.activeClassName];
+      return classNames(child.props.className, state.activeClassName);
     }
-    return [];
+    return child.props.className;
   };
 
   const screenZIndexes = useMemo(() => {
@@ -186,9 +186,9 @@ const ScreenContextProvider = ({ children }) => {
       if (screenId) {
         const state = screenStates[screenId];
         const transitionParams = getTransitionParams(state);
-        const childClassNames = getChildClassNames(state);
+        const childClassNames = getChildClassNames(child, state);
         const component = (
-          <CSSTransition
+          <ContextualCSSTransition
             in={transitionParams.in}
             classNames={transitionParams.class}
             timeout={200}
@@ -200,22 +200,22 @@ const ScreenContextProvider = ({ children }) => {
                   className: childClassNames,
                   style: {'zIndex': screenZIndexes[screenId]}
                 })}
-          </CSSTransition>
+          </ContextualCSSTransition>
         )
         if (state.float && state.usesTrackBar) {
           return (
-            <CSSTransition
+            <ContextualCSSTransition
             in={transitionParams.in}
             classNames='Screen--fadeIn'
             timeout={200}
             mountOnEnter={state.mountOnEnter}
             unmountOnExit={state.unmountOnExit}>
               <div 
-                className={classNames('Viewport', ...childClassNames)}
+                className={classNames('Viewport', childClassNames)}
                 style={{'zIndex': screenZIndexes[screenId]}}>
                 {component}
               </div>
-          </CSSTransition>
+          </ContextualCSSTransition>
           );
         }
         else {
@@ -252,7 +252,7 @@ const ScreenContextProvider = ({ children }) => {
           activeScreenId={currentActiveScreenId}
           enteringScreenId={currentEnteringScreenId} />
         {getChildren()}
-        <CSSTransition
+        <ContextualCSSTransition
           in={trackBarState === 'active' || trackBarState === 'entering'}
           classNames="TrackBar--slideUp"
           timeout={200}
@@ -261,7 +261,7 @@ const ScreenContextProvider = ({ children }) => {
               state={trackBarState} 
               activeScreenId={currentActiveScreenId}
               enteringScreenId={currentEnteringScreenId} />
-        </CSSTransition>
+        </ContextualCSSTransition>
       </ScreenWrapper>
     </ScreenContext.Provider>
   );

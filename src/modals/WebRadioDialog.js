@@ -1,10 +1,10 @@
 import { useCallback, useContext, useRef } from "react";
-import Modal from "react-modal/lib/components/Modal";
 import Button from "../common/Button";
 import styles from './WebRadioDialog.module.scss';
 import { ServiceContext } from "../contexts/ServiceProvider";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import TextField from "../common/TextField";
+import ContextualModal from "../common/ContextualModal";
 
 function WebRadioDialog(props) {
 
@@ -85,7 +85,7 @@ function WebRadioDialog(props) {
   const supportsHover = !window.matchMedia('(hover: none)').matches;
 
   return (
-    <Modal
+    <ContextualModal
       closeTimeoutMS={200}
       overlayClassName={modalOverlayClassNames}
       className={modalClassNames}
@@ -127,7 +127,7 @@ function WebRadioDialog(props) {
           onClick={onOK}
         />
       </div>
-    </Modal>
+    </ContextualModal>
   );
 }
 

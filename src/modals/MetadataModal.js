@@ -1,8 +1,8 @@
-import Modal from "react-modal/lib/components/Modal";
 import Button from "../common/Button";
 import styles from './MetadataModal.module.scss';
 import MetadataPanel from "../common/MetadataPanel";
 import { useRef } from "react";
+import ContextualModal from "../common/ContextualModal";
 
 function MetadataModal(props) {
   const overlayEl = useRef(null);
@@ -22,7 +22,7 @@ function MetadataModal(props) {
   };
 
   return (
-    <Modal
+    <ContextualModal
       closeTimeoutMS={200}
       overlayClassName={modalOverlayClassNames}
       className={modalClassNames}
@@ -50,7 +50,7 @@ function MetadataModal(props) {
         album={album}
         artist={artist}
         placeholderImage={placeholderImage} />
-    </Modal>
+    </ContextualModal>
   );
 }
 

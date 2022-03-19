@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import Modal from "react-modal/lib/components/Modal";
+import ContextualModal from "../common/ContextualModal";
 import { SocketContext } from "../contexts/SocketProvider";
 import './DisconnectedIndicator.scss';
 
@@ -41,13 +41,13 @@ function DisconnectedIndicator() {
   };
 
   return (
-    <Modal
+    <ContextualModal
       isOpen={ visible }
       closeTimeoutMS={200}
       overlayClassName={modalOverlayClassNames}
       className={modalClassNames}>
         <span className="material-icons DisconnectedIndicator__icon">rotate_right</span>
-    </Modal>
+    </ContextualModal>
   );
 }
 

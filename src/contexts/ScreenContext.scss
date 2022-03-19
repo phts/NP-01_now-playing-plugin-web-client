@@ -29,6 +29,10 @@
       opacity: 1;
       transition: opacity 200ms;
     }
+
+    &-done {
+      opacity: 1;
+    }
   }
 
   &-exit {
@@ -54,6 +58,10 @@
       transform: translateY(0);
       transition: transform 200ms;
     }
+
+    &-done {
+      transform: translateY(0);
+    }
   }
 
   &-exit {
@@ -77,6 +85,10 @@
     &-active {
       transform: translateX(0);
       transition: transform 200ms;
+    }
+
+    &-done {
+      transform: translateX(0);
     }
   }
 
@@ -102,6 +114,10 @@
       transform: translateX(0);
       transition: transform 200ms;
     }
+
+    &-done {
+      transform: translateX(0);
+    }
   }
 
   &-exit {
@@ -122,20 +138,26 @@
   &-enter {
     filter: var(--screen-underFloatExit-enter-filter);
 
-    &-active,
-    &-done {
+    &-active {
       filter: var(--screen-underFloatExit-enter-active-filter);
       transition: filter 200ms;
+    }
+
+    &-done {
+      filter: var(--screen-underFloatExit-enter-active-filter);
     }
   }
 
   &-exit {
     filter: var(--screen-underFloatExit-exit-filter);
 
-    &-active,
-    &-done {
+    &-active {
       filter: var(--screen-underFloatExit-exit-active-filter);
       transition: filter 200ms;
+    }
+
+    &-done {
+      filter: var(--screen-underFloatExit-exit-active-filter);
     }
   }
 }
@@ -147,6 +169,10 @@
     &-active {
       transform: translateY(0);
       transition: transform 200ms;
+    }
+
+    &-done {
+      transform: translateY(0);
     }
   }
 

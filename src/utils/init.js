@@ -7,13 +7,13 @@ export function getInitialData(prop, defaultVal = null) {
   }  
 };
 
+export function getLocationQueryParam(key, defaultVal = null) {
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  return urlSearchParams.get(key) || defaultVal;
+}
+
 export function getInitialHost() {
-  const host = getInitialData('host');
-  if (!host) {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    return urlSearchParams.get('host') || null;
-  }
-  return host;
+  return getInitialData('host') || getLocationQueryParam('host');
 };
 
 export function getInitialPluginInfo() {

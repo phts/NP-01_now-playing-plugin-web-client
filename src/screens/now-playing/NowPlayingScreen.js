@@ -253,7 +253,7 @@ function NowPlayingScreen(props) {
 
   const layoutClasses = classNames([
     styles.Layout,
-    ...props.className
+    props.className
   ]);
 
   return (

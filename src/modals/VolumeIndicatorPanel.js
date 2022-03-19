@@ -1,4 +1,4 @@
-import Modal from "react-modal/lib/components/Modal";
+import ContextualModal from "../common/ContextualModal";
 import VolumeIndicator from "../common/VolumeIndicator";
 import './VolumeIndicatorPanel.scss';
 
@@ -19,13 +19,13 @@ function VolumeIndicatorPanel(props) {
   const {closePanel, ...modalProps} = props;
 
   return (
-    <Modal 
+    <ContextualModal 
       closeTimeoutMS={200}
       overlayClassName={modalOverlayClassNames}
       className={modalClassNames}
       {...modalProps}>
       <VolumeIndicator onClick={closePanel} />
-    </Modal>
+    </ContextualModal>
   );
 }
 

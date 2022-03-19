@@ -391,7 +391,7 @@ function BrowseScreen(props) {
   const supportsHover = !window.matchMedia('(hover: none)').matches;
   const layoutClasses = classNames([
     styles.Layout,
-    ...props.className
+    props.className
   ]);
 
 

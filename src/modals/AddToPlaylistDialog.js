@@ -1,11 +1,11 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import Modal from "react-modal/lib/components/Modal";
 import Button from "../common/Button";
 import styles from './AddToPlaylistDialog.module.scss';
 import { ServiceContext } from "../contexts/ServiceProvider";
 import classNames from "classnames";
-import { CSSTransition } from "react-transition-group";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import ContextualCSSTransition from "../common/ContextualCSSTransition";
+import ContextualModal from "../common/ContextualModal";
 
 function AddToPlaylistDialog(props) {
 
@@ -136,7 +136,7 @@ function AddToPlaylistDialog(props) {
   const supportsHover = !window.matchMedia('(hover: none)').matches;
 
   return (
-    <Modal
+    <ContextualModal
       closeTimeoutMS={200}
       overlayClassName={modalOverlayClassNames}
       className={modalClassNames}
@@ -165,7 +165,7 @@ function AddToPlaylistDialog(props) {
         {getPlaylists()}       
       </OverlayScrollbarsComponent>
       <div className={styles.Layout__footer}>
-        <CSSTransition
+        <ContextualCSSTransition
           in={!createPlaylistMode}
           classNames={wrapperTransitionClassNames}
           timeout={200}>
@@ -181,8 +181,8 @@ function AddToPlaylistDialog(props) {
                 onClick={toggleCreatePlaylistMode}
               />
             </div>
-        </CSSTransition>
-        <CSSTransition
+        </ContextualCSSTransition>
+        <ContextualCSSTransition
           in={createPlaylistMode}
           classNames={wrapperTransitionClassNames}
           timeout={200}
@@ -214,9 +214,9 @@ function AddToPlaylistDialog(props) {
                 disabled
                 onClick={createAndAddToPlaylist} />
             </div>
-        </CSSTransition>
+        </ContextualCSSTransition>
       </div>
-    </Modal>
+    </ContextualModal>
   );
 }
 

@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect, useRef } from "react";
-import Modal from "react-modal/lib/components/Modal";
 import { useSwipeable } from "react-swipeable";
 import Button from "../common/Button";
 import ScreenSwitcher from "../common/ScreenSwitcher";
@@ -10,6 +9,7 @@ import { eventPathHasNoSwipe } from "../utils/event";
 import styles from './ActionPanel.module.scss';
 import { VOLUME_INDICATOR } from "./CommonModals";
 import volumioIcon from "../assets/volumio-icon.png";
+import ContextualModal from "../common/ContextualModal";
 
 function ActionPanel(props) {
 
@@ -72,7 +72,7 @@ function ActionPanel(props) {
   };
   
   return (
-    <Modal 
+    <ContextualModal 
       closeTimeoutMS={200}
       overlayClassName={modalOverlayClassNames}
       className={modalClassNames}
@@ -93,7 +93,7 @@ function ActionPanel(props) {
             onClick={switchToVolumio} />
         </div>
       </div>
-    </Modal>
+    </ContextualModal>
   );
 }
 

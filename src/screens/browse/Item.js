@@ -3,9 +3,6 @@ import Button from "../../common/Button";
 import Image from "../../common/Image";
 import { secondsToString } from "../../utils/track";
 import { getItemActions, hasPlayButton } from "./helper";
-import '@szhsin/react-menu/dist/index.css';
-import '@szhsin/react-menu/dist/theme-dark.css';
-import '@szhsin/react-menu/dist/transitions/slide.css';
 import { eventPathHasClass } from "../../utils/event";
 import PopupMenu from "../../common/PopupMenu";
 
