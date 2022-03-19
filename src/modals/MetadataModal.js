@@ -2,7 +2,7 @@ import Modal from "react-modal/lib/components/Modal";
 import Button from "../common/Button";
 import styles from './MetadataModal.module.scss';
 import MetadataPanel from "../common/MetadataPanel";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 function MetadataModal(props) {
   const overlayEl = useRef(null);

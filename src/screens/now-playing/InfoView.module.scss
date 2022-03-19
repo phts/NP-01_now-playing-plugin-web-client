@@ -30,6 +30,8 @@
   --info-chooser-button-toggled-color: var(--widget-highlight-color);
   --info-chooser-button-toggled-background: none;
   --info-chooser-button-toggled-border: none;
+  --art-fit: var(--albumart-fit);
+  --art-border-radius: var(--albumart-border-radius);
 
   height: calc(100% - 5em);
 }

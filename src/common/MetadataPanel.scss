@@ -2,10 +2,12 @@
 @import "./Button";
 
 .MetadataPanel {
-  --art-width: #{'min(30vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
-  --art-height: #{'min(30vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
+  --viewportHeight: calc(var(--vh, 1vh) * 100);
+  --art-size: #{'min(30vw, calc(var(--viewportHeight) - 15em))'};
+  --art-width: var(--art-size);
+  --art-height: var(--art-size);
   --art-fit: cover;
-  --art-border-radius: 0.5em;
+  --art-border-radius: 0.5em; 
   --title-primary-font-size: inherit;
   --title-primary-font-family: inherit;
   --title-primary-color: var(--track-info-text-color);
@@ -23,31 +25,44 @@
   --info-chooser-button-toggled-border: var(--button-toggled-border);
   --info-chooser-button-font-size: 1.8em;
 
+  --title-height: 5em;
+  --info-type-chooser-height: 4.5em;
+  --header-height: var(--title-height);
+
   width: 100%;
   height: 100%;
   padding: 1.2em 0;
   box-sizing: border-box;
 
   @media (orientation: portrait) {
-    --art-width: #{'min(40vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
-    --art-height: #{'min(40vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
+    --art-size: #{'min(40vw, calc(var(--viewportHeight) - 15em))'};
+    --info-type-chooser-height: 2.5em;
+    --header-height: calc(var(--title-height) + var(--info-type-chooser-height));
 
     padding-top: 0;
   }
 
-  &__titleBar {
+  &--singleLineTitle {
+    --title-height: 3em;
+  }
+
+  &--singleInfoType {
+    --info-type-chooser-height: 0px;
+  }
+
+  &__header {
     display: flex;
     width: 100%;
-    height: 5em;
+    height: var(--header-height);
     padding-bottom: 0.5em;
     font-weight: 700;
     box-sizing: border-box;
   
     @media (orientation: portrait) {
-      height: auto;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      gap: 1em;
     }
   }
 
@@ -58,6 +73,11 @@
     justify-content: normal;
     gap: 2px;
     padding-right: 2em;
+
+    @media (orientation: portrait) {
+      padding-right: 0;
+      align-items: center;
+    }
 
     &--primary,
     &--secondary {
@@ -86,7 +106,7 @@
   }
 
   &__infoTypeChooser {
-    height: 4.5em;
+    height: var(--info-type-chooser-height);
     margin-left: auto;
     display: flex;
     align-items: center;
@@ -94,21 +114,20 @@
   
     @media (orientation: portrait) {
       margin-right: auto;
-      height: 2.5em;
     }
   }
 
   &__contentsWrapper {
     display: flex;
-    height: calc(100% - 5em);
+    height: calc(100% - var(--header-height));
     overflow:hidden;
     box-sizing: border-box;
 
     @media (orientation: portrait) {
       flex-direction: column;
-      padding-top: 1em;
-      height: calc(100% - 12em);
+      height: calc(100% - var(--header-height));
       gap: 1em;
+      padding-top: 1em;
     }
   }
 

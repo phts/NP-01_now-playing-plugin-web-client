@@ -50,16 +50,31 @@ function MetadataPanel(props) {
   const baseClassName = props.styles ? props.styles.baseClassName : null;
   const stylesBundle = baseClassName ? props.styles.bundle : null;
   const extraClassNames = (props.styles ? props.styles.extraClassNames : null) || [];
+  
+  const getArtistAlbumText = useCallback(() => {
+    let artistAlbum = artist;
+    if (album) {
+      artistAlbum += artistAlbum ? ' - ' : '';
+      artistAlbum += album;
+    }
+    return artistAlbum;
+  }, [artist, album]);
+
+  const secondaryTitleText = song ? getArtistAlbumText() : (album ? artist : null);
 
   const mainClassName = (baseClassName && stylesBundle) ? 
     classNames(
       stylesBundle[baseClassName] || 'MetadataPanel',
-      [...extraClassNames]
+      [...extraClassNames],
+      !secondaryTitleText ? stylesBundle[`${baseClassName}--singleLineTitle`] || 'MetadataPanel--singleLineTitle' : null,
+      availableInfoTypes.length <= 1 ? stylesBundle[`${baseClassName}--singleInfoType`] || 'MetadataPanel--singleInfoType' : null,
     )
     :
     classNames(
       'MetadataPanel',
-      [...extraClassNames]
+      [...extraClassNames],
+      !secondaryTitleText ? 'MetadataPanel--singleLineTitle' : null,
+      availableInfoTypes.length <= 1 ? 'MetadataPanel--singleInfoType' : null,
     );
 
   const getElementClassName = useCallback((element) => 
@@ -179,28 +194,18 @@ function MetadataPanel(props) {
   }, [availableInfoTypes, infoType, setInfoType, getElementClassName, infoChooserButtonStyles]);
 
   const getTitleBar = useCallback(() => {
-    const getArtistAlbumText = () => {
-      let artistAlbum = artist;
-      if (album) {
-        artistAlbum += artistAlbum ? ' - ' : '';
-        artistAlbum += album;
-      }
-      return artistAlbum;
-    };
-
     const primary = song || album || artist;
-    const secondary = song ? getArtistAlbumText() : (album ? artist : null);
 
     return (
-      <div className={getElementClassName('titleBar')}>
+      <div className={getElementClassName('header')}>
         <div className={getElementClassName('title')}>
           {primary ? <span className={getElementClassName('title--primary')}>{primary}</span> : null}
-          {secondary ? <span className={getElementClassName('title--secondary')}>{secondary}</span> : null}
+          {secondaryTitleText ? <span className={getElementClassName('title--secondary')}>{secondaryTitleText}</span> : null}
         </div>
         {getInfoTypeChooser()}
       </div>
     );
-  }, [song, artist, album, getInfoTypeChooser, getElementClassName]);
+  }, [song, artist, album, secondaryTitleText, getInfoTypeChooser, getElementClassName]);
 
   const getImage = useCallback(() => {
     if (state.status !== 'fetched') {
