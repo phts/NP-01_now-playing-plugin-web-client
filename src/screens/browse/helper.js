@@ -182,6 +182,12 @@ export function getItemActions(location, item) {
       action: 'removeWebRadioFromFavorites'
     });
   }
-
+  if (item.type === 'song') {
+    itemActions.push({
+      title: 'View Info',
+      icon: 'info',
+      action: 'viewInfo'
+    });
+  }
   return itemActions;
 }

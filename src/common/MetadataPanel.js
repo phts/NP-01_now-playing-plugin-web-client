@@ -22,11 +22,15 @@ const getAvailableInfoTypes = (props) => {
   if (song) {
     result.push('song');
   }
-  if (artist) {
-    result.push('artist');
-  }
-  if (album) {
-    result.push('album');
+  if (artist || album) {
+    if (song) {
+      artist && result.push('artist');
+      album && result.push('album');
+    }
+    else {
+      album && result.push('album');
+      artist && result.push('artist');
+    }
   }
   if (song) {
     result.push('lyrics');
@@ -70,6 +74,8 @@ function MetadataPanel(props) {
     if (metadataService) {
       const handleMetadataFetched = (data) => {
         const { params, info } = data;
+        console.log('metadata fetched: ' , params, data);
+
         if ((song || album || artist) &&
           (!song || params.song === song) &&
           (!album || params.album === album) &&

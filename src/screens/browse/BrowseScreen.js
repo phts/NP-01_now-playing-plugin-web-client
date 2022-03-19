@@ -14,7 +14,7 @@ import { ScreenContext } from '../../contexts/ScreenContextProvider';
 import classNames from 'classnames';
 import { eventPathHasNoSwipe } from '../../utils/event';
 import { useSwipeable } from 'react-swipeable';
-import { ACTION_PANEL, ADD_TO_PLAYLIST_DIALOG, WEB_RADIO_DIALOG } from '../../modals/CommonModals';
+import { ACTION_PANEL, ADD_TO_PLAYLIST_DIALOG, METADATA_MODAL, WEB_RADIO_DIALOG } from '../../modals/CommonModals';
 import { ServiceContext } from '../../contexts/ServiceProvider';
 import { isPlayOnDirectClick } from './helper';
 
@@ -275,6 +275,29 @@ function BrowseScreen(props) {
     else if (action === 'removeWebRadioFromFavorites') {
       playlistService.removeWebRadioFromFavorites(item);
       expectsContentsRefresh = true;
+    }
+    else if (action === 'viewInfo') {
+      const modalData = {};
+      if (item.type === 'song') {
+        modalData.song = item.title;
+        modalData.album = item.album;
+        modalData.artist = item.artist;
+      }
+      else if (item.type === 'album') {
+        modalData.album = item.title || item.album;
+        modalData.artist = item.artist;
+      }
+      else if (item.type === 'artist') {
+        modalData.artist = item.title;
+      }
+      else {
+        modalData.album = item.album;
+        modalData.artist = item.artist;
+      }
+      if (modalData.album || modalData.artist) {
+        modalData.placeholderImage = item.albumart;
+        openModal(METADATA_MODAL, { data: modalData });
+      }
     }
     browseService.registerAction({
       action,

@@ -2,10 +2,11 @@ import Button from '../../common/Button';
 import Image from '../../common/Image';
 import PopupMenu from '../../common/PopupMenu';
 import styles from './Header.module.scss';
+import Item from './Item';
 
 function Header(props) {
   const data = props.info;
-
+console.log('header data', data);
   const excludeItemTypes = [
     'play-playlist'
   ];
@@ -57,14 +58,22 @@ function Header(props) {
     key: 'addToPlaylist',
     title: 'Add to Playlist',
     icon: 'playlist_add',
-    value: { action: 'addToPlaylist' },
+    value: { action: 'addToPlaylist' }
   });
   menuItems.push({
     key: 'addToQueue',
     title: 'Add to Queue',
     icon: 'add_to_queue',
-    value: { action: 'addToQueue' },
+    value: { action: 'addToQueue' }
   });
+  if (data.type === 'album' || data.type ==='artist' || data.artist || data.album) {
+    menuItems.push({
+      key: 'viewInfo',
+      title: 'View Info',
+      icon: 'info',
+      value: { action: 'viewInfo' }
+    });
+  }
 
   actionComponents.push((
     <PopupMenu

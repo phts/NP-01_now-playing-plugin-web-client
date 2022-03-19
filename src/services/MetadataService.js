@@ -39,6 +39,44 @@ export default class MetadataService {
     }
   }
 
+  /**
+   * params {
+   *  album: ...
+   *  artist: ...
+   * }
+   */
+   async getAlbumInfo(params) {
+    const payload = {...params, type: 'album'};
+    const data = await requestPluginApiEndpoint(this.apiPath, '/metadata/fetchInfo', payload);
+    if (data.success) {
+      this._pushFetched({
+        album: params.name,
+        artist: params.artist
+      }, data.data);
+    }
+    else {
+      this._pushError(data.error);
+    }
+  }
+
+  /**
+   * params {
+   *  artist: ...
+   * }
+   */
+   async getArtistInfo(params) {
+    const payload = {...params, type: 'artist'};
+    const data = await requestPluginApiEndpoint(this.apiPath, '/metadata/fetchInfo', payload);
+    if (data.success) {
+      this._pushFetched({
+        artist: params.name
+      }, data.data);
+    }
+    else {
+      this._pushError(data.error);
+    }
+  }
+
   // Event:
   // fetched
   on(event, handler) {

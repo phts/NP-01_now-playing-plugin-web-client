@@ -1,0 +1,119 @@
+.Overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+  background: var(--dialog-overlay-background);
+
+  &--after-open {
+    opacity: 1;
+  }
+
+  &--before-close {
+    opacity: 0;
+  }
+}
+
+.Layout {
+  --viewportHeight: calc(var(--vh, 1vh) * 100);
+  --left: calc(50vw - 50%);
+  --top: calc(calc(var(--viewportHeight) / 2) - 50%);
+  --vmargin: 4em;
+  --max-modal-height: 480px;
+  --modal-height: #{'min(var(--max-modal-height), calc(var(--viewportHeight) - var(--vmargin)))'};
+
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--dialog-background);
+  overflow: hidden;
+  border: var(--dialog-border);
+  border-radius: var(--dialog-border-radius);
+  box-shadow: var(--dialog-box-shadow);
+  outline: none;
+  transform: translate(var(--left), var(--top));
+  transition: opacity 200ms;
+  width: 90vw;
+  max-width: 1024px;
+  min-width: 300px;
+  height: var(--modal-height);
+  box-sizing: border-box;
+  opacity: 0;
+  backdrop-filter: var(--dialog-backdrop-filter);
+
+  @media (max-height: 379px) {
+    --vmargin: 2em;
+  }
+
+  @media (orientation: portrait) {
+    --max-modal-height: 800px;
+  }
+
+  &--after-open {
+    opacity: 1;
+  }
+
+  &--before-close {
+    opacity: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    height: 2.5em;
+    min-height: 2.5em;
+    padding: 0 0.5em;
+    box-sizing: border-box;
+  }
+}
+
+@import "../common/Button";
+
+.Button {
+  --button-color: var(--toolbar-button-color);
+  --button-hover-color: var(--toolbar-button-hover-color);
+  --button-toggled-color: var(--toolbar-button-toggled-color);
+
+  width: var(--toolbar-button-size);
+  height: var(--toolbar-button-size);
+
+  &--close {
+    margin-left: auto;
+  }
+}
+
+@import "../common/MetadataPanel";
+
+.MetadataPanel {
+  --title-primary-font-size: 1.5em;
+  --info-chooser-button-font-size: var(--button-font-size);
+
+  --panel-padding: 2em;
+  --art-size: #{'min(30vw, calc(calc(var(--modal-height) - var(--panel-padding)) - 7.5em))'};
+  --art-width: var(--art-size);
+  --art-height: var(--art-size);
+
+  flex-grow: 1;
+  padding: var(--panel-padding);
+  padding-top: 0;
+
+  @media (orientation: portrait) {
+    --art-size: #{'min(30vw, calc(calc(var(--modal-height) - var(--panel-padding)) - 7.5em))'};
+  }
+
+  @media all and (orientation: landscape) and (max-height: 379px) {
+    --panel-padding: 1em;
+  }
+
+  @media all and (orientation: portrait) and (max-width: 379px) {
+    --panel-padding: 1em;
+  }
+
+  &__artImage {
+    @extend .MetadataPanel__artImage;
+
+    max-width: 320px;
+    max-height: 320px;
+  }
+}
