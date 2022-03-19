@@ -89,7 +89,6 @@ function MetadataPanel(props) {
     if (metadataService) {
       const handleMetadataFetched = (data) => {
         const { params, info } = data;
-        console.log('metadata fetched: ' , params, data);
 
         if ((song || album || artist) &&
           (!song || params.song === song) &&

@@ -2,11 +2,9 @@ import Button from '../../common/Button';
 import Image from '../../common/Image';
 import PopupMenu from '../../common/PopupMenu';
 import styles from './Header.module.scss';
-import Item from './Item';
 
 function Header(props) {
   const data = props.info;
-console.log('header data', data);
   const excludeItemTypes = [
     'play-playlist'
   ];
