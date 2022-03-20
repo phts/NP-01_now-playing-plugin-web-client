@@ -256,7 +256,8 @@ const ScreenContextProvider = ({ children }) => {
           in={trackBarState === 'active' || trackBarState === 'entering'}
           classNames="TrackBar--slideUp"
           timeout={200}
-          mountOnEnter={true}>
+          mountOnEnter
+          unmountOnExit>
             <TrackBar 
               state={trackBarState} 
               activeScreenId={currentActiveScreenId}
