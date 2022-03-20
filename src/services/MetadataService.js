@@ -2,20 +2,23 @@ import { EventEmitter } from "eventemitter3";
 import { requestPluginApiEndpoint } from "../utils/api";
 
 export default class MetadataService {
-  constructor(apiPath) {
-    this.apiPath = apiPath;
-    this.init();
-  }
-
-  init() {
+  constructor() {
+    this.apiPath = null;
     this.emitter = new EventEmitter();
-    
   }
 
-  destroy() {
+  setApiPath(apiPath) {
+    this.apiPath = apiPath;
+  }
+
+  isReady() {
+    return this.apiPath !== null;
+  }
+
+/*  destroy() {
     this.emitter.removeAllListeners();
     //this.emitter = null;  <-- commenting out for react refresh to work
-  }
+  }*/
 
   /**
    * params {
@@ -25,6 +28,9 @@ export default class MetadataService {
    * }
    */
   async getSongInfo(params) {
+    if (!this.apiPath) {
+      return;
+    }
     const payload = {...params, type: 'song'};
     const data = await requestPluginApiEndpoint(this.apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
@@ -45,7 +51,10 @@ export default class MetadataService {
    *  artist: ...
    * }
    */
-   async getAlbumInfo(params) {
+  async getAlbumInfo(params) {
+    if (!this.apiPath) {
+      return;
+    }
     const payload = {...params, type: 'album'};
     const data = await requestPluginApiEndpoint(this.apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
@@ -64,7 +73,10 @@ export default class MetadataService {
    *  artist: ...
    * }
    */
-   async getArtistInfo(params) {
+  async getArtistInfo(params) {
+    if (!this.apiPath) {
+      return;
+    }
     const payload = {...params, type: 'artist'};
     const data = await requestPluginApiEndpoint(this.apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {

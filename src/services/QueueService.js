@@ -5,26 +5,48 @@ const PLAY_ENTIRE_LIST_TYPES = [
 ];
 
 export default class QueueService {
-  constructor(socket) {
-    this.socket = socket;
-    this.init();
+  constructor() {
+    this.socket = null;
+    this.emitter = new EventEmitter();
+    this.initState();
+    this.initSocketEventHandlers();
   }
 
-  init() {
-    this.emitter = new EventEmitter();
+  initState() {
     this._setQueue([]);
-    if (this.socket) {
-      this.socketEventHandlers = {
-        'pushQueue': this._setQueue.bind(this),
+  }
+
+  initSocketEventHandlers() {
+    this.socketEventHandlers = {
+      'pushQueue': this._setQueue.bind(this)
+    };
+  }
+
+  setSocket(socket) {
+    const oldSocket = this.socket;
+    if (oldSocket === socket) {
+      return;
+    }
+    if (oldSocket) {
+      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
+        oldSocket.off(event, handler);
       }
+    }
+    this.socket = socket;
+    if (this.socket) {
       for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
         this.socket.on(event, handler);
       }
+
+      // Reset
+      this.initState();
+
+      // Request queue
       this.socket.emit('getQueue');
     }
   }
 
-  destroy() {
+  /*destroy() {
     if (this.socket && this.socketEventHandlers) {
       for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
         this.socket.off(event, handler);
@@ -35,7 +57,7 @@ export default class QueueService {
     this._setQueue([]);
     this.emitter.removeAllListeners();
     //this.emitter = null;  <-- commenting out for react refresh to work
-  }
+  }*/
 
   // Event:
   // queueChanged

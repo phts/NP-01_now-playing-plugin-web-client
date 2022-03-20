@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext, useEffect, useContext, useMemo } from "react";
 import BrowseService from "../services/BrowseService";
 import MetadataService from "../services/MetadataService";
 import PlaylistService from "../services/PlaylistService";
@@ -8,42 +8,28 @@ import { SocketContext } from "./SocketProvider";
 
 const ServiceContext = createContext();
 
-const initServices = (socket = null, host = null, apiPath = null) => {
-  return {
-    playlistService: new PlaylistService(socket),
-    queueService: new QueueService(socket),
-    browseService: new BrowseService(socket, host),
-    metadataService: apiPath ? new MetadataService(apiPath) : null
-  };
-};
-
-const destroyServices = (services) => {
-  services.playlistService.destroy();
-  services.queueService.destroy();
-  services.browseService.destroy();
-  if (services.metadataService) {
-    services.metadataService.destroy();
-  }
-};
-
-const initialServices = initServices();
-
 const ServiceProvider = ({ children }) => {
   const {socket} = useContext(SocketContext);
-  const {host, pluginInfo} = useContext(AppContext);
-  const [services, setServices] = useState(initialServices);
+  const {pluginInfo} = useContext(AppContext);
 
+  const services = useMemo(() => ({
+    playlistService: new PlaylistService(),
+    queueService: new QueueService(),
+    browseService: new BrowseService(),
+    metadataService: new MetadataService()
+  }), []);
+  
   const apiPath = pluginInfo ? pluginInfo.apiPath : null;
 
   useEffect(() => {
-    setServices(initServices(socket, host, apiPath));
-  }, [setServices, socket, host, apiPath]);
+    services.playlistService.setSocket(socket);
+    services.queueService.setSocket(socket);
+    services.browseService.setSocket(socket);
+  }, [socket, services]);
 
   useEffect(() => {
-    return () => {
-      destroyServices(services);
-    };
-  }, [services]);
+    services.metadataService.setApiPath(apiPath);
+  }, [apiPath, services]);
 
   return (
     <ServiceContext.Provider value={services}>

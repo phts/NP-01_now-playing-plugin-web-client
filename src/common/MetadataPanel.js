@@ -118,7 +118,7 @@ function MetadataPanel(props) {
 
   // Fetch info when song / artist / album changes
   useEffect(() => {
-    if (metadataService) {
+    if (metadataService.isReady()) {
       if (song) {
         const params = {
           name: song,

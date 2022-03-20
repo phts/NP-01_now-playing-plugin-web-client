@@ -1,13 +1,48 @@
 import EventEmitter from "eventemitter3";
 
 export default class PlaylistService {
-  constructor(socket) {
-    this.socket = socket;
-    this.init();
+  constructor() {
+    this.socket = null;
+    this.emitter = new EventEmitter();
+    this.initState();
+    this.initSocketEventHandlers();
   }
 
-  init() {
-    this.emitter = new EventEmitter();
+  initState() {
+    this.setPlaylists([]);
+  }
+
+  initSocketEventHandlers() {
+    this.socketEventHandlers = {
+      'pushListPlaylist': this.setPlaylists.bind(this)
+    };
+  }
+
+  setSocket(socket) {
+    const oldSocket = this.socket;
+    if (oldSocket === socket) {
+      return;
+    }
+    if (oldSocket) {
+      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
+        oldSocket.off(event, handler);
+      }
+    }
+    this.socket = socket;
+    if (this.socket) {
+      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
+        this.socket.on(event, handler);
+      }
+
+      // Reset
+      this.initState();
+
+      // Request playlists
+      this.socket.emit('listPlaylist');
+    }
+   }
+
+  /*init() {
     this.setPlaylists([]);
     if (this.socket) {
       this.socketListPlaylistHandler = this.setPlaylists.bind(this);
@@ -24,7 +59,7 @@ export default class PlaylistService {
     this.emitter.removeAllListeners();
     //this.emitter = null;  <-- commenting out for react refresh to work
     this.setPlaylists([]);
-  }
+  }*/
 
   on(event, handler) {
     this.emitter.on(event, handler);

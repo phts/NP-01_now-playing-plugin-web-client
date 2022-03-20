@@ -8,37 +8,70 @@ const HOME = {
 };
 
 export default class BrowseService {
-  constructor(socket, host) {
-    this.socket = socket;
-    this.host = host;
-    this.init();
+  constructor() {
+    this.socket = null;
+    this.host = null;
+    this.emitter = new EventEmitter();
+    this.initState();
+    this.initSocketEventHandlers();
   }
 
-  init() {
-    this.emitter = new EventEmitter();
+  initState() {
     this.currentDisplayed = {
       location: HOME,
       contents: null
     };
     this._setBrowseSources([]);
-    if (this.socket) {
+    this.currentLoading = null;
+    this.lastAction = null;
+    this.backHistory = [];
+  }
+
+  initSocketEventHandlers() {
       this.socketEventHandlers = {
         'pushBrowseSources': this._setBrowseSources.bind(this),
         'pushBrowseLibrary': this._handlePushBrowseLibrary.bind(this),
         'pushAddWebRadio': this._handlePushAddWebRadio.bind(this)
+    };
       }
+
+  setSocket(socket) {
+    const oldSocket = this.socket;
+    if (oldSocket === socket) {
+      return;
+    }
+    if (oldSocket) {
+      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
+        oldSocket.off(event, handler);
+      }
+    }
+    this.socket = socket;
+    if (this.socket) {
       for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
         this.socket.on(event, handler);
       }
+
+      this.host = this.socket.io.uri;
+
+      console.log('browserservice host:' , this.host);
+
+      // Reset the browsing state
+      this.initState();
+
+      // Request browse sources
       this.socket.emit('getBrowseSources');
+
     }
-    this.currentLoading = null;
-    this.lastAction = null;
-    this.backHistory = [];
-    this.currentSearchQuery = null;
+    else {
+      this.host = null;
+    }
   }
 
-  destroy() {
+  isReady() {
+    return this.socket && this.socket.connected && this.host;
+  }
+
+  /*destroy() {
     if (this.socket && this.socketEventHandlers) {
       for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
         this.socket.off(event, handler);
@@ -53,8 +86,7 @@ export default class BrowseService {
     this.currentLoading = null; // location
     this.lastAction = null;
     this.backHistory = [];
-    this.currentSearchQuery = null;
-  }
+  }*/
 
   // Event:
   // contentsLoaded
