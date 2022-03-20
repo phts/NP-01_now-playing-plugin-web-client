@@ -1,68 +1,49 @@
 import classNames from "classnames";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Range } from "react-range";
-import { SocketContext } from "../contexts/SocketProvider";
-import { millisecondsToString, TrackTimer } from "../utils/track";
+import { PlayerSeekContext } from "../contexts/PlayerSeekProvider";
+import { millisecondsToString } from "../utils/track";
 import './Seekbar.scss';
 
 function Seekbar(props) {
-  const {socket} = useContext(SocketContext);
   const playerState = props.playerState;
-  const [seek, setSeek] = useState(playerState.seek || 0);
-  const trackTimerRef = useRef();
+  const {currentSeekPosition, seekTo} = useContext(PlayerSeekContext);
+  const [displaySeek, setDisplaySeek] = useState(currentSeekPosition);
   const isSeekingRef = useRef(false);
 
-  const seekTo = useCallback(val => {
-    socket.emit('seek', val/1000);
-  }, [socket]);
-   
-  const onTrackTimerSeek = useCallback(val => {
-    setSeek(val);
-  }, [setSeek]);
-
   useEffect(() => {
-    const seekVal = playerState.seek || 0;
-    const trackTimer = new TrackTimer();
-    trackTimerRef.current = trackTimer;
-    trackTimer.on('seek', onTrackTimerSeek);
-
-    if (playerState.status === 'play') {
-      trackTimer.start(seekVal);
+    if (!isSeekingRef.current) {
+      setDisplaySeek(currentSeekPosition);
     }
-    setSeek(seekVal);
-        
-    return () => {
-      trackTimer.destroy();
-      trackTimerRef.current = null;
-    };
-  }, [props.playerState, playerState.seek, playerState.status, onTrackTimerSeek]);
+  }, [setDisplaySeek, currentSeekPosition]);
 
-  const seekText = millisecondsToString(seek);
+  const seekText = millisecondsToString(displaySeek);
   const duration = (playerState.duration || 0) * 1000;
   const durationText = millisecondsToString(duration);
-  const seekPercent = (duration > 0) ? ((seek / duration) * 100) + '%' : 0;
+  const seekPercent = (duration > 0) ? ((currentSeekPosition / duration) * 100) + '%' : 0;
   const disabled = playerState.duration === 0 || playerState.status === 'stop';
 
-  const beginSeek = useCallback(beginVal => {
-    trackTimerRef.current.pause();
+  const beginSeek = useCallback((beginVal) => {
     isSeekingRef.current = true;
-    setSeek(beginVal);
-  }, [setSeek]);
+    setDisplaySeek(beginVal);
+  }, [setDisplaySeek]);
 
-  const endSeek = useCallback(endVal => {
+  const endSeek = useCallback((values) => {
+    const endVal = values[0];
     isSeekingRef.current = false;
-    setSeek(endVal);
+    setDisplaySeek(endVal);
     seekTo(endVal);
-  }, [setSeek, seekTo]);
+  }, [setDisplaySeek, seekTo]);
 
-  const onSliderValueChanged = useCallback(val => {
+  const onSliderValueChanged = useCallback((values) => {
+    const changedVal = values[0];
     if (isSeekingRef.current) {
-      setSeek(val);
+      setDisplaySeek(changedVal);
     }
     else {
-      beginSeek(val);
+      beginSeek(changedVal);
     }
-  }, [setSeek, beginSeek]);
+  }, [setDisplaySeek, beginSeek]);
 
   // Style bundle in props
   const baseClassName = props.styles ? props.styles.baseClassName : null;
@@ -119,10 +100,10 @@ function Seekbar(props) {
   return (
     <div className={mainClassName}>
       <Range 
-        values={[Math.min(seek, duration)]}
+        values={[Math.min(displaySeek, duration)]}
         max={Math.max(duration, 1)}
-        onChange={values => onSliderValueChanged(values[0])}
-        onFinalChange={values => endSeek(values[0])}
+        onChange={onSliderValueChanged}
+        onFinalChange={endSeek}
         renderTrack={renderSliderTrack}
         renderThumb={renderSliderThumb} />
       { showText ? 

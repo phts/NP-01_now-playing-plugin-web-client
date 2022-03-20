@@ -21,6 +21,7 @@ import VolumioScreen from './screens/volumio/VolumioScreen';
 import { ThemeProvider } from './contexts/ThemeProvider';
 import { ServiceProvider } from './contexts/ServiceProvider';
 import { StylesProvider } from './contexts/StylesProvider';
+import { PlayerSeekProvider } from './contexts/PlayerSeekProvider';
 
 function App() {
   const [height, setHeight] = useState(window.innerHeight);
@@ -41,39 +42,41 @@ function App() {
     <AppContextProvider>
       <SocketProvider>
         <PlayerStateProvider>
-          <ThemeProvider>
-            <StylesProvider>
-              <AppStartup />
-              <div className="App" style={{ '--vh': vh }}>
-                <NotificationProvider>
-                  <ModalStateProvider>
-                    <VolumeChangeListener />
-                    <NotificationListener />
-                    <DisconnectedIndicator />
-                    <ServiceProvider>
-                      <ScreenContextProvider>
-                        <NowPlayingScreen
-                          screenId="NowPlaying"
-                          defaultActive={true} />
-                        <BrowseScreen
-                          screenId="Browse"
-                          usesTrackBar={true} />
-                        <QueueScreen
-                          screenId="Queue"
-                          float={true}
-                          usesTrackBar={true} />
-                        <VolumioScreen
-                          screenId="Volumio"
-                          mountOnEnter={true}
-                          unmountOnExit={true} />
-                        <CommonModals realVh={vh}/>
-                      </ScreenContextProvider>
-                    </ServiceProvider>
-                  </ModalStateProvider>
-                </NotificationProvider>
-              </div>
-            </StylesProvider>
-          </ThemeProvider>
+          <PlayerSeekProvider>
+            <ThemeProvider>
+              <StylesProvider>
+                <AppStartup />
+                <div className="App" style={{ '--vh': vh }}>
+                  <NotificationProvider>
+                    <ModalStateProvider>
+                      <VolumeChangeListener />
+                      <NotificationListener />
+                      <DisconnectedIndicator />
+                      <ServiceProvider>
+                        <ScreenContextProvider>
+                          <NowPlayingScreen
+                            screenId="NowPlaying"
+                            defaultActive={true} />
+                          <BrowseScreen
+                            screenId="Browse"
+                            usesTrackBar={true} />
+                          <QueueScreen
+                            screenId="Queue"
+                            float={true}
+                            usesTrackBar={true} />
+                          <VolumioScreen
+                            screenId="Volumio"
+                            mountOnEnter={true}
+                            unmountOnExit={true} />
+                          <CommonModals realVh={vh}/>
+                        </ScreenContextProvider>
+                      </ServiceProvider>
+                    </ModalStateProvider>
+                  </NotificationProvider>
+                </div>
+              </StylesProvider>
+            </ThemeProvider>
+          </PlayerSeekProvider>
         </PlayerStateProvider>
       </SocketProvider>
     </AppContextProvider>
