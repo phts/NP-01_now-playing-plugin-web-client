@@ -22,7 +22,8 @@ function InfoView(props) {
         song={playerState.title}
         album={playerState.album}
         artist={playerState.artist}
-        placeholderImage={playerState.albumart} />
+        placeholderImage={playerState.albumart}
+        restoreStateKey="NowPlayingScreen.InfoView.restoreState" />
       <div className={styles.BottomBar}>
         <Seekbar
           styles={{

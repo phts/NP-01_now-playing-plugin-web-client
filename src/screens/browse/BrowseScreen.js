@@ -17,6 +17,7 @@ import { useSwipeable } from 'react-swipeable';
 import { ACTION_PANEL, ADD_TO_PLAYLIST_DIALOG, METADATA_MODAL, WEB_RADIO_DIALOG } from '../../modals/CommonModals';
 import { ServiceContext } from '../../contexts/ServiceProvider';
 import { isPlayOnDirectClick } from './helper';
+import { StoreContext } from '../../contexts/StoreProvider';
 
 const HOME = {
   type: 'browse',
@@ -24,21 +25,26 @@ const HOME = {
   service: null
 };
 
+const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
+const RESTORE_STATE_KEY = 'BrowseScreen.restoreState';
+
 function BrowseScreen(props) {
+  const store = useContext(StoreContext);
+  const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
   const {socket} = useContext(SocketContext);
   const showToast = useContext(NotificationContext);
   const { openModal } = useContext(ModalStateContext);
   const { playlistService, queueService, browseService } = useContext(ServiceContext);
-  const [listView, setListView] = useState('grid');
+  const [listView, setListView] = useState(restoreState.listView || 'grid');
   const [contents, setContents] = useState({});
   const currentLocation = useRef(HOME);
-  const currentSearchQuery = useRef('');
   const scrollbarsRef = useRef(null);
   const fakeLoadingBarRef = useRef(null);
   const { switchScreen } = useContext(ScreenContext);
   const toolbarEl = useRef(null);
   const screenRef = useRef(null);
   const [menuOverlay, setMenuOverlay] = useState(false);
+  const scrollPositionRef = useRef(INITIAL_SCROLL_POSITION);
 
   // Browse / navigation handling
 
@@ -48,7 +54,7 @@ function BrowseScreen(props) {
     };
 
     const handleContentsLoaded = (data) => {
-      if (!data.isBack) {
+      if (!data.isBack && !data.isRestore) {
         browseService.addCurrentToHistory(getScrollPosition());
       }
       currentLocation.current = data.location;
@@ -71,7 +77,7 @@ function BrowseScreen(props) {
     browseService.on('contentsLoading', handleContentsLoading);
     browseService.on('contentsLoaded', handleContentsLoaded);
     browseService.on('contentsRefreshed', handleContentsRefreshed);
-    browseService.on('error', handleError);
+    browseService.on('error', handleError); 
 
     return () => {
       browseService.off('contentsLoading', handleContentsLoading);
@@ -81,16 +87,35 @@ function BrowseScreen(props) {
     }
   }, [setContents, browseService, showToast]);
 
+  // Update restoreState on change in listView
+  useEffect(() => {
+    restoreState.listView = listView;
+  }, [restoreState, listView]);
+
+  useEffect(() => {
+    // Restore using scrollPosition from restoreState (which can be ignored
+    // if browseService has been reset)
+    browseService.restoreCurrentDisplayed(restoreState.scrollPosition);
+
+    return (() => {
+      // On unmount, save scrollPosition to restoreState
+      restoreState.scrollPosition = scrollPositionRef.current;
+    });
+  }, [browseService, restoreState]);
+
   const getScrollPosition = () => {
-    const zero = { x: 0, y: 0 };
     if (scrollbarsRef.current) {
       const scroll = scrollbarsRef.current.osInstance().scroll() || {};
-      return scroll.position || zero;
+      return scroll.position || INITIAL_SCROLL_POSITION;
     }
     else {
-      return zero;
+      return INITIAL_SCROLL_POSITION;
     }
   };
+
+  scrollPositionRef.current = getScrollPosition();
+
+  // Browse actions
 
   const browse = useCallback((location, refresh = false) => {
     browseService.browse(location, refresh);
@@ -112,11 +137,11 @@ function BrowseScreen(props) {
   }, [setListView, listView]);
 
   const onSearchQuery = useCallback((query, commit) => {
-    currentSearchQuery.current = query;
+    restoreState.searchQuery = query; // Update restoreState
     if (commit) {
       search(query);
     }
-  }, [search]);
+  }, [search, restoreState]);
 
   const openActionPanel = useCallback(() => {
     openModal(ACTION_PANEL);
@@ -439,7 +464,8 @@ function BrowseScreen(props) {
         currentContents={contents}
         currentListView={listView}
         onButtonClick={handleToolbarButtonClicked}
-        onSearchQuery={onSearchQuery} />
+        onSearchQuery={onSearchQuery}
+        initialSearchQuery={restoreState.searchQuery || ''} />
       <OverlayScrollbarsComponent
         ref={scrollbarsRef}
         className={styles.Layout__contents}

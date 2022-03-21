@@ -26,6 +26,7 @@ const SearchBox = React.forwardRef((props, ref) => {
       placeholder={props.placeholder}
       icon="search"
       onChange={onInput}
+      defaultValue={props.defaultValue}
       styles={{ 
         baseClassName: 'TextField',
         bundle: styles,

@@ -87,6 +87,7 @@ const Toolbar = React.forwardRef((props, ref) => {
           <SearchBox 
             ref={searchBoxRef} 
             onQuery={props.onSearchQuery}
+            defaultValue={props.initialSearchQuery}
             placeholder={props.currentLocation.service ? props.currentLocation.service.prettyName : ''} />
         </div>
       </div>

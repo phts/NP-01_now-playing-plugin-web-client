@@ -11,6 +11,7 @@ export default class BrowseService {
   constructor() {
     this.socket = null;
     this.host = null;
+    this.hasReset = false;
     this.emitter = new EventEmitter();
     this.initState();
     this.initSocketEventHandlers();
@@ -28,12 +29,12 @@ export default class BrowseService {
   }
 
   initSocketEventHandlers() {
-      this.socketEventHandlers = {
-        'pushBrowseSources': this._setBrowseSources.bind(this),
-        'pushBrowseLibrary': this._handlePushBrowseLibrary.bind(this),
-        'pushAddWebRadio': this._handlePushAddWebRadio.bind(this)
+    this.socketEventHandlers = {
+      'pushBrowseSources': this._setBrowseSources.bind(this),
+      'pushBrowseLibrary': this._handlePushBrowseLibrary.bind(this),
+      'pushAddWebRadio': this._handlePushAddWebRadio.bind(this)
     };
-      }
+  }
 
   setSocket(socket) {
     const oldSocket = this.socket;
@@ -53,10 +54,9 @@ export default class BrowseService {
 
       this.host = this.socket.io.uri;
 
-      console.log('browserservice host:' , this.host);
-
       // Reset the browsing state
       this.initState();
+      this.hasReset = true;
 
       // Request browse sources
       this.socket.emit('getBrowseSources');
@@ -108,12 +108,24 @@ export default class BrowseService {
   _setBrowseSources(data) {
     this.browseSources = data;
     if (this.currentDisplayed && isHome(this.currentDisplayed.location)) {
-      this.browse(HOME);
+      const contents = this._getBrowseSourceContents();
+      this._pushRefresh(contents);
     }
   }
 
   getBrowseSources() {
     return this.browseSources;
+  }
+
+  _getBrowseSourceContents() {
+    return {
+      navigation: {
+        lists: [{
+          items: this.getBrowseSources(),
+          availableListViews: ['grid']
+        }]
+      }
+    };
   }
 
   _handlePushBrowseLibrary(data) {
@@ -158,9 +170,16 @@ export default class BrowseService {
     }
   }
 
-  _pushLoad(location, contents, scrollPosition = 0, isBack = false) {
+  _pushLoad(location, contents, scrollPosition = 0, loadType) {
     this.currentLoading = null;
-    this.emitter.emit('contentsLoaded', {location, contents, scrollPosition, isBack});
+    const payload = {location, contents, scrollPosition};
+    if (loadType === 'back') {
+      payload.isBack = true;
+    }
+    if (loadType === 'restore') {
+      payload.isRestore = true;
+    }
+    this.emitter.emit('contentsLoaded', payload);
     this.currentDisplayed = { location, contents };
     if (isHome(location)) {
       this.backHistory = [];
@@ -194,15 +213,7 @@ export default class BrowseService {
     if (isHome(location)) {
       this.backHistory = [];
       // Push browse sources
-      this._pushLoad(
-        HOME, {
-        navigation: {
-          lists: [{
-            items: this.getBrowseSources(),
-            availableListViews: ['grid']
-          }]
-        }
-      });
+      this._pushLoad(HOME, this._getBrowseSourceContents());
     }
     else {
       this.currentLoading = location;
@@ -278,7 +289,7 @@ export default class BrowseService {
       this.browse(HOME);
     }
     else if (['browse', 'search', 'goto'].includes(prev.location.type)) {
-      this._pushLoad(prev.location, prev.contents, prev.scrollPosition, true);
+      this._pushLoad(prev.location, prev.contents, prev.scrollPosition, 'back');
     }
   }
 
@@ -312,5 +323,12 @@ export default class BrowseService {
    */
   registerAction(action) {
     this.lastAction = action;
+  }
+
+  restoreCurrentDisplayed(scrollPosition) {
+    if (this.currentDisplayed) {
+      this._pushLoad(this.currentDisplayed.location, this.currentDisplayed.contents, this.hasReset ? null : scrollPosition, 'restore');
+    }
+    this.hasReset = false;
   }
 }

@@ -180,6 +180,20 @@ const ScreenContextProvider = ({ children }) => {
     }, {});
   }, [orderedScreenIds]);
 
+  const shouldUnmountOnExit = useCallback((screenId) => {
+    if (currentEnteringScreenId && screenStates[currentEnteringScreenId].float &&
+      currentExitingScreenId === screenId) {
+        return false;
+    }
+    else if (currentActiveScreenId && screenStates[currentActiveScreenId].float &&
+      screenStates[screenId].status === 'inactive') {
+        return false;
+    }
+    else {
+      return screenStates[screenId].unmountOnExit;
+    }
+  }, [currentEnteringScreenId, currentActiveScreenId, currentExitingScreenId, screenStates]);
+
   const getChildren = () => {
     return Children.map(children, child => {
       const screenId = isValidElement(child) ? child.props.screenId : null;
@@ -187,13 +201,14 @@ const ScreenContextProvider = ({ children }) => {
         const state = screenStates[screenId];
         const transitionParams = getTransitionParams(state);
         const childClassNames = getChildClassNames(child, state);
+        const unmountOnExit = shouldUnmountOnExit(screenId);
         const component = (
           <ContextualCSSTransition
             in={transitionParams.in}
             classNames={transitionParams.class}
             timeout={200}
             mountOnEnter={state.mountOnEnter}
-            unmountOnExit={state.unmountOnExit}
+            unmountOnExit={unmountOnExit}
             onEntered={onScreenSwitched}>
               {cloneElement(
                 child, {
@@ -209,7 +224,8 @@ const ScreenContextProvider = ({ children }) => {
             classNames='Screen--fadeIn'
             timeout={200}
             mountOnEnter={state.mountOnEnter}
-            unmountOnExit={state.unmountOnExit}>
+            unmountOnExit={unmountOnExit}
+            onEntered={onScreenSwitched}>
               <div 
                 className={classNames('Viewport', childClassNames)}
                 style={{'zIndex': screenZIndexes[screenId]}}>

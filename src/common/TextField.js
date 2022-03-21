@@ -43,7 +43,7 @@ const TextField = React.forwardRef((props, ref) => {
           type="text"
           className={getElementClassName('input')}
           placeholder={props.placeholder}
-          value={props.value}
+          defaultValue={props.defaultValue}
           onChange={props.onChange}
           onFocus={onInputFocus}
           onBlur={onInputBlur} />

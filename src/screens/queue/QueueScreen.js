@@ -11,14 +11,22 @@ import Items from './Items';
 import { ServiceContext } from '../../contexts/ServiceProvider';
 import { ADD_TO_PLAYLIST_DIALOG } from '../../modals/CommonModals';
 import { ModalStateContext } from '../../contexts/ModalStateProvider';
+import { StoreContext } from '../../contexts/StoreProvider';
+
+const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
+const RESTORE_STATE_KEY = 'QueueScreen.restoreState';
 
 function QueueScreen(props) {
+  const store = useContext(StoreContext);
+  const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
   const playerState = useContext(PlayerStateContext);
   const { openModal } = useContext(ModalStateContext);
   const { queueService } = useContext(ServiceContext);
   const [items, setItems] = useState(queueService.getQueue());
   const {exitActiveScreen} = useContext(ScreenContext);
   const toolbarEl = useRef(null);
+  const scrollbarsRef = useRef(null);
+  const scrollPositionRef = useRef(INITIAL_SCROLL_POSITION);
 
   useEffect(() => {
     const handleQueueChanged = (data) => {
@@ -31,6 +39,31 @@ function QueueScreen(props) {
       queueService.off('queueChanged', handleQueueChanged);
     }
   }, [queueService, setItems]);
+
+  // Keep track of scroll position and save to restoreState on unmount;
+  // Restore scroll position on remount
+
+  useEffect(() => {
+    if (scrollbarsRef.current) {
+      scrollbarsRef.current.osInstance().scroll(restoreState.scrollPosition || 0);
+    }
+
+    return (() => {
+      restoreState.scrollPosition = scrollPositionRef.current;
+    });
+  }, [restoreState]);
+  
+  const getScrollPosition = () => {
+    if (scrollbarsRef.current) {
+      const scroll = scrollbarsRef.current.osInstance().scroll() || {};
+      return scroll.position || INITIAL_SCROLL_POSITION;
+    }
+    else {
+      return INITIAL_SCROLL_POSITION;
+    }
+  };
+
+  scrollPositionRef.current = getScrollPosition();
 
   const closeScreen = useCallback(() => {
     exitActiveScreen({
@@ -114,6 +147,7 @@ function QueueScreen(props) {
           playerState={playerState}
           onButtonClick={handleToolbarButtonClicked} />
         <OverlayScrollbarsComponent
+          ref={scrollbarsRef}
           className={styles.Layout__contents}
           options={{ scrollbars: {
             autoHide: supportsHover ? 'leave' : 'scroll'

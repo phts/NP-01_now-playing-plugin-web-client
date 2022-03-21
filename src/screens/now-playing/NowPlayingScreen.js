@@ -15,6 +15,9 @@ import BasicView from './BasicView';
 import InfoView from './InfoView';
 import { StylesContext } from '../../contexts/StylesProvider';
 import { ServiceContext } from '../../contexts/ServiceProvider';
+import { StoreContext } from '../../contexts/StoreProvider';
+
+const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
 function NowPlayingScreen(props) {
   const playerState = useContext(PlayerStateContext);
@@ -23,7 +26,14 @@ function NowPlayingScreen(props) {
   const {customStyles} = useContext(StylesContext);
   const screenEl = useRef(null);
   const {activeScreenId, switchScreen} = useContext(ScreenContext);
-  const [view, setView] = useState('basic');
+  const store = useContext(StoreContext);
+  const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
+  const [view, setView] = useState(restoreState.view || 'basic');
+
+  // Update restoreState on view changed
+  useEffect(() => {
+    restoreState.view = view;
+  }, [restoreState, view]);
 
   const openActionPanel = useCallback(() => {
     openModal(ACTION_PANEL);

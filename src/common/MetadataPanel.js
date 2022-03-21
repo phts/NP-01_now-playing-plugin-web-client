@@ -6,6 +6,7 @@ import Button from './Button';
 import './MetadataPanel.scss';
 import { ServiceContext } from '../contexts/ServiceProvider';
 import { NotificationContext } from '../contexts/NotificationProvider';
+import { StoreContext } from '../contexts/StoreProvider';
 
 const DEFAULT_INFO_CHOOSER_BUTTON_STYLES = {
   baseClassName: 'MetadataPanelInfoChooserButton',
@@ -15,6 +16,8 @@ const DEFAULT_INFO_CHOOSER_BUTTON_STYLES = {
     'MetadataPanelInfoChooserButton--toggled': 'MetadataPanelInfoChooserButton--toggled'
   }
 };
+
+const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
 
 const getAvailableInfoTypes = (props) => {
   const result = [];
@@ -39,13 +42,47 @@ const getAvailableInfoTypes = (props) => {
 };
 
 function MetadataPanel(props) {
-  const { song, album, artist, placeholderImage, infoChooserButtonStyles } = props;
+  const { restoreStateKey, song, album, artist, placeholderImage, infoChooserButtonStyles } = props;
   const { metadataService } = useContext(ServiceContext);
   const showToast = useContext(NotificationContext);
-  const [state, setState] = useState({ status: 'idle' });
-  const availableInfoTypes = getAvailableInfoTypes(props);
-  const [infoType, setInfoType] = useState(availableInfoTypes[0]);
   const scrollbarsRef = useRef(null);
+  const currentScrollPositionRef = useRef(INITIAL_SCROLL_POSITION);
+
+  const store = useContext(StoreContext);
+  const restoreState = restoreStateKey ? store.get(restoreStateKey, {}, true) : null;
+  const availableInfoTypes = getAvailableInfoTypes(props);
+  const getInitialInfoType = () => {
+    if (restoreState && restoreState.infoType && availableInfoTypes.includes(restoreState.infoType)) {
+      return restoreState.infoType;
+    }
+    return availableInfoTypes[0];
+  };
+  const getInitialState = () => {
+    if (restoreState && restoreState.state) {
+      const { status, forProps = {} } = restoreState.state;
+      return (
+        (status === 'fetched' || status === 'error') && 
+        forProps.song === song && 
+        forProps.album === album && 
+        forProps.artist === artist) 
+        ? restoreState.state : { status: 'idle' };
+    }
+    return { status: 'idle' };
+  };
+  const getInitialScrollPositions = () => {
+    if (restoreState && restoreState.state) {
+      const { forProps = {} } = restoreState.state;
+      return (
+        forProps.song === song && 
+        forProps.album === album && 
+        forProps.artist === artist) 
+        ? restoreState.scrollPositions : {};
+    }
+    return {};
+  };
+  const [infoType, setInfoType] = useState(getInitialInfoType());
+  const [state, setState] = useState(getInitialState());
+  const scrollPositionsRef = useRef(getInitialScrollPositions());
 
   const baseClassName = props.styles ? props.styles.baseClassName : null;
   const stylesBundle = baseClassName ? props.styles.bundle : null;
@@ -94,7 +131,11 @@ function MetadataPanel(props) {
           (!song || params.song === song) &&
           (!album || params.album === album) &&
           (!artist || params.artist === artist)) {
-            setState({ status: 'fetched', info });
+            setState({ 
+              status: 'fetched', 
+              info, 
+              forProps: { song, album, artist }
+            });
         }
       };
 
@@ -103,7 +144,11 @@ function MetadataPanel(props) {
           type: 'error',
           message
         });
-        setState({ status: 'error', error: {message} });
+        setState({ 
+          status: 'error', 
+          error: {message},
+          forProps: { song, album, artist }
+        });
       };
       
       metadataService.on('fetched', handleMetadataFetched);
@@ -118,6 +163,13 @@ function MetadataPanel(props) {
 
   // Fetch info when song / artist / album changes
   useEffect(() => {
+    if (state.forProps && 
+      state.forProps.song === song &&
+      state.forProps.album === album &&
+      state.forProps.artist === artist) {
+        return;
+    }
+    const forProps = { song, album, artist };
     if (metadataService.isReady()) {
       if (song) {
         const params = {
@@ -140,17 +192,35 @@ function MetadataPanel(props) {
         };
         metadataService.getArtistInfo(params);
       }
-      setState({ status: (song || album || artist) ? 'loading' : 'idle' });
+      setState({ 
+        status: (song || album || artist) ? 'loading' : 'idle',
+        forProps
+      });
     }
     else {
       setState({
         status: 'error',
         error: {
           message: 'Metadata service unavailable. Check that you have the latest version of the Now Playing plugin installed.'
-        }
+        },
+        forProps
       });
     }
-  }, [metadataService, song, artist, album, setState]);
+  }, [metadataService, song, artist, album, state, setState]);
+
+  // Update restore state
+
+  useEffect(() => {
+    if (restoreState) {
+      restoreState.infoType = infoType;
+    }
+  }, [restoreState, infoType]);
+  
+  useEffect(() => {
+    if (restoreState) {
+      restoreState.state = state;
+    }
+  }, [restoreState, state]);
 
   // Components
 
@@ -300,11 +370,42 @@ function MetadataPanel(props) {
     }
   }, [state, infoType, getElementClassName]);
 
+  // Keep track of scroll positions for each info type
+
+  useEffect(() => {
+    currentScrollPositionRef.current = INITIAL_SCROLL_POSITION;
+  }, [state]);
+
+  useEffect(() => {
+    currentScrollPositionRef.current = scrollPositionsRef.current[infoType] || INITIAL_SCROLL_POSITION;
+
+    return () => {
+      scrollPositionsRef.current[infoType] = currentScrollPositionRef.current;
+
+      // Update restore state
+      if (restoreState) {
+        restoreState.scrollPositions = scrollPositionsRef.current;
+      }
+    }
+  }, [infoType, restoreState]);
+
   useEffect(() => {
     if (scrollbarsRef.current) {
-      scrollbarsRef.current.osInstance().scroll(0);
+      scrollbarsRef.current.osInstance().scroll(currentScrollPositionRef.current);
     }
   }, [infoType, state]);
+
+  const getScrollPosition = () => {
+    if (scrollbarsRef.current) {
+      const scroll = scrollbarsRef.current.osInstance().scroll() || {};
+      return scroll.position || INITIAL_SCROLL_POSITION;
+    }
+    else {
+      return INITIAL_SCROLL_POSITION;
+    }
+  };
+
+  currentScrollPositionRef.current = getScrollPosition();
 
   return (
     <div className={mainClassName}>
