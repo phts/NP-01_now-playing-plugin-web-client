@@ -28,7 +28,7 @@ function NowPlayingScreen(props) {
   const {activeScreenId, switchScreen} = useContext(ScreenContext);
   const store = useContext(StoreContext);
   const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
-  const [view, setView] = useState(restoreState.view || 'basic');
+  const [view, setView] = useState(restoreState.view || props.view || 'basic');
 
   // Update restoreState on view changed
   useEffect(() => {
