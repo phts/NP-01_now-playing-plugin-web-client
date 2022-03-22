@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import Image from './Image';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import Button from './Button';
 import './MetadataPanel.scss';
@@ -19,9 +19,8 @@ const DEFAULT_INFO_CHOOSER_BUTTON_STYLES = {
 
 const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
 
-const getAvailableInfoTypes = (props) => {
+const getAvailableInfoTypes = (song, album, artist) => {
   const result = [];
-  const {song, album, artist} = props;
   if (song) {
     result.push('song');
   }
@@ -45,44 +44,83 @@ function MetadataPanel(props) {
   const { restoreStateKey, song, album, artist, placeholderImage, infoChooserButtonStyles } = props;
   const { metadataService } = useContext(ServiceContext);
   const showToast = useContext(NotificationContext);
-  const scrollbarsRef = useRef(null);
-  const currentScrollPositionRef = useRef(INITIAL_SCROLL_POSITION);
+  const scrollbarRefs = useRef({});
 
   const store = useContext(StoreContext);
-  const restoreState = restoreStateKey ? store.get(restoreStateKey, {}, true) : null;
-  const availableInfoTypes = getAvailableInfoTypes(props);
-  const getInitialInfoType = () => {
+  const restoreState = useMemo(() => {
+    const rs = restoreStateKey ? store.get(restoreStateKey, {}, true) : null;
+    if (rs) {
+      if (rs.state) {
+        // Reset stored state if props do not match or status is still pending 
+        // completion (i.e. 'idle' or 'loading')
+        const { status, forProps = {} } = rs.state;
+        if ((status === 'idle' || status === 'loading') ||
+          forProps.song !== song || 
+          forProps.album !== album || 
+          forProps.artist !== artist) {
+            rs.state = { status: 'idle' };
+        }
+      }
+      else {
+        rs.state = { status: 'idle' };
+      }
+    }
+    return rs;
+  }, [restoreStateKey, store, song, album, artist]);
+
+  const availableInfoTypes = useMemo(() => {
+    return getAvailableInfoTypes(song, album, artist);
+  }, [song, album, artist]);
+
+  // Obtain default infoType from restoreState if available
+  const getDefaultInfoType = useCallback(() => {
     if (restoreState && restoreState.infoType && availableInfoTypes.includes(restoreState.infoType)) {
       return restoreState.infoType;
     }
     return availableInfoTypes[0];
-  };
-  const getInitialState = () => {
-    if (restoreState && restoreState.state) {
-      const { status, forProps = {} } = restoreState.state;
-      return (
-        (status === 'fetched' || status === 'error') && 
-        forProps.song === song && 
-        forProps.album === album && 
-        forProps.artist === artist) 
-        ? restoreState.state : { status: 'idle' };
+  }, [restoreState, availableInfoTypes]);
+
+  const [infoType, setInfoType] = useState(getDefaultInfoType());
+
+  const [state, setState] = useState(restoreState ? restoreState.state : { status: 'idle' });
+
+  // Ref for keeping track of the scroll position for each infoType
+  const scrollPositionsRef = useRef({});
+
+  useEffect(() => {
+    if (!infoType || !availableInfoTypes.includes(infoType)) {
+      setInfoType(getDefaultInfoType());
     }
-    return { status: 'idle' };
-  };
-  const getInitialScrollPositions = () => {
-    if (restoreState && restoreState.state) {
-      const { forProps = {} } = restoreState.state;
-      return (
-        forProps.song === song && 
-        forProps.album === album && 
-        forProps.artist === artist) 
-        ? restoreState.scrollPositions : {};
+  }, [availableInfoTypes, infoType, setInfoType, getDefaultInfoType]);
+
+  // Restore state - set scrollPositions on mount / save on unmount
+  useEffect(() => {
+    // On mount, set scrollPositions from restoreState
+    if (restoreState && restoreState.scrollPositions) {
+      scrollPositionsRef.current = {...restoreState.scrollPositions};
     }
-    return {};
-  };
-  const [infoType, setInfoType] = useState(getInitialInfoType());
-  const [state, setState] = useState(getInitialState());
-  const scrollPositionsRef = useRef(getInitialScrollPositions());
+
+    return () => {
+      // On unmount, save current scrollPositions to restoreState
+      if (restoreState) {
+        restoreState.scrollPositions = {...scrollPositionsRef.current};
+      }
+    };
+  }, [restoreState]);
+
+  // Restore state - update when current infoType changes
+  useEffect(() => {
+    if (restoreState) {
+      restoreState.infoType = infoType;
+    }
+  }, [restoreState, infoType]);
+
+  // Restore state - update when current state changes
+  useEffect(() => {
+    if (restoreState) {
+      restoreState.state = state;
+    }
+  }, [restoreState, state]);
 
   const baseClassName = props.styles ? props.styles.baseClassName : null;
   const stylesBundle = baseClassName ? props.styles.bundle : null;
@@ -208,20 +246,6 @@ function MetadataPanel(props) {
     }
   }, [metadataService, song, artist, album, state, setState]);
 
-  // Update restore state
-
-  useEffect(() => {
-    if (restoreState) {
-      restoreState.infoType = infoType;
-    }
-  }, [restoreState, infoType]);
-  
-  useEffect(() => {
-    if (restoreState) {
-      restoreState.state = state;
-    }
-  }, [restoreState, state]);
-
   // Components
 
   const getInfoTypeChooser = useCallback(() => {
@@ -289,7 +313,14 @@ function MetadataPanel(props) {
     }
   }, [placeholderImage, infoType, state]);
 
-  const getInfoContents = useCallback(() => {
+  // OverlayScrollbarsComponent handler for keeping track of scroll position for current infoType
+  const onInfoScrolled = (scrollbarEl, scrolledInfoType) => {
+    scrollPositionsRef.current[scrolledInfoType] = scrollbarEl.scroll().position;
+  };
+
+  const infoContents = useMemo(() => {
+    scrollbarRefs.current = {};
+
     if (state.status === 'idle') {
       return null;
     }
@@ -298,6 +329,7 @@ function MetadataPanel(props) {
       const infoClassNames = classNames(
         getElementClassName('info'),
         getElementClassName('info--loading'),
+        getElementClassName('info--active'),
         'no-swipe');
       return (
         <div className={infoClassNames}>
@@ -307,105 +339,109 @@ function MetadataPanel(props) {
       );
     }
 
-    let contents = null, isEmpty = false;
-    if (state.status === 'fetched') {
-      if (infoType === 'song' || infoType === 'artist' || infoType === 'album') {
-        const description = state.info[infoType] ? state.info[infoType].description : null;
-        isEmpty = !description || description === '?';
-        contents = !isEmpty ? description : `${infoType} description unavailable`;
-      }
-      else if (infoType === 'lyrics') {
-        isEmpty = !state.info.song || !state.info.song.embedContents || state.info.song.embedContents.contentParts.length === 0;
-        if (!isEmpty) {
-          // Strip links first
-          const embedContents = state.info.song.embedContents.contentParts.join();
-          const wrapper = document.createElement('div');
-          wrapper.innerHTML = embedContents;
-          const anchors = Array.from(wrapper.getElementsByTagName('a'));
-          for (const anchor of anchors) {
-            anchor.replaceWith(...anchor.childNodes);
-          }
-
-          contents = <div 
-            className={getElementClassName('lyrics')} 
-            dangerouslySetInnerHTML={{__html: wrapper.innerHTML}} /> 
+    return availableInfoTypes.map((forInfoType) => {
+      let contents = null, isEmpty = false;
+      if (state.status === 'fetched') {
+        if (forInfoType === 'song' || forInfoType === 'artist' || forInfoType === 'album') {
+          const description = state.info[forInfoType] ? state.info[forInfoType].description : null;
+          isEmpty = !description || description === '?';
+          contents = !isEmpty ? description : `${forInfoType} description unavailable`;
         }
-        else {
-          contents = `${infoType} unavailable`;
-        }
-      }
-    }
-    else if (state.status === 'error') {
-      isEmpty = true;
-      contents = state.error.message;
-    }
-    
-    const infoClassNames = classNames(
-      getElementClassName('info'),
-      isEmpty ? getElementClassName('info--empty') : null,
-      'no-swipe');
-
-    if (!isEmpty) {
-      const supportsHover = !window.matchMedia('(hover: none)').matches;
-      return (
-        <OverlayScrollbarsComponent
-          ref={scrollbarsRef}
-          className={infoClassNames}
-          options={{
-            scrollbars: {
-              autoHide: supportsHover ? 'leave' : 'scroll'
+        else if (forInfoType === 'lyrics') {
+          isEmpty = !state.info.song || !state.info.song.embedContents || state.info.song.embedContents.contentParts.length === 0;
+          if (!isEmpty) {
+            // Strip links first
+            const embedContents = state.info.song.embedContents.contentParts.join();
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = embedContents;
+            const anchors = Array.from(wrapper.getElementsByTagName('a'));
+            for (const anchor of anchors) {
+              anchor.replaceWith(...anchor.childNodes);
             }
-          }}>
-          {contents}
-        </OverlayScrollbarsComponent>
-      );  
-    }
-    else {
-      return (
-        <div className={infoClassNames}>
-          <span className='material-icons'>sentiment_very_dissatisfied</span>
-          <div>{contents}</div>
-        </div>
-      );
-    }
-  }, [state, infoType, getElementClassName]);
 
-  // Keep track of scroll positions for each info type
+            contents = <div 
+              className={getElementClassName('lyrics')} 
+              dangerouslySetInnerHTML={{__html: wrapper.innerHTML}} /> 
+          }
+          else {
+            contents = `${forInfoType} unavailable`;
+          }
+        }
+      }
+      else if (state.status === 'error') {
+        isEmpty = true;
+        contents = state.error.message;
+      }
+      
+      const infoClassNames = classNames(
+        getElementClassName('info'),
+        isEmpty ? getElementClassName('info--empty') : null,
+        'no-swipe');
+      const infoId = `info-${forInfoType}`;
 
+      if (!isEmpty) {
+        const supportsHover = !window.matchMedia('(hover: none)').matches;
+        return (
+          <OverlayScrollbarsComponent
+            key={forInfoType}
+            id={infoId}
+            ref={el => {scrollbarRefs.current[forInfoType] = el}}
+            className={infoClassNames}
+            options={{
+              scrollbars: {
+                autoHide: supportsHover ? 'leave' : 'scroll'
+              },
+              callbacks: {
+                onScrollStop: function() {
+                  onInfoScrolled(this, forInfoType);
+                }
+              }
+            }}>
+            {contents}
+          </OverlayScrollbarsComponent>
+        );  
+      }
+      else {
+        return (
+          <div key={forInfoType} id={infoId} className={infoClassNames}>
+            <span className='material-icons'>sentiment_very_dissatisfied</span>
+            <div>{contents}</div>
+          </div>
+        );
+      }
+    });
+  }, [availableInfoTypes, state, getElementClassName]);
+
+  // Toggle 'active' class on infoType or state change
   useEffect(() => {
-    currentScrollPositionRef.current = INITIAL_SCROLL_POSITION;
-  }, [state]);
-
-  useEffect(() => {
-    currentScrollPositionRef.current = scrollPositionsRef.current[infoType] || INITIAL_SCROLL_POSITION;
+    const infoId = `info-${infoType}`;
+    const el = document.getElementById(infoId);
+    if (el) {
+      el.classList.add(getElementClassName('info--active'));
+    }
 
     return () => {
-      scrollPositionsRef.current[infoType] = currentScrollPositionRef.current;
-
-      // Update restore state
-      if (restoreState) {
-        restoreState.scrollPositions = scrollPositionsRef.current;
+      if (el) {
+        el.classList.remove(getElementClassName('info--active'));
       }
+    };
+  }, [state, infoType, getElementClassName]);
+
+  // Restore scroll position when infoType changes
+  useEffect(() => {
+    const scrollbarEl = scrollbarRefs.current[infoType] ? scrollbarRefs.current[infoType].osInstance() : null;
+    if (scrollbarEl) {
+      scrollbarEl.update(true); // Need this for Chromium-based browsers
+      scrollbarEl.scroll(scrollPositionsRef.current[infoType] || INITIAL_SCROLL_POSITION);
     }
-  }, [infoType, restoreState]);
+  }, [infoType]);
 
   useEffect(() => {
-    if (scrollbarsRef.current) {
-      scrollbarsRef.current.osInstance().scroll(currentScrollPositionRef.current);
+    return () => {
+      // Reset scrollPositions when initial state changes.
+      scrollPositionsRef.current = {};
     }
-  }, [infoType, state]);
-
-  const getScrollPosition = () => {
-    if (scrollbarsRef.current) {
-      const scroll = scrollbarsRef.current.osInstance().scroll() || {};
-      return scroll.position || INITIAL_SCROLL_POSITION;
-    }
-    else {
-      return INITIAL_SCROLL_POSITION;
-    }
-  };
-
-  currentScrollPositionRef.current = getScrollPosition();
+  }, [state]);
 
   return (
     <div className={mainClassName}>
@@ -414,7 +450,9 @@ function MetadataPanel(props) {
         <div className={getElementClassName('art')}>
           <Image className={getElementClassName('artImage')} src={getImage()} />
         </div>
-        {getInfoContents()}
+        <div className={getElementClassName('infoWrapper')}>
+          {infoContents}
+        </div>
       </div>
     </div>
   );
