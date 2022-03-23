@@ -16,7 +16,7 @@ import { eventPathHasNoSwipe } from '../../utils/event';
 import { useSwipeable } from 'react-swipeable';
 import { ACTION_PANEL, ADD_TO_PLAYLIST_DIALOG, METADATA_MODAL, WEB_RADIO_DIALOG } from '../../modals/CommonModals';
 import { ServiceContext } from '../../contexts/ServiceProvider';
-import { isPlayOnDirectClick } from './helper';
+import { getServiceByName, getServiceByUri, isPlayOnDirectClick } from './helper';
 import { StoreContext } from '../../contexts/StoreProvider';
 
 const HOME = {
@@ -93,9 +93,11 @@ function BrowseScreen(props) {
   }, [restoreState, listView]);
 
   useEffect(() => {
-    // Restore using scrollPosition from restoreState (which can be ignored
-    // if browseService has been reset)
-    browseService.restoreCurrentDisplayed(restoreState.scrollPosition);
+    if (!props.location) {
+      // Restore using scrollPosition from restoreState (which can be ignored
+      // if browseService has been reset)
+      browseService.restoreCurrentDisplayed(restoreState.scrollPosition);
+    }
 
     return (() => {
       // On unmount, save scrollPosition to restoreState
@@ -121,14 +123,47 @@ function BrowseScreen(props) {
     browseService.browse(location, refresh);
   }, [browseService]);
 
-  const search = useCallback((query) => {
-    browseService.search(query);
+  const search = useCallback((query, service) => {
+    browseService.search(query, service);
   }, [browseService]);
 
   const goBack = useCallback(() => {
     browseService.goBack();
   }, [browseService]);
 
+  // Handle props.location
+
+  useEffect(() => {
+    if (!props.location) {
+      return;
+    }
+    const {type, params} = props.location;
+    if (type === 'browse') {
+      const {uri} = params;
+      if (!uri) {
+        browse(HOME);
+      }
+      else {
+        const browseLocation = {
+          type: 'browse',
+          service: getServiceByUri(uri, browseService.getBrowseSources()),
+          uri
+        };
+        browse(browseLocation);
+      }
+    }
+    else if (type === 'search') {
+      const {query, service: serviceName} = params;
+      const service = getServiceByName(serviceName, browseService.getBrowseSources());
+      search(query, service);
+    }
+    else if (type === 'currentPlaying') {
+      const {type: currentPlayingType, playerState} = params;
+      if (currentPlayingType && playerState) {
+        browseService.gotoCurrentPlaying(currentPlayingType, playerState);
+      }
+    }
+  }, [props.location, browseService, browse, search]);
 
   // Toolbar actions
 

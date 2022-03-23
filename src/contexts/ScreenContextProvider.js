@@ -103,7 +103,8 @@ const ScreenContextProvider = ({ children }) => {
           (targetState.underFloat ? 'underFloatExit' : 'fadeIn'),
         activeClassName: opts.activeClassName || 'Screen--active',
         underFloat: false,
-        enteringFromUnderFloat: targetState.underFloat
+        enteringFromUnderFloat: targetState.underFloat,
+        screenProps: opts.screenProps
       }
     };
     if (currentActiveScreenId) {
@@ -213,7 +214,8 @@ const ScreenContextProvider = ({ children }) => {
               {cloneElement(
                 child, {
                   className: childClassNames,
-                  style: {'zIndex': screenZIndexes[screenId]}
+                  style: {'zIndex': screenZIndexes[screenId]},
+                  ...(state.screenProps)
                 })}
           </ContextualCSSTransition>
         )

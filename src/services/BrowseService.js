@@ -1,5 +1,5 @@
 import EventEmitter from "eventemitter3";
-import { isHome } from "../screens/browse/helper";
+import { getServiceByName, isHome } from "../screens/browse/helper";
 
 const HOME = {
   type: 'browse',
@@ -234,7 +234,10 @@ export default class BrowseService {
     }
   }
 
-  search(query) {
+  // There is a difference between service = null and service = undefined:
+  // - null: search all services
+  // - undefined: search service as provided by currentDisplayed
+  search(query, service) {
     if (!this.socket) {
       return;
     }
@@ -249,12 +252,10 @@ export default class BrowseService {
       query,
       service: null
     };
-    if (this.currentDisplayed) {
-      const service = this.currentDisplayed.location.service;
-      if (service) {
-        payload.service = service.name;
-        searchLocation.service = service;
-      }
+    const _service = service !== undefined ? service : (this.currentDisplayed ? this.currentDisplayed.location.service : null);
+    if (_service) {
+      payload.service = _service.name;
+      searchLocation.service = _service;
     }
     this.currentLoading = searchLocation;
     this._pushLoading(searchLocation);
@@ -307,7 +308,7 @@ export default class BrowseService {
     const gotoLocation = {
       type: 'goto',
       params: payload,
-      service: null
+      service: getServiceByName(playerState.service, this.getBrowseSources())
     };
     this.currentLoading = gotoLocation;
     this._pushLoading();

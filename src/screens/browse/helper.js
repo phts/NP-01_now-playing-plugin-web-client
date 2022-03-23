@@ -16,6 +16,40 @@ export function isHome(location) {
       (location.uri === '/' || location.uri === '');
 }
 
+export function getServiceByUri(uri, browseSources) {
+  if (!uri) {
+    return null;
+  }
+
+  const matchedSource = browseSources.find(source => uri.startsWith(source.uri));
+  if (matchedSource) {
+    return {
+      name: matchedSource.plugin_name,
+      prettyName: matchedSource.plugin_name === 'mpd' ? 'Music Library' : matchedSource.name
+    };
+  }
+  else {
+    return null;
+  }
+}
+
+export function getServiceByName(name, browseSources) {
+  if (!name) {
+    return null;
+  }
+
+  const matchedSource = browseSources.find(source => name === source.plugin_name);
+  if (matchedSource) {
+    return {
+      name: matchedSource.plugin_name,
+      prettyName: matchedSource.plugin_name === 'mpd' ? 'Music Library' : matchedSource.name
+    };
+  }
+  else {
+    return null;
+  }
+}
+
 // Based on:
 // https://github.com/volumio/Volumio2-UI/blob/master/src/app/browse-music/browse-music.controller.js
 export function hasPlayButton(item) {

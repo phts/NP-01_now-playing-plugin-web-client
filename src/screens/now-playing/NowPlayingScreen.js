@@ -21,7 +21,6 @@ const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
 function NowPlayingScreen(props) {
   const playerState = useContext(PlayerStateContext);
-  const {browseService} = useContext(ServiceContext);
   const {openModal, disableModal, enableModal} = useContext(ModalStateContext);
   const {customStyles} = useContext(StylesContext);
   const screenEl = useRef(null);
@@ -203,10 +202,18 @@ function NowPlayingScreen(props) {
         break;
       case 'gotoArtist':
       case 'gotoAlbum':
-        browseService.gotoCurrentPlaying(action === 'gotoArtist' ? 'artist' : 'album', playerState);
         switchScreen({
           screenId: 'Browse',
-          enterTransition: 'slideLeft'
+          enterTransition: 'slideLeft',
+          screenProps: {
+            location: {
+              type: 'currentPlaying',
+              params: {
+                type: action === 'gotoArtist' ? 'artist' : 'album',
+                playerState
+              }
+            }
+          }
         });
         break;
       default:
