@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Direction, Range } from "react-range";
-import { usePlayerState } from "../contexts/PlayerStateProvider";
+import { usePlayerState } from "../contexts/PlayerProvider";
 import { useSocket } from "../contexts/SocketProvider";
 import Button from "./Button";
 import styles from "./VolumeSlider.module.scss";

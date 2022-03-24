@@ -1,6 +1,5 @@
 import styles from './QueueScreen.module.scss';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { usePlayerState } from '../../contexts/PlayerStateProvider';
 import classNames from 'classnames';
 import { useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
@@ -12,6 +11,7 @@ import { useQueueService } from '../../contexts/ServiceProvider';
 import { ADD_TO_PLAYLIST_DIALOG } from '../../modals/CommonModals';
 import { useModals } from '../../contexts/ModalStateProvider';
 import { useStore } from '../../contexts/StoreProvider';
+import { usePlayerState } from '../../contexts/PlayerProvider';
 
 const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
 const RESTORE_STATE_KEY = 'QueueScreen.restoreState';

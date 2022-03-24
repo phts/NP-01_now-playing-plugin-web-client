@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { useSocket } from "./SocketProvider";
+import { createContext, useEffect, useState } from "react";
+import { useSocket } from "../SocketProvider";
 
 const PlayerStateContext = createContext();
 
@@ -30,6 +30,4 @@ const PlayerStateProvider = ({ children }) => {
   );
 };
 
-const usePlayerState = () => useContext(PlayerStateContext);
-
-export { usePlayerState, PlayerStateProvider };
+export { PlayerStateContext, PlayerStateProvider };

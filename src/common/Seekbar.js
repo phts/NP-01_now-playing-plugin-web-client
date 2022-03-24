@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Range } from "react-range";
-import { usePlayerSeek } from "../contexts/PlayerSeekProvider";
+import { usePlayerSeek } from "../contexts/PlayerProvider";
 import { millisecondsToString } from "../utils/track";
 import './Seekbar.scss';
 

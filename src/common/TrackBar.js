@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useModals } from '../contexts/ModalStateProvider';
-import { usePlayerState } from '../contexts/PlayerStateProvider';
+import { usePlayerState } from '../contexts/PlayerProvider';
 import { useScreens } from '../contexts/ScreenContextProvider';
 import { VOLUME_INDICATOR } from '../modals/CommonModals';
 import { eventPathHasNoSwipe } from '../utils/event';

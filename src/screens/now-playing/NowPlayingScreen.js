@@ -1,7 +1,6 @@
 import styles from './NowPlayingScreen.module.scss';
 import Dock from '../../common/Dock';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { usePlayerState } from '../../contexts/PlayerStateProvider';
 import Button from '../../common/Button';
 import { useModals } from '../../contexts/ModalStateProvider';
 import classNames from 'classnames';
@@ -15,6 +14,7 @@ import BasicView from './BasicView';
 import InfoView from './InfoView';
 import { useStore } from '../../contexts/StoreProvider';
 import { useCustomStyles } from '../../contexts/SettingsProvider';
+import { usePlayerState } from '../../contexts/PlayerProvider';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 

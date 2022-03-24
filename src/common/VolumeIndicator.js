@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useCallback, useMemo } from "react";
-import { usePlayerState } from "../contexts/PlayerStateProvider";
+import { usePlayerState } from "../contexts/PlayerProvider";
 import "./VolumeIndicator.scss";
 
 function VolumeIndicator(props) {

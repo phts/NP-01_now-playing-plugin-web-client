@@ -3,12 +3,12 @@ import './Background.scss';
 import './animations.scss';
 import { sanitizeImageUrl } from "../utils/track";
 import { useAppContext } from "../contexts/AppContextProvider";
-import { usePlayerState } from "../contexts/PlayerStateProvider";
 import Image from "./Image";
 import { preloadImage } from "../utils/image";
 import classNames from "classnames";
 import ContextualCSSTransition from "./ContextualCSSTransition";
 import { useCustomStyles } from "../contexts/SettingsProvider";
+import { usePlayerState } from "../contexts/PlayerProvider";
 
 /**
    * Transition state phases:

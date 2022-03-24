@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useModals } from "../contexts/ModalStateProvider";
-import { usePlayerState } from "../contexts/PlayerStateProvider";
+import { usePlayerState } from "../contexts/PlayerProvider";
 import { VOLUME_INDICATOR } from "../modals/CommonModals";
 
 const AUTO_CLOSE = 1500;
