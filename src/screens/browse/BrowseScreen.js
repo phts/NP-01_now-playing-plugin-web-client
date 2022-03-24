@@ -105,7 +105,7 @@ function BrowseScreen(props) {
       // On unmount, save scrollPosition to restoreState
       restoreState.scrollPosition = scrollPositionRef.current;
     });
-  }, [browseService, restoreState]);
+  }, [browseService, restoreState, props.location]);
 
   const getScrollPosition = () => {
     if (scrollbarsRef.current) {
