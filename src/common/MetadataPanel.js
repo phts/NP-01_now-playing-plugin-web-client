@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 import Image from './Image';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import Button from './Button';
 import './MetadataPanel.scss';
-import { ServiceContext } from '../contexts/ServiceProvider';
-import { NotificationContext } from '../contexts/NotificationProvider';
-import { StoreContext } from '../contexts/StoreProvider';
+import { useMetadataService } from '../contexts/ServiceProvider';
+import { useToasts } from '../contexts/NotificationProvider';
+import { useStore } from '../contexts/StoreProvider';
 
 const DEFAULT_INFO_CHOOSER_BUTTON_STYLES = {
   baseClassName: 'MetadataPanelInfoChooserButton',
@@ -42,11 +42,11 @@ const getAvailableInfoTypes = (song, album, artist) => {
 
 function MetadataPanel(props) {
   const { restoreStateKey, song, album, artist, placeholderImage, infoChooserButtonStyles } = props;
-  const { metadataService } = useContext(ServiceContext);
-  const showToast = useContext(NotificationContext);
+  const metadataService = useMetadataService();
+  const showToast = useToasts();
   const scrollbarRefs = useRef({});
 
-  const store = useContext(StoreContext);
+  const store = useStore();
   const restoreState = useMemo(() => {
     const rs = restoreStateKey ? store.get(restoreStateKey, {}, true) : null;
     if (rs) {

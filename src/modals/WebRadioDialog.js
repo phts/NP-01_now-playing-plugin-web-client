@@ -1,14 +1,14 @@
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useRef } from "react";
 import Button from "../common/Button";
 import styles from './WebRadioDialog.module.scss';
-import { ServiceContext } from "../contexts/ServiceProvider";
+import { usePlaylistService } from "../contexts/ServiceProvider";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import TextField from "../common/TextField";
 import ContextualModal from "../common/ContextualModal";
 
 function WebRadioDialog(props) {
 
-  const { playlistService } = useContext(ServiceContext);
+  const playlistService= usePlaylistService();
   const overlayEl = useRef(null);
   const nameInputRef = useRef(null);
   const urlInputRef = useRef(null);

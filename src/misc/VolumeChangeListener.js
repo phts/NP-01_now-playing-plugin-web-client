@@ -1,13 +1,13 @@
-import { useContext, useEffect, useRef } from "react";
-import { ModalStateContext } from "../contexts/ModalStateProvider";
-import { PlayerStateContext } from "../contexts/PlayerStateProvider";
+import { useEffect, useRef } from "react";
+import { useModals } from "../contexts/ModalStateProvider";
+import { usePlayerState } from "../contexts/PlayerStateProvider";
 import { VOLUME_INDICATOR } from "../modals/CommonModals";
 
 const AUTO_CLOSE = 1500;
 
 function VolumeChangeListener() {
-  const {openModal} = useContext(ModalStateContext);
-  const playerState = useContext(PlayerStateContext);
+  const {openModal} = useModals();
+  const playerState = usePlayerState();
   const oldVolumeRef = useRef(null);
 
   useEffect(() => {

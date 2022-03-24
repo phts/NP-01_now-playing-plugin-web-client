@@ -1,14 +1,14 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { requestPluginApiEndpoint } from "../utils/api";
 import { getInitialCustomStyles } from "../utils/init";
-import { AppContext } from "./AppContextProvider";
-import { SocketContext } from "./SocketProvider";
+import { useAppContext } from "./AppContextProvider";
+import { useSocket } from "./SocketProvider";
 
 const StylesContext = createContext();
 
 const StylesProvider = ({ children }) => {
-  const {socket} = useContext(SocketContext);
-  const {pluginInfo} = useContext(AppContext);
+  const {socket} = useSocket();
+  const {pluginInfo} = useAppContext()
   const [customStyles, setCustomStyles] = useState(getInitialCustomStyles());
 
   useEffect(() => {
@@ -50,4 +50,6 @@ const StylesProvider = ({ children }) => {
   );
 };
 
-export { StylesContext, StylesProvider };
+const useCustomStyles = () => useContext(StylesContext);
+
+export { useCustomStyles, StylesProvider };

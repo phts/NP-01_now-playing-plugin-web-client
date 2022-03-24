@@ -1,10 +1,10 @@
-import { useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useSwipeable } from "react-swipeable";
 import Button from "../common/Button";
 import ScreenSwitcher from "../common/ScreenSwitcher";
 import VolumeSlider from "../common/VolumeSlider";
-import { ModalStateContext } from "../contexts/ModalStateProvider";
-import { ScreenContext } from "../contexts/ScreenContextProvider";
+import { useModals } from "../contexts/ModalStateProvider";
+import { useScreens } from "../contexts/ScreenContextProvider";
 import { eventPathHasNoSwipe } from "../utils/event";
 import styles from './ActionPanel.module.scss';
 import { VOLUME_INDICATOR } from "./CommonModals";
@@ -13,8 +13,8 @@ import ContextualModal from "../common/ContextualModal";
 
 function ActionPanel(props) {
 
-  const {disableModal, enableModal} = useContext(ModalStateContext);
-  const {switchScreen} = useContext(ScreenContext);
+  const {disableModal, enableModal} = useModals();
+  const {switchScreen} = useScreens();
   const overlayEl = useRef(null);
   const {closePanel} = props;
 

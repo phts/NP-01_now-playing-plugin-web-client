@@ -1,13 +1,13 @@
 import classNames from "classnames";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Range } from "react-range";
-import { PlayerSeekContext } from "../contexts/PlayerSeekProvider";
+import { usePlayerSeek } from "../contexts/PlayerSeekProvider";
 import { millisecondsToString } from "../utils/track";
 import './Seekbar.scss';
 
 function Seekbar(props) {
   const playerState = props.playerState;
-  const {currentSeekPosition, seekTo} = useContext(PlayerSeekContext);
+  const {currentSeekPosition, seekTo} = usePlayerSeek();
   const [displaySeek, setDisplaySeek] = useState(currentSeekPosition);
   const isSeekingRef = useRef(false);
 

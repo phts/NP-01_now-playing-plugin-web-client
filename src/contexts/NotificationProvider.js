@@ -1,4 +1,4 @@
-import { createContext, useCallback } from "react";
+import { createContext, useCallback, useContext } from "react";
 import toaster from 'toasted-notes' ;
 import Toast from '../common/Toast';
 import './NotificationProvider.scss';
@@ -25,4 +25,6 @@ const NotificationProvider = ({ children }) => {
   );
 };
 
-export { NotificationContext, NotificationProvider };
+const useToasts = () => useContext(NotificationContext);
+
+export { useToasts, NotificationProvider };

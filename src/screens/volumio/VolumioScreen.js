@@ -1,12 +1,11 @@
 import classNames from 'classnames';
-import { useContext } from 'react';
-import { AppContext } from '../../contexts/AppContextProvider';
-import { ScreenContext } from '../../contexts/ScreenContextProvider';
+import { useAppContext } from '../../contexts/AppContextProvider';
+import { useScreens } from '../../contexts/ScreenContextProvider';
 import styles from './VolumioScreen.module.scss';
 
 function VolumioScreen(props) {
-  const {host} = useContext(AppContext);
-  const {exitActiveScreen} = useContext(ScreenContext);
+  const {host} = useAppContext();
+  const {exitActiveScreen} = useScreens();
 
   const layoutClasses = classNames([
     styles.Layout,

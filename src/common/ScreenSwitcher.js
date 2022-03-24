@@ -1,10 +1,10 @@
-import { useCallback, useContext } from 'react';
-import { ScreenContext } from '../contexts/ScreenContextProvider';
+import { useCallback } from 'react';
+import { useScreens } from '../contexts/ScreenContextProvider';
 import Button from './Button';
 import styles from './ScreenSwitcher.module.scss';
 
 function ScreenSwitcher(props) {
-  const {activeScreenId, switchScreen} = useContext(ScreenContext);
+  const {activeScreenId, switchScreen} = useScreens();
   
   const onSwitch = props.onSwitch;
   const handleSwitchClicked = useCallback((e) => {

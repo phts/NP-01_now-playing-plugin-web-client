@@ -1,13 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { TrackTimer } from "../utils/track";
-import { PlayerStateContext } from "./PlayerStateProvider";
-import { SocketContext } from "./SocketProvider";
+import { usePlayerState } from "./PlayerStateProvider";
+import { useSocket } from "./SocketProvider";
 
 const PlayerSeekContext = createContext();
 
 const PlayerSeekProvider = ({ children }) => {
-  const {socket} = useContext(SocketContext);
-  const playerState = useContext(PlayerStateContext);
+  const {socket} = useSocket();
+  const playerState = usePlayerState();
   const [currentSeekPosition, setCurrentSeekPosition] = useState(0);
   const trackTimer = useRef(new TrackTimer());
 
@@ -44,4 +44,6 @@ const PlayerSeekProvider = ({ children }) => {
   );
 };
 
-export { PlayerSeekContext, PlayerSeekProvider };
+const usePlayerSeek = () => useContext(PlayerSeekContext);
+
+export { usePlayerSeek, PlayerSeekProvider };

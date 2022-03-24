@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Modal from "react-modal/lib/components/Modal";
-import { AppContext } from "./contexts/AppContextProvider";
-import { SocketContext } from "./contexts/SocketProvider";
+import { useAppContext } from "./contexts/AppContextProvider";
+import { useSocket } from "./contexts/SocketProvider";
 import io from "socket.io-client";
 
 const refresh = () => {
@@ -9,8 +9,8 @@ const refresh = () => {
 };
 
 function AppStartup() {
-  const {host, pluginInfo, setPluginInfo} = useContext(AppContext);
-  const {socket, setSocket} = useContext(SocketContext);
+  const {host, pluginInfo, setPluginInfo} = useAppContext();
+  const {socket, setSocket} = useSocket();
   const currentPluginInfo = useRef(null);
 
   useEffect(() => {

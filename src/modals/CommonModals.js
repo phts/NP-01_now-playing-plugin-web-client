@@ -1,5 +1,5 @@
-import { useCallback, useContext } from "react";
-import { ModalStateContext } from "../contexts/ModalStateProvider";
+import { useCallback } from "react";
+import { useModals } from "../contexts/ModalStateProvider";
 import ActionPanel from "./ActionPanel";
 import AddToPlaylistDialog from "./AddToPlaylistDialog";
 import MetadataModal from "./MetadataModal";
@@ -13,7 +13,7 @@ export const WEB_RADIO_DIALOG = 'webRadioDialog';
 export const METADATA_MODAL = 'metadataModal';
 
 function CommonModals(props) {
-  const { isModalOpened, isModalDisabled, closeModal, getModalData } = useContext(ModalStateContext);
+  const { isModalOpened, isModalDisabled, closeModal, getModalData } = useModals();
   const {realVh} = props;
   
   const closeActionPanel = useCallback(() => {

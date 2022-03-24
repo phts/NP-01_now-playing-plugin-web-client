@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const SocketContext = createContext();
 
@@ -12,4 +12,6 @@ const SocketProvider = ({ children }) => {
   );
 };
 
-export { SocketContext, SocketProvider };
+const useSocket = () => useContext(SocketContext);
+
+export { useSocket, SocketProvider };

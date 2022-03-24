@@ -1,14 +1,14 @@
 import classNames from "classnames";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Direction, Range } from "react-range";
-import { PlayerStateContext } from "../contexts/PlayerStateProvider";
-import { SocketContext } from "../contexts/SocketProvider";
+import { usePlayerState } from "../contexts/PlayerStateProvider";
+import { useSocket } from "../contexts/SocketProvider";
 import Button from "./Button";
 import styles from "./VolumeSlider.module.scss";
 
 function VolumeSlider(props) {
-  const {socket} = useContext(SocketContext);
-  const playerState = useContext(PlayerStateContext);
+  const {socket} = useSocket();
+  const playerState = usePlayerState();
   const changeVolumeTimer = useRef(null);
   const changeVolumeValue = useRef(playerState.volume);
   const [displayVolume, setDisplayVolume] = useState(playerState.volume);

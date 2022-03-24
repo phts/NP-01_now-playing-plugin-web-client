@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { SocketContext } from "./SocketProvider";
+import { useSocket } from "./SocketProvider";
 
 const PlayerStateContext = createContext();
 
 const PlayerStateProvider = ({ children }) => {
 
   const [playerState, setPlayerState] = useState({});
-  const {socket} = useContext(SocketContext);
+  const {socket} = useSocket();
 
   useEffect(() => {
     if (socket) {
@@ -30,4 +30,6 @@ const PlayerStateProvider = ({ children }) => {
   );
 };
 
-export { PlayerStateContext, PlayerStateProvider };
+const usePlayerState = () => useContext(PlayerStateContext);
+
+export { usePlayerState, PlayerStateProvider };

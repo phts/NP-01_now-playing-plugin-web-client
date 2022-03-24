@@ -1,4 +1,4 @@
-import { createContext, useMemo } from "react";
+import { createContext, useContext, useMemo } from "react";
 import Store from "../utils/store";
 
 const StoreContext = createContext();
@@ -13,4 +13,6 @@ const StoreProvider = ({ children }) => {
   );
 };
 
-export { StoreContext, StoreProvider };
+const useStore = () => useContext(StoreContext);
+
+export { useStore, StoreProvider };

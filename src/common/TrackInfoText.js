@@ -1,11 +1,11 @@
-import { useCallback, useContext } from 'react';
-import { AppContext } from '../contexts/AppContextProvider';
+import { useCallback } from 'react';
+import { useAppContext } from '../contexts/AppContextProvider';
 import './TrackInfoText.scss';
 import { getFormatIcon, getFormatResolution } from '../utils/track';
 import classNames from 'classnames';
 
 function TrackInfoText(props) {
-  const { host } = useContext(AppContext);
+  const { host } = useAppContext();
   const playerState = props.playerState;
   const title = playerState.title || '';
   const artist = playerState.artist || '';

@@ -1,10 +1,10 @@
 import classNames from "classnames";
-import { useCallback, useContext, useMemo } from "react";
-import { PlayerStateContext } from "../contexts/PlayerStateProvider";
+import { useCallback, useMemo } from "react";
+import { usePlayerState } from "../contexts/PlayerStateProvider";
 import "./VolumeIndicator.scss";
 
 function VolumeIndicator(props) {
-  const playerState = useContext(PlayerStateContext);
+  const playerState = usePlayerState();
   const isMuted = playerState.mute !== undefined ? playerState.mute : false;
   const volume = playerState.volume || 0;
 

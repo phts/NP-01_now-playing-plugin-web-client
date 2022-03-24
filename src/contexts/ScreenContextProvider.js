@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { Children, cloneElement, createContext, isValidElement, useCallback, useMemo, useReducer, useRef } from "react";
+import { Children, cloneElement, createContext, isValidElement, useCallback, useContext, useMemo, useReducer, useRef } from "react";
 import Background from "../common/Background";
 import ContextualCSSTransition from "../common/ContextualCSSTransition";
 import TrackBar from "../common/TrackBar";
@@ -286,4 +286,6 @@ const ScreenContextProvider = ({ children }) => {
   );
 };
 
-export { ScreenContext, ScreenContextProvider };
+const useScreens = () => useContext(ScreenContext);
+
+export { useScreens, ScreenContextProvider };

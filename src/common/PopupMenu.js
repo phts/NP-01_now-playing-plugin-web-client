@@ -1,12 +1,12 @@
 import './PopupMenu.scss';
 import classNames from 'classnames';
 import { ControlledMenu, MenuDivider, MenuHeader, MenuItem, useMenuState } from '@szhsin/react-menu';
-import { useCallback, useContext, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Button from './Button';
-import { AppContext } from '../contexts/AppContextProvider';
+import { useAppContext } from '../contexts/AppContextProvider';
 
 function PopupMenu(props) {
-  const {isKiosk} = useContext(AppContext);
+  const {isKiosk} = useAppContext();
   const disableTransitions = isKiosk;
   const {menuItems, onMenuItemClick, onMenuOverlay} = props;
   const menuButtonRef = useRef();

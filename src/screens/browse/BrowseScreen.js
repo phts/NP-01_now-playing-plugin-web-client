@@ -1,23 +1,23 @@
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import 'overlayscrollbars/css/OverlayScrollbars.css';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { SocketContext } from '../../contexts/SocketProvider';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSocket } from '../../contexts/SocketProvider';
 import styles from './BrowseScreen.module.scss';
 import Section from './Section';
 import 'font-awesome/css/font-awesome.min.css';
 import FakeLoadingBar from './FakeLoadingBar';
 import Toolbar from './Toolbar';
-import { ModalStateContext } from '../../contexts/ModalStateProvider';
+import { useModals } from '../../contexts/ModalStateProvider';
 import Header from './Header';
-import { NotificationContext } from '../../contexts/NotificationProvider';
-import { ScreenContext } from '../../contexts/ScreenContextProvider';
+import { useToasts } from '../../contexts/NotificationProvider';
+import { useScreens } from '../../contexts/ScreenContextProvider';
 import classNames from 'classnames';
 import { eventPathHasNoSwipe } from '../../utils/event';
 import { useSwipeable } from 'react-swipeable';
 import { ACTION_PANEL, ADD_TO_PLAYLIST_DIALOG, METADATA_MODAL, WEB_RADIO_DIALOG } from '../../modals/CommonModals';
-import { ServiceContext } from '../../contexts/ServiceProvider';
+import { useBrowseService, usePlaylistService, useQueueService } from '../../contexts/ServiceProvider';
 import { getServiceByName, getServiceByUri, isPlayOnDirectClick } from './helper';
-import { StoreContext } from '../../contexts/StoreProvider';
+import { useStore } from '../../contexts/StoreProvider';
 
 const HOME = {
   type: 'browse',
@@ -29,18 +29,20 @@ const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
 const RESTORE_STATE_KEY = 'BrowseScreen.restoreState';
 
 function BrowseScreen(props) {
-  const store = useContext(StoreContext);
+  const store = useStore();
   const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
-  const {socket} = useContext(SocketContext);
-  const showToast = useContext(NotificationContext);
-  const { openModal } = useContext(ModalStateContext);
-  const { playlistService, queueService, browseService } = useContext(ServiceContext);
+  const {socket} = useSocket();
+  const showToast = useToasts();
+  const { openModal } = useModals();
+  const playlistService = usePlaylistService();
+  const queueService = useQueueService();
+  const browseService = useBrowseService();
   const [listView, setListView] = useState(restoreState.listView || 'grid');
   const [contents, setContents] = useState({});
   const currentLocation = useRef(HOME);
   const scrollbarsRef = useRef(null);
   const fakeLoadingBarRef = useRef(null);
-  const { switchScreen } = useContext(ScreenContext);
+  const { switchScreen } = useScreens();
   const toolbarEl = useRef(null);
   const screenRef = useRef(null);
   const [menuOverlay, setMenuOverlay] = useState(false);

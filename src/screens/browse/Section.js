@@ -1,13 +1,13 @@
 import classNames from 'classnames';
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import Items from './Items';
 import styles from './Section.module.scss';
 import $ from 'cash-dom';
-import { AppContext } from '../../contexts/AppContextProvider';
+import { useAppContext } from '../../contexts/AppContextProvider';
 import { hasMenu } from './helper';
 
 function Section(props) {
-  const {host} = useContext(AppContext);
+  const {host} = useAppContext();
 
   const listView = useMemo(() => {
     let availableListViews = props.list.availableListViews;

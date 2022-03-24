@@ -1,7 +1,7 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Button from "../common/Button";
 import styles from './AddToPlaylistDialog.module.scss';
-import { ServiceContext } from "../contexts/ServiceProvider";
+import { usePlaylistService } from "../contexts/ServiceProvider";
 import classNames from "classnames";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import ContextualCSSTransition from "../common/ContextualCSSTransition";
@@ -9,7 +9,7 @@ import ContextualModal from "../common/ContextualModal";
 
 function AddToPlaylistDialog(props) {
 
-  const { playlistService } = useContext(ServiceContext);
+  const playlistService = usePlaylistService();
   const [playlists, setPlaylists] = useState([]);
   const [createPlaylistMode, setCreatePlaylistMode] = useState(false);
   const overlayEl = useRef(null);

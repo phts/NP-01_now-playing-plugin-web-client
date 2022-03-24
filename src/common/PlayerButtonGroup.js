@@ -1,11 +1,11 @@
 import './PlayerButtonGroup.scss';
 import Button from './Button';
 import classNames from 'classnames';
-import { useCallback, useContext } from 'react';
-import { SocketContext } from '../contexts/SocketProvider';
+import { useCallback } from 'react';
+import { useSocket } from '../contexts/SocketProvider';
 
 function PlayerButtonGroup(props) {
-  const {socket} = useContext(SocketContext);
+  const {socket} = useSocket();
   const playerState = props.playerState;
 
   // Button event handlers

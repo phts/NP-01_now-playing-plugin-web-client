@@ -1,13 +1,13 @@
-import { useCallback, useContext, useEffect, useRef, useReducer } from "react";
+import { useCallback, useEffect, useRef, useReducer } from "react";
 import './Background.scss';
 import './animations.scss';
 import { sanitizeImageUrl } from "../utils/track";
-import { AppContext } from "../contexts/AppContextProvider";
-import { PlayerStateContext } from "../contexts/PlayerStateProvider";
+import { useAppContext } from "../contexts/AppContextProvider";
+import { usePlayerState } from "../contexts/PlayerStateProvider";
 import Image from "./Image";
 import { preloadImage } from "../utils/image";
 import classNames from "classnames";
-import { StylesContext } from "../contexts/StylesProvider";
+import { useCustomStyles } from "../contexts/StylesProvider";
 import ContextualCSSTransition from "./ContextualCSSTransition";
 
 /**
@@ -34,12 +34,11 @@ import ContextualCSSTransition from "./ContextualCSSTransition";
 };
 
 function Background(props) {
-  const {host} = useContext(AppContext);
-  const playerState = useContext(PlayerStateContext);
-  const {customStyles} = useContext(StylesContext);
+  const {host, isKiosk} = useAppContext();
+  const playerState = usePlayerState();
+  const {customStyles} = useCustomStyles();
   const fallbackSrc = host + '/albumart';
   const pendingTargetSrc = useRef(null);
-  const {isKiosk} = useContext(AppContext);
   const disableTransitions = isKiosk;
 
   const transitionStateReducer = (state, transitionProps = {}) => {

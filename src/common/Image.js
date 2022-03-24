@@ -1,10 +1,10 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { AppContext } from '../contexts/AppContextProvider';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAppContext } from '../contexts/AppContextProvider';
 import { preloadImage } from '../utils/image';
 import { sanitizeImageUrl } from '../utils/track';
 
 function Image(props) {
-  const {host} = useContext(AppContext);
+  const {host} = useAppContext();
   const [loadedSrc, setLoadedSrc] = useState(null);
   const currentTargetSrc = useRef(null);
   const fallbackSrc = host + '/albumart';

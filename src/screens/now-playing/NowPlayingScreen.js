@@ -1,31 +1,30 @@
 import styles from './NowPlayingScreen.module.scss';
 import Dock from '../../common/Dock';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { PlayerStateContext } from '../../contexts/PlayerStateProvider';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { usePlayerState } from '../../contexts/PlayerStateProvider';
 import Button from '../../common/Button';
-import { ModalStateContext } from '../../contexts/ModalStateProvider';
+import { useModals } from '../../contexts/ModalStateProvider';
 import classNames from 'classnames';
 import VolumeIndicator from '../../common/VolumeIndicator';
 import { useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
-import { ScreenContext } from '../../contexts/ScreenContextProvider';
+import { useScreens } from '../../contexts/ScreenContextProvider';
 import { ACTION_PANEL, VOLUME_INDICATOR } from '../../modals/CommonModals';
 import PopupMenu from '../../common/PopupMenu';
 import BasicView from './BasicView';
 import InfoView from './InfoView';
-import { StylesContext } from '../../contexts/StylesProvider';
-import { ServiceContext } from '../../contexts/ServiceProvider';
-import { StoreContext } from '../../contexts/StoreProvider';
+import { useCustomStyles } from '../../contexts/StylesProvider';
+import { useStore } from '../../contexts/StoreProvider';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
 function NowPlayingScreen(props) {
-  const playerState = useContext(PlayerStateContext);
-  const {openModal, disableModal, enableModal} = useContext(ModalStateContext);
-  const {customStyles} = useContext(StylesContext);
+  const playerState = usePlayerState();
+  const {openModal, disableModal, enableModal} = useModals();
+  const {customStyles} = useCustomStyles();
   const screenEl = useRef(null);
-  const {activeScreenId, switchScreen} = useContext(ScreenContext);
-  const store = useContext(StoreContext);
+  const {activeScreenId, switchScreen} = useScreens();
+  const store = useStore();
   const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
   const [view, setView] = useState(restoreState.view || props.view || 'basic');
 

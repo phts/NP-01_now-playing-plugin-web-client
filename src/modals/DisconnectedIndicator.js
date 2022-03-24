@@ -1,11 +1,11 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ContextualModal from "../common/ContextualModal";
-import { SocketContext } from "../contexts/SocketProvider";
+import { useSocket } from "../contexts/SocketProvider";
 import './DisconnectedIndicator.scss';
 
 function DisconnectedIndicator() {
 
-  const {socket} = useContext(SocketContext);
+  const {socket} = useSocket();
   const [visible, setVisible] = useState();
 
   const onConnect = useCallback(() => {

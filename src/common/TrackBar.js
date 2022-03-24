@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
-import { ModalStateContext } from '../contexts/ModalStateProvider';
-import { PlayerStateContext } from '../contexts/PlayerStateProvider';
-import { ScreenContext } from '../contexts/ScreenContextProvider';
+import { useModals } from '../contexts/ModalStateProvider';
+import { usePlayerState } from '../contexts/PlayerStateProvider';
+import { useScreens } from '../contexts/ScreenContextProvider';
 import { VOLUME_INDICATOR } from '../modals/CommonModals';
 import { eventPathHasNoSwipe } from '../utils/event';
 import Button from './Button';
@@ -16,9 +16,9 @@ import TrackInfoText from './TrackInfoText';
 import VolumeSlider from './VolumeSlider';
 
 function TrackBar(props) {
-  const playerState = useContext(PlayerStateContext);
-  const {disableModal, enableModal} = useContext(ModalStateContext);
-  const {switchScreen, exitActiveScreen} = useContext(ScreenContext);
+  const playerState = usePlayerState();
+  const {disableModal, enableModal} = useModals();
+  const {switchScreen, exitActiveScreen} = useScreens();
   const [volumeBarVisible, showVolumeBar] = useState(false);
   const trackBarEl = useRef(null);
 

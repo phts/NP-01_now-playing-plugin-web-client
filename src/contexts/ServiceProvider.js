@@ -3,14 +3,14 @@ import BrowseService from "../services/BrowseService";
 import MetadataService from "../services/MetadataService";
 import PlaylistService from "../services/PlaylistService";
 import QueueService from "../services/QueueService";
-import { AppContext } from "./AppContextProvider";
-import { SocketContext } from "./SocketProvider";
+import { useAppContext } from "./AppContextProvider";
+import { useSocket } from "./SocketProvider";
 
 const ServiceContext = createContext();
 
 const ServiceProvider = ({ children }) => {
-  const {socket} = useContext(SocketContext);
-  const {pluginInfo} = useContext(AppContext);
+  const {socket} = useSocket();
+  const {pluginInfo} = useAppContext();
 
   const services = useMemo(() => ({
     playlistService: new PlaylistService(),
@@ -38,4 +38,10 @@ const ServiceProvider = ({ children }) => {
   );
 };
 
-export { ServiceContext, ServiceProvider };
+const useService = (serviceName) => useContext(ServiceContext)[serviceName];
+const usePlaylistService = () => useService('playlistService');
+const useQueueService = () => useService('queueService');
+const useBrowseService = () => useService('browseService');
+const useMetadataService = () => useService('metadataService');
+
+export { usePlaylistService, useQueueService, useBrowseService, useMetadataService, ServiceProvider };

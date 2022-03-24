@@ -3,8 +3,8 @@ import defaultTheme from '../themes/default';
 import glassTheme from '../themes/glass';
 import { requestPluginApiEndpoint } from "../utils/api";
 import { getInitialThemeName } from "../utils/init";
-import { AppContext } from "./AppContextProvider";
-import { SocketContext } from "./SocketProvider";
+import { useAppContext } from "./AppContextProvider";
+import { useSocket } from "./SocketProvider";
 
 const ThemeContext = createContext();
 
@@ -14,8 +14,8 @@ const themes = {
 };
 
 const ThemeProvider = ({ children }) => {
-  const {socket} = useContext(SocketContext);
-  const {pluginInfo} = useContext(AppContext);
+  const {socket} = useSocket();
+  const {pluginInfo} = useAppContext()
   const [theme, applyTheme] = useState(themes[getInitialThemeName()] || defaultTheme);
   const currentTheme = useRef(theme);
 
@@ -67,4 +67,6 @@ const ThemeProvider = ({ children }) => {
   );
 };
 
-export { ThemeContext, ThemeProvider };
+const useTheme = () => useContext(ThemeContext);
+
+export { useTheme, ThemeProvider };

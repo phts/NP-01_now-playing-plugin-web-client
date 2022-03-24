@@ -1,11 +1,11 @@
-import { useContext, useEffect } from "react";
-import { SocketContext } from '../contexts/SocketProvider';
-import { NotificationContext } from '../contexts/NotificationProvider';
+import { useEffect } from "react";
+import { useSocket } from '../contexts/SocketProvider';
+import { useToasts } from '../contexts/NotificationProvider';
 
 function NotificationListener() {
 
-  const {socket} = useContext(SocketContext);
-  const showToast = useContext(NotificationContext);
+  const {socket} = useSocket();
+  const showToast = useToasts();
 
   useEffect(() => {
     if (socket) {

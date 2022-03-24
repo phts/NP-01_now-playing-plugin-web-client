@@ -1,29 +1,29 @@
 import styles from './QueueScreen.module.scss';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { PlayerStateContext } from '../../contexts/PlayerStateProvider';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePlayerState } from '../../contexts/PlayerStateProvider';
 import classNames from 'classnames';
 import { useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
-import { ScreenContext } from '../../contexts/ScreenContextProvider';
+import { useScreens } from '../../contexts/ScreenContextProvider';
 import Toolbar from './Toolbar';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import Items from './Items';
-import { ServiceContext } from '../../contexts/ServiceProvider';
+import { useQueueService } from '../../contexts/ServiceProvider';
 import { ADD_TO_PLAYLIST_DIALOG } from '../../modals/CommonModals';
-import { ModalStateContext } from '../../contexts/ModalStateProvider';
-import { StoreContext } from '../../contexts/StoreProvider';
+import { useModals } from '../../contexts/ModalStateProvider';
+import { useStore } from '../../contexts/StoreProvider';
 
 const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
 const RESTORE_STATE_KEY = 'QueueScreen.restoreState';
 
 function QueueScreen(props) {
-  const store = useContext(StoreContext);
+  const store = useStore();
   const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
-  const playerState = useContext(PlayerStateContext);
-  const { openModal } = useContext(ModalStateContext);
-  const { queueService } = useContext(ServiceContext);
+  const playerState = usePlayerState();
+  const { openModal } = useModals();
+  const queueService = useQueueService();
   const [items, setItems] = useState(queueService.getQueue());
-  const {exitActiveScreen} = useContext(ScreenContext);
+  const {exitActiveScreen} = useScreens();
   const toolbarEl = useRef(null);
   const scrollbarsRef = useRef(null);
   const scrollPositionRef = useRef(INITIAL_SCROLL_POSITION);

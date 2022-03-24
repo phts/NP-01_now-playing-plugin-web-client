@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { getInitialHost, getInitialPluginInfo, getLocationQueryParam } from "../utils/init";
 
 const AppContext = createContext();
@@ -16,4 +16,6 @@ const AppContextProvider = ({ children }) => {
   );
 };
 
-export { AppContext, AppContextProvider };
+const useAppContext = () => useContext(AppContext);
+
+export { useAppContext, AppContextProvider };
