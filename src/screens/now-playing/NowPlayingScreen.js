@@ -13,8 +13,8 @@ import { ACTION_PANEL, VOLUME_INDICATOR } from '../../modals/CommonModals';
 import PopupMenu from '../../common/PopupMenu';
 import BasicView from './BasicView';
 import InfoView from './InfoView';
-import { useCustomStyles } from '../../contexts/StylesProvider';
 import { useStore } from '../../contexts/StoreProvider';
+import { useCustomStyles } from '../../contexts/SettingsProvider';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 

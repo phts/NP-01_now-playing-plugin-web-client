@@ -7,8 +7,8 @@ import { usePlayerState } from "../contexts/PlayerStateProvider";
 import Image from "./Image";
 import { preloadImage } from "../utils/image";
 import classNames from "classnames";
-import { useCustomStyles } from "../contexts/StylesProvider";
 import ContextualCSSTransition from "./ContextualCSSTransition";
+import { useCustomStyles } from "../contexts/SettingsProvider";
 
 /**
    * Transition state phases:

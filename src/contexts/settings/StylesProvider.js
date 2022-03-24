@@ -1,8 +1,8 @@
-import { createContext, useState, useEffect, useContext } from "react";
-import { requestPluginApiEndpoint } from "../utils/api";
-import { getInitialCustomStyles } from "../utils/init";
-import { useAppContext } from "./AppContextProvider";
-import { useSocket } from "./SocketProvider";
+import { createContext, useState, useEffect } from "react";
+import { requestPluginApiEndpoint } from "../../utils/api";
+import { getInitialCustomStyles } from "../../utils/init";
+import { useAppContext } from "../AppContextProvider";
+import { useSocket } from "../SocketProvider";
 
 const StylesContext = createContext();
 
@@ -50,6 +50,4 @@ const StylesProvider = ({ children }) => {
   );
 };
 
-const useCustomStyles = () => useContext(StylesContext);
-
-export { useCustomStyles, StylesProvider };
+export { StylesContext, StylesProvider };

@@ -1,10 +1,10 @@
-import { createContext, useState, useEffect, useCallback, useRef, useContext } from "react";
-import defaultTheme from '../themes/default';
-import glassTheme from '../themes/glass';
-import { requestPluginApiEndpoint } from "../utils/api";
-import { getInitialThemeName } from "../utils/init";
-import { useAppContext } from "./AppContextProvider";
-import { useSocket } from "./SocketProvider";
+import { createContext, useState, useEffect, useCallback, useRef } from "react";
+import defaultTheme from '../../themes/default';
+import glassTheme from '../../themes/glass';
+import { requestPluginApiEndpoint } from "../../utils/api";
+import { getInitialThemeName } from "../../utils/init";
+import { useAppContext } from "../AppContextProvider";
+import { useSocket } from "../SocketProvider";
 
 const ThemeContext = createContext();
 
@@ -67,6 +67,4 @@ const ThemeProvider = ({ children }) => {
   );
 };
 
-const useTheme = () => useContext(ThemeContext);
-
-export { useTheme, ThemeProvider };
+export { ThemeContext, ThemeProvider };

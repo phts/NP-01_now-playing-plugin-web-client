@@ -18,11 +18,10 @@ import QueueScreen from './screens/queue/QueueScreen';
 import { useEffect, useState } from 'react';
 import CommonModals from './modals/CommonModals';
 import VolumioScreen from './screens/volumio/VolumioScreen';
-import { ThemeProvider } from './contexts/ThemeProvider';
 import { ServiceProvider } from './contexts/ServiceProvider';
-import { StylesProvider } from './contexts/StylesProvider';
 import { PlayerSeekProvider } from './contexts/PlayerSeekProvider';
 import { StoreProvider } from './contexts/StoreProvider';
+import { SettingsProvider } from './contexts/SettingsProvider';
 
 function App() {
   const [height, setHeight] = useState(window.innerHeight);
@@ -45,45 +44,43 @@ function App() {
         <SocketProvider>
           <PlayerStateProvider>
             <PlayerSeekProvider>
-              <ThemeProvider>
-                <StylesProvider>
-                  <AppStartup />
-                  <div className="App" style={{ '--vh': vh }}>
-                    <NotificationProvider>
-                      <ModalStateProvider>
-                        <VolumeChangeListener />
-                        <NotificationListener />
-                        <DisconnectedIndicator />
-                        <ServiceProvider>
-                          <ScreenContextProvider>
-                            <NowPlayingScreen
-                              screenId="NowPlaying"
-                              defaultActive={true}
-                              mountOnEnter
-                              unmountOnExit />
-                            <BrowseScreen
-                              screenId="Browse"
-                              usesTrackBar={true}
-                              mountOnEnter
-                              unmountOnExit />
-                            <QueueScreen
-                              screenId="Queue"
-                              float={true}
-                              usesTrackBar={true}
-                              mountOnEnter
-                              unmountOnExit />
-                            <VolumioScreen
-                              screenId="Volumio"
-                              mountOnEnter={true}
-                              unmountOnExit={true} />
-                            <CommonModals realVh={vh}/>
-                          </ScreenContextProvider>
-                        </ServiceProvider>
-                      </ModalStateProvider>
-                    </NotificationProvider>
-                  </div>
-                </StylesProvider>
-              </ThemeProvider>
+              <SettingsProvider>
+                <AppStartup />
+                <div className="App" style={{ '--vh': vh }}>
+                  <NotificationProvider>
+                    <ModalStateProvider>
+                      <VolumeChangeListener />
+                      <NotificationListener />
+                      <DisconnectedIndicator />
+                      <ServiceProvider>
+                        <ScreenContextProvider>
+                          <NowPlayingScreen
+                            screenId="NowPlaying"
+                            defaultActive={true}
+                            mountOnEnter
+                            unmountOnExit />
+                          <BrowseScreen
+                            screenId="Browse"
+                            usesTrackBar={true}
+                            mountOnEnter
+                            unmountOnExit />
+                          <QueueScreen
+                            screenId="Queue"
+                            float={true}
+                            usesTrackBar={true}
+                            mountOnEnter
+                            unmountOnExit />
+                          <VolumioScreen
+                            screenId="Volumio"
+                            mountOnEnter={true}
+                            unmountOnExit={true} />
+                          <CommonModals realVh={vh}/>
+                        </ScreenContextProvider>
+                      </ServiceProvider>
+                    </ModalStateProvider>
+                  </NotificationProvider>
+                </div>
+              </SettingsProvider>
             </PlayerSeekProvider>
           </PlayerStateProvider>
         </SocketProvider>
