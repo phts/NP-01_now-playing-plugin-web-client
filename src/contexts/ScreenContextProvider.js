@@ -5,6 +5,7 @@ import ContextualCSSTransition from "../common/ContextualCSSTransition";
 import TrackBar from "../common/TrackBar";
 import ScreenWrapper from "../screens/ScreenWrapper";
 import './ScreenContext.scss';
+import { usePerformanceSettings } from "./SettingsProvider";
 
 const ScreenContext = createContext();
 
@@ -29,6 +30,7 @@ const getInitialScreenStates = (children) => {
 const ScreenContextProvider = ({ children }) => {
 
   const lastOrderedScreenIds = useRef(null);
+  const {performanceSettings} = usePerformanceSettings();
 
   const screenStatesReducer = (states, data = {}) => {
     for (const screenId of Object.keys(data)) {
@@ -191,9 +193,15 @@ const ScreenContextProvider = ({ children }) => {
         return false;
     }
     else {
+      if (performanceSettings.unmountScreensOnExit === 'custom') {
+        const perfKey = `unmount${screenId}ScreenOnExit`;
+        if (performanceSettings[perfKey] !== undefined) {
+          return performanceSettings[perfKey];
+        }
+      }
       return screenStates[screenId].unmountOnExit;
     }
-  }, [currentEnteringScreenId, currentActiveScreenId, currentExitingScreenId, screenStates]);
+  }, [currentEnteringScreenId, currentActiveScreenId, currentExitingScreenId, screenStates, performanceSettings]);
 
   const getChildren = () => {
     return Children.map(children, child => {

@@ -1,9 +1,8 @@
 import Modal from "react-modal/lib/components/Modal";
-import { useAppContext } from "../contexts/AppContextProvider";
+import { usePerformanceSettings } from "../contexts/SettingsProvider";
 
 function ContextualModal(props) {
-  const {isKiosk} = useAppContext();
-  const disableTransitions = isKiosk;
+  const {disableTransitions} = usePerformanceSettings();
 
   const portalClassName = disableTransitions ? 'ReactModalPortal no-transitions' : null;
 

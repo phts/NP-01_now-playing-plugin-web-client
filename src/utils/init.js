@@ -1,3 +1,9 @@
+export const DEFAULT_PERFORMANCE_SETTINGS = {
+  transitionEffectsKiosk: false,
+  transitionEffectsOtherDevices: true,
+  unmountScreensOnExit: 'default'
+};
+
 export function getInitialData(prop, defaultVal = null) {
   if (window.__initialData && window.__initialData[prop]) {
     return window.__initialData[prop];
@@ -26,4 +32,8 @@ export function getInitialThemeName() {
 
 export function getInitialCustomStyles() {
   return getInitialData('styles', {});
+};
+
+export function getInitialPerformanceSettings() {
+  return getInitialData('performanceSettings', DEFAULT_PERFORMANCE_SETTINGS);
 };

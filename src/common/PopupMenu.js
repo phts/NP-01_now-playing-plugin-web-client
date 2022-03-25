@@ -3,11 +3,10 @@ import classNames from 'classnames';
 import { ControlledMenu, MenuDivider, MenuHeader, MenuItem, useMenuState } from '@szhsin/react-menu';
 import { useCallback, useEffect, useRef } from 'react';
 import Button from './Button';
-import { useAppContext } from '../contexts/AppContextProvider';
+import { usePerformanceSettings } from '../contexts/SettingsProvider';
 
 function PopupMenu(props) {
-  const {isKiosk} = useAppContext();
-  const disableTransitions = isKiosk;
+  const {disableTransitions} = usePerformanceSettings();
   const {menuItems, onMenuItemClick, onMenuOverlay} = props;
   const menuButtonRef = useRef();
   const menuOverlayRef = useRef();

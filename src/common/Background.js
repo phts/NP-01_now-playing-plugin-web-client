@@ -7,7 +7,7 @@ import Image from "./Image";
 import { preloadImage } from "../utils/image";
 import classNames from "classnames";
 import ContextualCSSTransition from "./ContextualCSSTransition";
-import { useCustomStyles } from "../contexts/SettingsProvider";
+import { useCustomStyles, usePerformanceSettings } from "../contexts/SettingsProvider";
 import { usePlayerState } from "../contexts/PlayerProvider";
 
 /**
@@ -34,12 +34,12 @@ import { usePlayerState } from "../contexts/PlayerProvider";
 };
 
 function Background(props) {
-  const {host, isKiosk} = useAppContext();
+  const {host} = useAppContext();
   const playerState = usePlayerState();
   const {customStyles} = useCustomStyles();
   const fallbackSrc = host + '/albumart';
   const pendingTargetSrc = useRef(null);
-  const disableTransitions = isKiosk;
+  const {disableTransitions} = usePerformanceSettings();
 
   const transitionStateReducer = (state, transitionProps = {}) => {
     return {...state, ...transitionProps};

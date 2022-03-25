@@ -54,24 +54,22 @@ function App() {
                       <ScreenContextProvider>
                         <NowPlayingScreen
                           screenId="NowPlaying"
-                          defaultActive={true}
+                          defaultActive
                           mountOnEnter
                           unmountOnExit />
                         <BrowseScreen
                           screenId="Browse"
-                          usesTrackBar={true}
-                          mountOnEnter
-                          unmountOnExit />
+                          usesTrackBar
+                          mountOnEnter />
                         <QueueScreen
                           screenId="Queue"
-                          float={true}
-                          usesTrackBar={true}
-                          mountOnEnter
-                          unmountOnExit />
+                          float
+                          usesTrackBar
+                          mountOnEnter />
                         <VolumioScreen
                           screenId="Volumio"
-                          mountOnEnter={true}
-                          unmountOnExit={true} />
+                          mountOnEnter
+                          unmountOnExit />
                         <CommonModals realVh={vh} />
                       </ScreenContextProvider>
                     </ServiceProvider>
