@@ -2,12 +2,6 @@ import React, { useCallback } from 'react';
 import Item from './Item';
 import styles from './Items.module.scss';
 
-/*const compareProps = (prevProps, nextProps) => {
-  return prevProps.styles === nextProps.styles && 
-    prevProps.items === nextProps.items && 
-    prevProps.currentPlayingPosition === nextProps.currentPlayingPosition;
-};*/
-
 const Items = React.memo((props) => {
   const getItems = useCallback(() => {
     return props.items.map((item, index) => (
@@ -25,7 +19,7 @@ const Items = React.memo((props) => {
   return (
     <div className={styles.Layout}>{getItems()}</div>
   );
-}/*, compareProps*/);
+});
 
 Items.displayName = 'QueueScreenItems';
 

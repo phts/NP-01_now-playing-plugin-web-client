@@ -91,7 +91,7 @@ function TrackBar(props) {
     <Button 
       key="queue"
       icon="queue_music"
-      toggleable={true}
+      toggleable
       toggled={props.activeScreenId === 'Queue' || props.enteringScreenId === 'Queue'}
       styles={{
         baseClassName: 'Button',
@@ -143,7 +143,7 @@ function TrackBar(props) {
           <Image 
             className={styles.AlbumArt__image} 
             src={playerState.albumart} 
-            preload={true} 
+            preload 
             onClick={switchToNowPlaying} />
         </div>
         {!emptyTrackInfoText ?
@@ -152,7 +152,7 @@ function TrackBar(props) {
               baseClassName: 'TrackInfoText',
               bundle: styles
             }}
-            concatArtistAlbum={true}
+            concatArtistAlbum
             playerState={playerState}
             onClick={switchToNowPlaying} />
           : null}
@@ -171,7 +171,7 @@ function TrackBar(props) {
       closeTimeoutMS={200}
       overlayClassName={styles.VolumeBarOverlay}
       className={volumeBarClassNames}
-      preventScroll={true}
+      preventScroll
       onRequestClose={toggleVolumeBar}>
       <div className={styles.VolumeBar}>
         <VolumeSlider orientation="vertical" />

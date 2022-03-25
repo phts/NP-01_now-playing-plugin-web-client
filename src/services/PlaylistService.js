@@ -24,13 +24,13 @@ export default class PlaylistService {
       return;
     }
     if (oldSocket) {
-      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
+      for (const [event, handler] of Object.entries(this.socketEventHandlers)) {
         oldSocket.off(event, handler);
       }
     }
     this.socket = socket;
     if (this.socket) {
-      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
+      for (const [event, handler] of Object.entries(this.socketEventHandlers)) {
         this.socket.on(event, handler);
       }
 
@@ -40,26 +40,7 @@ export default class PlaylistService {
       // Request playlists
       this.socket.emit('listPlaylist');
     }
-   }
-
-  /*init() {
-    this.setPlaylists([]);
-    if (this.socket) {
-      this.socketListPlaylistHandler = this.setPlaylists.bind(this);
-      this.socket.on('pushListPlaylist', this.socketListPlaylistHandler);
-      this.socket.emit('listPlaylist');
-    }
   }
-
-  destroy() {
-    if (this.socket && this.socketListPlaylistHandler) {
-      this.socket.off('pushListPlaylist', this.socketListPlaylistHandler);
-    }
-    this.socket = null;
-    this.emitter.removeAllListeners();
-    //this.emitter = null;  <-- commenting out for react refresh to work
-    this.setPlaylists([]);
-  }*/
 
   on(event, handler) {
     this.emitter.on(event, handler);

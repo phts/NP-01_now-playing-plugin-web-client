@@ -53,7 +53,6 @@ function Item(props) {
           icon="remove_circle_outline" 
           onClick={handleRemoveClicked} />
       </div>
-      { /* <div className={styles.Item__ellipsis}><button className="menu-trigger"><i class="fa fa-ellipsis-v"></i></button></div>*/}
     </div>
   );
 }

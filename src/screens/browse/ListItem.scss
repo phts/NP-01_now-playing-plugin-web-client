@@ -41,10 +41,6 @@
     }
   }
 
-  /*&:not(:last-of-type) {
-    border-bottom: var(--browse-screen-list-item-divider);
-  }*/
-
   @media (min-width: 1024px) {
     &:first-of-type {
       border-top-left-radius: var(--browse-screen-list-border-radius);

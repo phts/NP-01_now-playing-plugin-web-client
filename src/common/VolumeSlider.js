@@ -99,7 +99,7 @@ function VolumeSlider(props) {
           extraClassNames: [styles['Button--mute']]
         }}
         icon="volume_mute" 
-        toggleable={true}
+        toggleable
         toggled={playerState.mute}
         onClick={toggleMute} />
       <Range className={styles.Slider}

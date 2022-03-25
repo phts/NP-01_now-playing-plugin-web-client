@@ -18,10 +18,6 @@
   color: var(--browse-screen-grid-item-color);
   text-align: center;
 
-  /*> :not(:first-child) {
-    padding: 0.5em 0px;
-  }*/
-
   &:hover {
     .Item__image,
     .Item__icon {
@@ -165,9 +161,7 @@
     font-size: 1em;
     width: 2.5em;
     height: 3em;
-    /*padding: 5px;
-    min-width: 1em;*/
-
+    
     @media (max-width: 300px) {
       width: 2em;
       height: 2.5em;

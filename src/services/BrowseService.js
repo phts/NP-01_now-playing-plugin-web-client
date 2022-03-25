@@ -71,23 +71,6 @@ export default class BrowseService {
     return this.socket && this.socket.connected && this.host;
   }
 
-  /*destroy() {
-    if (this.socket && this.socketEventHandlers) {
-      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
-        this.socket.off(event, handler);
-      }
-    }
-    this.socket = null;
-    this.socketEventHandlers = null;
-    this._setBrowseSources([]);
-    this.emitter.removeAllListeners();
-    //this.emitter = null; <-- commenting out for react refresh to work
-    this.currentDisplayed = null;
-    this.currentLoading = null; // location
-    this.lastAction = null;
-    this.backHistory = [];
-  }*/
-
   // Event:
   // contentsLoaded
   // contentsRefreshed

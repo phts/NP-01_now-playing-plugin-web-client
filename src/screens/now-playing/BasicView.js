@@ -22,7 +22,7 @@ function BasicView(props) {
   return (
     <div className={styles.Layout}>
       <div className={styles.AlbumArt}>
-        <Image className={styles.AlbumArt__image} src={playerState.albumart} preload={true} />
+        <Image className={styles.AlbumArt__image} src={playerState.albumart} preload />
       </div>
       <div className={styles.MainContents}>
         {!emptyTrackInfoText ?

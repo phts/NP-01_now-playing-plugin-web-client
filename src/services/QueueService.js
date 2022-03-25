@@ -46,19 +46,6 @@ export default class QueueService {
     }
   }
 
-  /*destroy() {
-    if (this.socket && this.socketEventHandlers) {
-      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
-        this.socket.off(event, handler);
-      }
-    }
-    this.socket = null;
-    this.socketEventHandlers = null;
-    this._setQueue([]);
-    this.emitter.removeAllListeners();
-    //this.emitter = null;  <-- commenting out for react refresh to work
-  }*/
-
   // Event:
   // queueChanged
   on(event, handler) {

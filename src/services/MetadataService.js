@@ -15,11 +15,6 @@ export default class MetadataService {
     return this.apiPath !== null;
   }
 
-/*  destroy() {
-    this.emitter.removeAllListeners();
-    //this.emitter = null;  <-- commenting out for react refresh to work
-  }*/
-
   /**
    * params {
    *  name: ...
