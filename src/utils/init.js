@@ -37,3 +37,8 @@ export function getInitialCustomStyles() {
 export function getInitialPerformanceSettings() {
   return getInitialData('performanceSettings', DEFAULT_PERFORMANCE_SETTINGS);
 };
+
+export function checkKiosk() {
+  const url = new URL(window.location);
+  return url.hostname === 'localhost' || getLocationQueryParam('kiosk', false);
+}

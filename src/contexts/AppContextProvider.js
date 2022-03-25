@@ -1,6 +1,6 @@
 import deepEqual from "deep-equal";
 import { createContext, useContext, useReducer, useState } from "react";
-import { getInitialHost, getInitialPluginInfo, getLocationQueryParam } from "../utils/init";
+import { checkKiosk, getInitialHost, getInitialPluginInfo } from "../utils/init";
 
 const AppContext = createContext();
 
@@ -9,7 +9,7 @@ const pluginInfoReducer = (currentPluginInfo, newPluginInfo) => deepEqual(curren
 const AppContextProvider = ({ children }) => {
   const [host, setHost] = useState(getInitialHost());
   const [pluginInfo, setPluginInfo] = useReducer(pluginInfoReducer, getInitialPluginInfo());
-  const [isKiosk, setKiosk] = useState(getLocationQueryParam('kiosk', false));
+  const [isKiosk, setKiosk] = useState(checkKiosk());
 
   return (
     <AppContext.Provider 
