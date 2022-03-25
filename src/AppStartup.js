@@ -33,21 +33,11 @@ function AppStartup() {
         });
       };
 
-      const onPluginInfo = (info) => {
-        const current = currentPluginInfo.current;
-        if (!current || (`${info.appPort}` !== `${current.appPort}` ||
-          info.version !== current.version ||
-          info.appUrl !== current.appUrl ||
-          info.apiPath !== current.apiPath)) {
-            setPluginInfo(info);
-        }
-      };
-
       ['connect', 'reconnect'].forEach(event => {
         socket.on(event, onSocketConnected);
       });
 
-      socket.on('nowPlayingPluginInfo', onPluginInfo);
+      socket.on('nowPlayingPluginInfo', setPluginInfo);
       socket.on("nowPlayingRefresh", refresh);
       
       socket.connect();
@@ -57,7 +47,7 @@ function AppStartup() {
           socket.off(event, onSocketConnected);
         });
 
-        socket.off('nowPlayingPluginInfo', onPluginInfo);
+        socket.off('nowPlayingPluginInfo', setPluginInfo);
         socket.off("nowPlayingRefresh", refresh);
       };
     }
@@ -76,7 +66,7 @@ function AppStartup() {
       }
     }
     currentPluginInfo.current = pluginInfo;
-  }, [pluginInfo, socket]);
+  }, [pluginInfo]);
 
   Modal.setAppElement('#root');
 
