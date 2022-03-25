@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect } from "react";
+import deepEqual from "deep-equal";
+import { createContext, useEffect, useReducer } from "react";
 import { requestPluginApiEndpoint } from "../../utils/api";
 import { getInitialCustomStyles } from "../../utils/init";
 import { useAppContext } from "../AppContextProvider";
@@ -6,10 +7,12 @@ import { useSocket } from "../SocketProvider";
 
 const StylesContext = createContext();
 
+const stylesReducer = (currentStyles, newStyles) => deepEqual(currentStyles, newStyles) ? currentStyles : newStyles;
+
 const StylesProvider = ({ children }) => {
   const {socket} = useSocket();
   const {pluginInfo} = useAppContext()
-  const [customStyles, setCustomStyles] = useState(getInitialCustomStyles());
+  const [customStyles, setCustomStyles] = useReducer(stylesReducer, getInitialCustomStyles());
 
   useEffect(() => {
     if (socket) {
@@ -41,7 +44,6 @@ const StylesProvider = ({ children }) => {
       };
     }
   }, [apiPath, setCustomStyles]);
-
 
   return (
     <StylesContext.Provider value={{customStyles, setCustomStyles}}>
