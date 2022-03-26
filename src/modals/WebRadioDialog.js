@@ -2,7 +2,7 @@ import { useCallback, useRef } from "react";
 import Button from "../common/Button";
 import styles from './WebRadioDialog.module.scss';
 import { usePlaylistService } from "../contexts/ServiceProvider";
-import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import { Scrollbars } from 'rc-scrollbars';
 import TextField from "../common/TextField";
 import ContextualModal from "../common/ContextualModal";
 
@@ -82,7 +82,6 @@ function WebRadioDialog(props) {
 
   const title = (mode === 'add' ? 'Add' : 'Edit') + ' Web Radio';
   const okText = mode === 'add' ? 'Add' : 'Save';
-  const supportsHover = !window.matchMedia('(hover: none)').matches;
 
   return (
     <ContextualModal
@@ -103,18 +102,17 @@ function WebRadioDialog(props) {
           icon="close"
           onClick={closeDialog} />
       </div>
-      <OverlayScrollbarsComponent
+      <Scrollbars
         className={styles.Layout__contents}
-        options={{
-          scrollbars: {
-            autoHide: supportsHover ? 'leave' : 'scroll'
-          }
-        }}>
+        classes={{
+          thumbVertical: 'Scrollbar__handle'
+        }}
+        autoHide>
         <div className={styles.ContentsWrapper}>
           <TextField ref={nameInputRef} placeholder="Name" icon="radio" onChange={onInputChange} />
           <TextField ref={urlInputRef} placeholder="URL" icon="link" onChange={onInputChange} />
         </div>
-      </OverlayScrollbarsComponent>
+      </Scrollbars>
       <div className={styles.Layout__footer}>
         <Button
           ref={okButtonRef}

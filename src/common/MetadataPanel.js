@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import Image from './Image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { Scrollbars } from 'rc-scrollbars';
 import Button from './Button';
 import './MetadataPanel.scss';
 import { useMetadataService } from '../contexts/ServiceProvider';
@@ -16,8 +16,6 @@ const DEFAULT_INFO_CHOOSER_BUTTON_STYLES = {
     'MetadataPanelInfoChooserButton--toggled': 'MetadataPanelInfoChooserButton--toggled'
   }
 };
-
-const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
 
 const getAvailableInfoTypes = (song, album, artist) => {
   const result = [];
@@ -313,9 +311,12 @@ function MetadataPanel(props) {
     }
   }, [placeholderImage, infoType, state]);
 
-  // OverlayScrollbarsComponent handler for keeping track of scroll position for current infoType
-  const onInfoScrolled = (scrollbarEl, scrolledInfoType) => {
-    scrollPositionsRef.current[scrolledInfoType] = scrollbarEl.scroll().position;
+  // Scrollbars handler for keeping track of scroll position for current infoType
+  const onInfoScrolled = (scrolledInfoType) => {
+    const scrollbarEl = scrollbarRefs.current[scrolledInfoType] || null;
+    if (scrollbarEl) {
+      scrollPositionsRef.current[scrolledInfoType] = scrollbarEl.getScrollTop();
+    }
   };
 
   const infoContents = useMemo(() => {
@@ -380,25 +381,19 @@ function MetadataPanel(props) {
       const infoId = `info-${forInfoType}`;
 
       if (!isEmpty) {
-        const supportsHover = !window.matchMedia('(hover: none)').matches;
         return (
-          <OverlayScrollbarsComponent
+          <Scrollbars
             key={forInfoType}
             id={infoId}
             ref={el => {scrollbarRefs.current[forInfoType] = el}}
             className={infoClassNames}
-            options={{
-              scrollbars: {
-                autoHide: supportsHover ? 'leave' : 'scroll'
-              },
-              callbacks: {
-                onScrollStop: function() {
-                  onInfoScrolled(this, forInfoType);
-                }
-              }
-            }}>
+            classes={{
+              thumbVertical: 'Scrollbar__handle'
+            }}
+            autoHide
+            onScrollStop={() => onInfoScrolled(forInfoType)}>
             {contents}
-          </OverlayScrollbarsComponent>
+          </Scrollbars>
         );  
       }
       else {
@@ -429,10 +424,9 @@ function MetadataPanel(props) {
 
   // Restore scroll position when infoType changes
   useEffect(() => {
-    const scrollbarEl = scrollbarRefs.current[infoType] ? scrollbarRefs.current[infoType].osInstance() : null;
+    const scrollbarEl = scrollbarRefs.current[infoType] || null;
     if (scrollbarEl) {
-      scrollbarEl.update(true); // Need this for Chromium-based browsers
-      scrollbarEl.scroll(scrollPositionsRef.current[infoType] || INITIAL_SCROLL_POSITION);
+      scrollbarEl.scrollTop(scrollPositionsRef.current[infoType] || 0);
     }
   }, [infoType]);
 

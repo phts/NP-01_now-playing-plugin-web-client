@@ -1,5 +1,4 @@
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
-import 'overlayscrollbars/css/OverlayScrollbars.css';
+import { Scrollbars } from 'rc-scrollbars';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSocket } from '../../contexts/SocketProvider';
 import styles from './BrowseScreen.module.scss';
@@ -25,7 +24,6 @@ const HOME = {
   service: null
 };
 
-const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
 const RESTORE_STATE_KEY = 'BrowseScreen.restoreState';
 
 function BrowseScreen(props) {
@@ -45,8 +43,7 @@ function BrowseScreen(props) {
   const { switchScreen } = useScreens();
   const toolbarEl = useRef(null);
   const screenRef = useRef(null);
-  const [menuOverlay, setMenuOverlay] = useState(false);
-  const scrollPositionRef = useRef(INITIAL_SCROLL_POSITION);
+  const scrollPositionRef = useRef(0);
 
   // Browse / navigation handling
 
@@ -109,11 +106,10 @@ function BrowseScreen(props) {
 
   const getScrollPosition = () => {
     if (scrollbarsRef.current) {
-      const scroll = scrollbarsRef.current.osInstance().scroll() || {};
-      return scroll.position || INITIAL_SCROLL_POSITION;
+      return scrollbarsRef.current.getScrollTop() || 0;
     }
     else {
-      return INITIAL_SCROLL_POSITION;
+      return 0;
     }
   };
 
@@ -384,14 +380,13 @@ function BrowseScreen(props) {
           sectionIndex={index}
           onItemClick={handleItemClicked}
           onPlayClick={handlePlayClicked}
-          callItemAction={callItemAction}
-          onMenuOverlay={setMenuOverlay} />
+          callItemAction={callItemAction} />
       )
       );
       return sections;
     }
     return null;
-  }, [contents.navigation, listView, handleItemClicked, handlePlayClicked, callItemAction, setMenuOverlay]);
+  }, [contents.navigation, listView, handleItemClicked, handlePlayClicked, callItemAction]);
 
   const header = useMemo(() => {
     if (contents.navigation && contents.navigation.info) {
@@ -407,7 +402,7 @@ function BrowseScreen(props) {
 
   useEffect(() => {
     if (scrollbarsRef.current) {
-      scrollbarsRef.current.osInstance().scroll(contents.__scroll || 0);
+      scrollbarsRef.current.scrollTop(contents.__scroll || 0);
     }
   }, [contents]);
 
@@ -449,13 +444,10 @@ function BrowseScreen(props) {
     fakeLoadingBarRef.current.stop(complete);
   };
 
-
-  const supportsHover = !window.matchMedia('(hover: none)').matches;
   const layoutClasses = classNames([
     styles.Layout,
     props.className
   ]);
-
 
   /*
   * Temporary workaround for my plugins that provide in-title links
@@ -503,20 +495,16 @@ function BrowseScreen(props) {
         onButtonClick={handleToolbarButtonClicked}
         onSearchQuery={onSearchQuery}
         initialSearchQuery={restoreState.searchQuery || ''} />
-      <OverlayScrollbarsComponent
+      <Scrollbars 
         ref={scrollbarsRef}
         className={styles.Layout__contents}
-        options={{
-          scrollbars: {
-            autoHide: supportsHover ? 'leave' : 'scroll'
-          },
-          overflowBehavior: {
-            y: menuOverlay ? 'hidden' : 'scroll'
-          }
-        }}>
+        classes={{
+          thumbVertical: 'Scrollbar__handle'
+        }}
+        autoHide>
         {header}
         <div className={styles.Contents}>{sections}</div>
-      </OverlayScrollbarsComponent>
+      </Scrollbars>
     </div>
   );
 }

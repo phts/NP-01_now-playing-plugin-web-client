@@ -5,7 +5,7 @@ import { useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
 import { useScreens } from '../../contexts/ScreenContextProvider';
 import Toolbar from './Toolbar';
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import { Scrollbars } from 'rc-scrollbars';
 import Items from './Items';
 import { useQueueService } from '../../contexts/ServiceProvider';
 import { ADD_TO_PLAYLIST_DIALOG } from '../../modals/CommonModals';
@@ -13,7 +13,6 @@ import { useModals } from '../../contexts/ModalStateProvider';
 import { useStore } from '../../contexts/StoreProvider';
 import { usePlayerState } from '../../contexts/PlayerProvider';
 
-const INITIAL_SCROLL_POSITION = { x: 0, y: 0 };
 const RESTORE_STATE_KEY = 'QueueScreen.restoreState';
 
 function QueueScreen(props) {
@@ -26,7 +25,7 @@ function QueueScreen(props) {
   const {exitActiveScreen} = useScreens();
   const toolbarEl = useRef(null);
   const scrollbarsRef = useRef(null);
-  const scrollPositionRef = useRef(INITIAL_SCROLL_POSITION);
+  const scrollPositionRef = useRef(0);
 
   useEffect(() => {
     const handleQueueChanged = (data) => {
@@ -45,7 +44,7 @@ function QueueScreen(props) {
 
   useEffect(() => {
     if (scrollbarsRef.current) {
-      scrollbarsRef.current.osInstance().scroll(restoreState.scrollPosition || 0);
+      scrollbarsRef.current.scrollTop(restoreState.scrollPosition || 0);
     }
 
     return (() => {
@@ -55,11 +54,10 @@ function QueueScreen(props) {
   
   const getScrollPosition = () => {
     if (scrollbarsRef.current) {
-      const scroll = scrollbarsRef.current.osInstance().scroll() || {};
-      return scroll.position || INITIAL_SCROLL_POSITION;
+      return scrollbarsRef.current.getScrollTop() || 0;
     }
     else {
-      return INITIAL_SCROLL_POSITION;
+      return 0;
     }
   };
 
@@ -124,8 +122,6 @@ function QueueScreen(props) {
     toolbarEl.current = el;
   };
 
-  const supportsHover = !window.matchMedia('(hover: none)').matches;
-
   const currentPlayingPosition = !isNaN(playerState.position) && 
     playerState.status === 'play' ? playerState.position : -1;
 
@@ -146,18 +142,19 @@ function QueueScreen(props) {
           itemCount={items.length}
           playerState={playerState}
           onButtonClick={handleToolbarButtonClicked} />
-        <OverlayScrollbarsComponent
+        <Scrollbars
           ref={scrollbarsRef}
           className={styles.Layout__contents}
-          options={{ scrollbars: {
-            autoHide: supportsHover ? 'leave' : 'scroll'
-          } }}>
+          classes={{
+            thumbVertical: 'Scrollbar__handle'
+          }}
+          autoHide>
           <Items
             items={items} 
             currentPlayingPosition={currentPlayingPosition}
             onItemClick={handleItemClicked}
             onRemoveClick={handleRemoveClicked} />
-        </OverlayScrollbarsComponent>
+        </Scrollbars>
       </div>
     </div>
   );

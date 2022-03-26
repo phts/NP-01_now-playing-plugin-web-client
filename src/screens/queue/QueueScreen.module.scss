@@ -27,22 +27,5 @@
   &__contents {
     width: 100%;
     flex-grow: 1;
-
-    // OverlayScrollbars
-    :global {
-      .os-scrollbar {
-        .os-scrollbar-handle {
-          background: var(--scrollbar-handle-color);
-
-          &.active {
-            background: var(--scrollbar-handle-active-color);
-          }
-        }
-
-        &:hover .os-scrollbar-handle {
-          background: var(--scrollbar-handle-hover-color);
-        }
-      }
-    }
   }
 }

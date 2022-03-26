@@ -71,6 +71,21 @@ body {
 
 }
 
+// Scrollbars
+.Scrollbar {
+  &__handle {
+    background-color: var(--scrollbar-handle-color) !important;
+
+    &:active {
+      background-color: var(--scrollbar-handle-active-color) !important;
+    }
+
+    &:hover {
+      background-color: var(--scrollbar-handle-hover-color) !important;
+    }
+  }
+}
+
 .no-transitions {
   transition: none !important;
 }

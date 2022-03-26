@@ -3,7 +3,7 @@ import Button from "../common/Button";
 import styles from './AddToPlaylistDialog.module.scss';
 import { usePlaylistService } from "../contexts/ServiceProvider";
 import classNames from "classnames";
-import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import { Scrollbars } from 'rc-scrollbars';
 import ContextualCSSTransition from "../common/ContextualCSSTransition";
 import ContextualModal from "../common/ContextualModal";
 
@@ -133,8 +133,6 @@ function AddToPlaylistDialog(props) {
     createPlaylistConfirmButtonRef.current.disabled = e.target.value.length === 0;
   };
 
-  const supportsHover = !window.matchMedia('(hover: none)').matches;
-
   return (
     <ContextualModal
       closeTimeoutMS={200}
@@ -155,15 +153,14 @@ function AddToPlaylistDialog(props) {
           icon="close"
           onClick={closeDialog} />
       </div>
-      <OverlayScrollbarsComponent
+      <Scrollbars
         className={styles.Layout__contents}
-        options={{
-          scrollbars: {
-            autoHide: supportsHover ? 'leave' : 'scroll'
-          }
-        }}>
+        classes={{
+          thumbVertical: 'Scrollbar__handle'
+        }}
+        autoHide>
         {getPlaylists()}       
-      </OverlayScrollbarsComponent>
+      </Scrollbars>
       <div className={styles.Layout__footer}>
         <ContextualCSSTransition
           in={!createPlaylistMode}
