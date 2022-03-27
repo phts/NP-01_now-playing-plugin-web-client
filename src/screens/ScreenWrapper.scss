@@ -30,3 +30,31 @@
     }
   }
 }
+
+.ScreenWrapper--dim {
+  &-enter {
+    filter: brightness(1);
+
+    &-active {
+      filter: brightness(0.4);
+      transition: filter 100ms ease-in;
+    }
+
+    &-done {
+      filter: brightness(0.4);
+    }
+  }
+
+  &-exit {
+    filter: brightness(0.4);
+
+    &-active {
+      filter: brightness(1);
+      transition: filter 100ms ease-in;
+    }
+
+    &-done {
+      filter: brightness(1);
+    }
+  }
+}
