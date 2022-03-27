@@ -180,6 +180,11 @@
       justify-content: center;
       margin-top: -1em;
 
+      // This is temporary until we implement i18n
+      > div::first-letter {
+        text-transform: capitalize;
+      }
+
       :global(.material-icons) {
         font-size: 1.8em;
       }

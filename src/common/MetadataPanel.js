@@ -237,7 +237,7 @@ function MetadataPanel(props) {
       setState({
         status: 'error',
         error: {
-          message: 'Metadata service unavailable. Check that you have the latest version of the Now Playing plugin installed.'
+          message: 'Metadata service unavailable'
         },
         forProps
       });
