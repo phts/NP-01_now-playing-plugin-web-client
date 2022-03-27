@@ -1,6 +1,11 @@
 .ScreenWrapper {
   height: calc(var(--vh, 1vh) * 100);
   will-change: filter;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .ScreenWrapper--blur {
