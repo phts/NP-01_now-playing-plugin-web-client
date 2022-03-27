@@ -158,6 +158,8 @@ function AddToPlaylistDialog(props) {
         classes={{
           thumbVertical: 'Scrollbar__handle'
         }}
+        autoHeight
+        autoHeightMax='var(--max-contents-height)'
         autoHide>
         {getPlaylists()}       
       </Scrollbars>

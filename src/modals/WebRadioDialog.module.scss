@@ -19,12 +19,12 @@
   --left: calc(50vw - 50%);
   --top: calc(calc(50vh - 3em) - 50%);
   --min-vmargin: 12em;
+  --max-dialog-height: calc(100vh - var(--min-vmargin));
 
   position: absolute;
   display: flex;
   flex-direction: column;
   background: var(--dialog-background);
-  overflow: hidden;
   border: var(--dialog-border);
   border-radius: var(--dialog-border-radius);
   box-shadow: var(--dialog-box-shadow);
@@ -35,7 +35,7 @@
   max-width: 500px;
   min-width: 300px;
   height: auto;
-  max-height: calc(100% - var(--min-vmargin));
+  max-height: var(--max-dialog-height);
   opacity: 0;
   backdrop-filter: var(--dialog-backdrop-filter);
 
@@ -68,9 +68,9 @@
   }
 
   &__contents {
+    // --max-contents-height is passed as Scrollbars prop
+    --max-contents-height: calc(var(--max-dialog-height) - 8em);
     width: 100%;
-    flex-grow: 1;
-    min-height: 0;
   }
 
   &__footer {
@@ -82,6 +82,7 @@
     align-items: center;
     justify-content: flex-end;
     padding: 0 1em;
+    box-sizing: border-box;
   }
 }
 

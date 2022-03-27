@@ -107,7 +107,10 @@ function WebRadioDialog(props) {
         classes={{
           thumbVertical: 'Scrollbar__handle'
         }}
-        autoHide>
+        autoHeight
+        autoHeightMax='var(--max-contents-height)'
+        autoHide
+        >
         <div className={styles.ContentsWrapper}>
           <TextField ref={nameInputRef} placeholder="Name" icon="radio" onChange={onInputChange} />
           <TextField ref={urlInputRef} placeholder="URL" icon="link" onChange={onInputChange} />
