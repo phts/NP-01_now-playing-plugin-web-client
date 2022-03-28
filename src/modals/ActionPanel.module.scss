@@ -21,6 +21,7 @@
   position: absolute;
   background: var(--action-panel-background);
   overflow: auto;
+  border: var(--action-panel-border);
   border-radius: var(--action-panel-border-radius);
   outline: none;
   transform: translate(var(--left), -150%);
