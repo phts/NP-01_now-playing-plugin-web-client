@@ -145,6 +145,7 @@
   pointer-events: none;
 
   .VolumeBar {
+    --volume-slider-border: var(--trackbar-volumebar-border);
     --volume-slider-background: var(--trackbar-volumebar-background);
     --volume-slider-backdrop-filter: var(--trackbar-volumebar-backdrop-filter);
 

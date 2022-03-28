@@ -75,6 +75,7 @@
   --queue-screen-background-filter: blur(20px);
 
   // TrackBar
+  --trackbar-volumebar-border: none;
   --trackbar-volumebar-background: rgba(32, 32, 32, 0.9);
   @supports (backdrop-filter: none) {
     --trackbar-volumebar-background: rgba(32, 32, 32, 0.7);
