@@ -31,6 +31,23 @@
   margin-top: 1em;
   padding: 1em;
 
+  &--solid {
+    --action-panel-background: #222;
+    --action-panel-border: 1px solid #454545;
+    --action-panel-border-radius: 0.5em;
+    --volume-slider-background: none;
+    --volume-slider-border-radius: 0;
+    --volume-slider-border: none;
+    --screen-switcher-background: #333;
+    --screen-switcher-border: 1px solid #454545;
+    --screen-switcher-label-background: #454545;
+    --action-panel-extra-button-background: #333;
+    --action-panel-extra-button-border: 1px solid #454545;
+    --common-box-shadow: none;
+
+    padding: 1em 0 2em 0;
+  }
+
   &--after-open {
     transform: translate(var(--left), 0);
   }

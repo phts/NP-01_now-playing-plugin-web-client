@@ -10,10 +10,12 @@ import styles from './ActionPanel.module.scss';
 import { VOLUME_INDICATOR } from "./CommonModals";
 import volumioIcon from "../assets/volumio-icon.png";
 import ContextualModal from "../common/ContextualModal";
+import { usePerformanceSettings } from "../contexts/SettingsProvider";
 
 function ActionPanel(props) {
 
   const {disableModal, enableModal} = useModals();
+  const {disableTransitions} = usePerformanceSettings();
   const {switchScreen} = useScreens();
   const overlayEl = useRef(null);
   const {closePanel} = props;
@@ -25,7 +27,7 @@ function ActionPanel(props) {
   };
 
   const modalClassNames = {
-    base: `${styles.Layout} no-swipe`,
+    base: `${styles.Layout} ${disableTransitions ? styles['Layout--solid'] : ''} no-swipe`,
     afterOpen: styles['Layout--after-open'],
     beforeClose: styles['Layout--before-close']
   }
