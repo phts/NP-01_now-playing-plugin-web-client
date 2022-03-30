@@ -143,7 +143,35 @@ function NowPlayingScreen(props) {
       }
     }
     return children;
-  }, [customStyles])
+  }, [customStyles]);
+
+  const trackInfoOrder = useMemo(() => {
+    const defaultTrackInfoOrder = [
+      'title', 'artist', 'album', 'mediaInfo'
+    ];
+    if (customStyles.trackInfoOrder === 'custom') {
+      const customTrackOrder = [
+        {key: 'title', order: customStyles.trackInfoTitleOrder || -1},
+        {key: 'artist', order: customStyles.trackInfoArtistOrder || -1},
+        {key: 'album', order: customStyles.trackInfoAlbumOrder || -1},
+        {key: 'mediaInfo', order: customStyles.trackInfoMediaInfoOrder || -1}
+      ];
+      customTrackOrder.sort((a, b) => {
+        const aOrder = (a.order !== -1) ? a.order : defaultTrackInfoOrder.indexOf(a.key);
+        const bOrder = (b.order !== -1) ? b.order : defaultTrackInfoOrder.indexOf(b.key);
+        if (aOrder === bOrder) {
+          return (defaultTrackInfoOrder.indexOf(a.key) > defaultTrackInfoOrder.indexOf(b.key)) ? 1 : -1;
+        }
+        else {
+          return (aOrder > bOrder) ? 1 : -1;
+        }
+      });
+      return customTrackOrder.map( o => o.key );
+    }
+    else {
+      return defaultTrackInfoOrder;
+    }
+  }, [customStyles]);
 
   // Disable Volume Indicator modal when its docked
   // counterpart is displayed
@@ -300,7 +328,7 @@ function NowPlayingScreen(props) {
       <Dock position="bottomRight">{ getDockChildren('bottom-right') }</Dock>
       <div className={ styles.Layout__view }>
         {view === 'basic' ? 
-          <BasicView playerState={playerState} />
+          <BasicView playerState={playerState} trackInfoOrder={trackInfoOrder} />
           :
           <InfoView playerState={playerState} />}
       </div>

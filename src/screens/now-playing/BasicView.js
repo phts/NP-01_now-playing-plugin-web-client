@@ -31,7 +31,8 @@ function BasicView(props) {
               baseClassName: 'TrackInfoText',
               bundle: styles
             }}
-            playerState={playerState} />
+            playerState={playerState}
+            trackInfoOrder={props.trackInfoOrder} />
           : null}
         <PlayerButtonGroup
           className={playerButtonGroupClasses}
