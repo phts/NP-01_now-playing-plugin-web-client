@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useReducer } from "react";
+import { useCallback, useEffect, useRef, useReducer, useMemo } from "react";
 import './Background.scss';
 import './animations.scss';
 import { sanitizeImageUrl } from "../utils/track";
@@ -207,9 +207,14 @@ function Background(props) {
     css['--background-color'] = customStyles.backgroundColor || '#000';
   }
   
-  if (customStyles.backgroundOverlay === 'custom') { 
+  if (customStyles.backgroundOverlay === 'customColor') { 
     css['--background-overlay-color'] = customStyles.backgroundOverlayColor;
-    css['--background-overlay-opacity'] = customStyles.backgroundOverlayOpacity;
+    css['--background-overlay-opacity'] = customStyles.backgroundOverlayColorOpacity;
+  }
+  else if (customStyles.backgroundOverlay === 'customGradient') { 
+    css['--background-overlay-color'] = 'transparent';
+    css['--background-overlay-gradient'] = customStyles.backgroundOverlayGradient;
+    css['--background-overlay-opacity'] = customStyles.backgroundOverlayGradientOpacity || 1;
   }
   else if (customStyles.backgroundOverlay === 'none') { 
     css['--background-overlay-display'] = 'none';

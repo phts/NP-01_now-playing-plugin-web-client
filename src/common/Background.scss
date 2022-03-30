@@ -7,6 +7,7 @@
   --default-background-color: #000;
   --default-background-overlay-color: #000;
   --default-background-overlay-opacity: 0.5;
+  --default-background-overlay-gradient: none;
   --default-background-overlay-display: inherit;
 
   --background-size: var(--default-background-size);
@@ -16,6 +17,7 @@
   --background-image: var(--default-background-image);
   --background-color: var(--default-background-color);
   --background-overlay-color: var(--default-background-overlay-color);
+  --background-overlay-gradient: var(--default-background-overlay-gradient);
   --background-overlay-opacity: var(--default-background-overlay-opacity);
   --background-overlay-display: var(--default-background-overlay-display);
 
@@ -55,6 +57,7 @@
     left: 0;
     width: 100%;
     height: 100%;
+    background-image: var(--background-overlay-gradient);
     background-color: var(--background-overlay-color);
     opacity: var(--background-overlay-opacity);
   }
