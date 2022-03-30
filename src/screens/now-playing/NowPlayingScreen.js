@@ -116,6 +116,10 @@ function NowPlayingScreen(props) {
       _css['--albumart-fit'] = customStyles.albumartFit;
     } 
 
+    if (customStyles.albumartBorder) { 
+      _css['--albumart-border'] = customStyles.albumartBorder;
+    }
+
     if (customStyles.albumartBorderRadius) { 
       _css['--albumart-border-radius'] = customStyles.albumartBorderRadius;
     }

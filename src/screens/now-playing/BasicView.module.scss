@@ -19,7 +19,9 @@
     object-fit: var(--albumart-fit);
     width: var(--albumart-width);
     height: var(--albumart-height);
+    border: var(--albumart-border);
     border-radius: var(--albumart-border-radius);
+    box-sizing: border-box;
   }
 
   @media all and (orientation: portrait) {
