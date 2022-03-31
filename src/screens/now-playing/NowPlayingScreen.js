@@ -178,10 +178,10 @@ function NowPlayingScreen(props) {
     ];
     if (customStyles.trackInfoOrder === 'custom') {
       const customTrackOrder = [
-        {key: 'title', order: customStyles.trackInfoTitleOrder || -1},
-        {key: 'artist', order: customStyles.trackInfoArtistOrder || -1},
-        {key: 'album', order: customStyles.trackInfoAlbumOrder || -1},
-        {key: 'mediaInfo', order: customStyles.trackInfoMediaInfoOrder || -1}
+        {key: 'title', order: !isNaN(customStyles.trackInfoTitleOrder) ? customStyles.trackInfoTitleOrder : -1},
+        {key: 'artist', order: !isNaN(customStyles.trackInfoArtistOrder) ? customStyles.trackInfoArtistOrder : -1},
+        {key: 'album', order: !isNaN(customStyles.trackInfoAlbumOrder) ? customStyles.trackInfoAlbumOrder : -1},
+        {key: 'mediaInfo', order: !isNaN(customStyles.trackInfoMediaInfoOrder) ? customStyles.trackInfoMediaInfoOrder : -1}
       ];
       customTrackOrder.sort((a, b) => {
         const aOrder = (a.order !== -1) ? a.order : defaultTrackInfoOrder.indexOf(a.key);
