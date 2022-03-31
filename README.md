@@ -2,6 +2,14 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.1.2
+- Add support for the following style settings:
+  - Track info display order
+  - Album art border
+  - Background overlay gradients
+  - Additional Volume Indicator Tweaks
+- Some minor bug fixes
+
 0.1.1
 - Add menus
 - Add metadata service support
