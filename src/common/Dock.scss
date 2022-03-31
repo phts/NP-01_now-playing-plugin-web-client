@@ -5,6 +5,7 @@
   align-items: center;
   gap: 0.5em;
   z-index: 2;
+  pointer-events: none;
 }
 
 .Dock--topLeft,

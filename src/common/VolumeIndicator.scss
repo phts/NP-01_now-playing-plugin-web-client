@@ -1,5 +1,21 @@
+@import '../App.scss';
+
 .VolumeIndicator {
   --volume-level: 0px;
+
+  --size: var(--volume-indicator-size);
+  --background: var(--volume-indicator-background);
+  --border-radius: var(--volume-indicator-border-radius);
+  --backdrop-background: var(--volume-indicator-backdrop-background);
+  --backdrop-filter: var(--volume-indicator-backdrop-filter);
+  --dial-stroke-base-color: var(--volume-indicator-dial-stroke-base-color);
+  --dial-stroke-highlight-color: var(--volume-indicator-dial-stroke-highlight-color);
+  --dial-stroke-muted-color: var(--volume-indicator-dial-stroke-muted-color);
+  --font-color: var(--volume-indicator-text-color);
+  --font-size: var(--volume-indicator-text-font-size);
+  --icon-size: var(--volume-indicator-icon-size);
+  --icon-color: var(--font-color);
+  --muted-icon-size: var(--volume-indicator-muted-icon-size);
 
   display: flex;
   align-items: center;
@@ -7,14 +23,14 @@
   z-index: 100;
 
   &__dialWrapper {
-    width: var(--volume-indicator-size);
-    height: var(--volume-indicator-size);
-    background: var(--volume-indicator-background);
-    border-radius: var(--volume-indicator-border-radius);
+    width: var(--size);
+    height: var(--size);
+    background: var(--background);
+    border-radius: var(--border-radius);
 
     @supports (backdrop-filter: none) {
-      background: var(--volume-indicator-backdrop-background);
-      backdrop-filter: var(--volume-indicator-backdrop-filter);
+      background: var(--backdrop-background);
+      backdrop-filter: var(--backdrop-filter);
     }
 
     svg {
@@ -31,34 +47,44 @@
     stroke-linecap: round;
     
     &--primary {
-      stroke: var(--volume-indicator-dial-stroke-base-color);
+      stroke: var(--dial-stroke-base-color);
     }
 
     &--highlight {
       stroke-dasharray: 100;
       stroke-dashoffset: calc(100px - var(--volume-level));
-      stroke: var(--volume-indicator-dial-stroke-highlight-color);
+      stroke: var(--dial-stroke-highlight-color);
     }
 
     &--muted {
-      stroke: var(--volume-indicator-dial-stroke-muted-color);
+      stroke: var(--dial-stroke-muted-color);
     }
   }
 
-  &__text {
+  &__contents {
     position: absolute;
-    color: var(--volume-indicator-text-color);
-    font-size: var(--volume-indicator-text-font-size);
     display: flex;
     align-items: center;
     justify-content: center;
 
-    &--muted {
-      font-size: var(--volume-indicator-text-muted-font-size);
-    }
-
     &--noDial {
       position: unset;
+      gap: 5px;
+    }
+  }
+
+  &__text {
+    color: var(--font-color);
+    font-size: var(--font-size);
+  }
+
+  &__icon {
+    @extend .material-icons;
+    --size: var(--icon-size);
+    color: var(--icon-color);
+
+    &--muted {
+      --size: var(--muted-icon-size);
     }
   }
 }

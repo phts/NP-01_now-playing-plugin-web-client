@@ -134,16 +134,39 @@ function NowPlayingScreen(props) {
     if (viTweaks.visibility === 'always') {
       const viPlacement = viTweaks.placement || 'bottom-right';
       if (viPlacement === position) {
-        const viCSS = {};
-        ['fontSize', 'margin'].forEach( prop => {
-          if (viTweaks[prop]) {
-            viCSS[prop] =  viTweaks[prop];
+        const viStyles = {};
+        for (const [key, value] of Object.entries(viTweaks)) {
+          switch(key) {
+            case 'fontSize':
+              viStyles['--vi-tweaks-font-size'] = value;
+              break;
+            case 'iconSize':
+              viStyles['--vi-tweaks-icon-size'] = value;
+              viStyles['--vi-tweaks-muted-icon-size'] = value;
+              break;
+            case 'fontColor':
+              viStyles['--vi-tweaks-font-color'] = value;
+              break;
+            case 'iconColor':
+              viStyles['--vi-tweaks-icon-color'] = value;
+              break;
+            case 'margin':
+              viStyles['--vi-tweaks-margin'] = value;
+              break;
+            default:
           }
-        });
-        children.push(<VolumeIndicator 
-          key="VolumeIndicator"
-          showDial={false}
-          style={viCSS} />);
+        }
+        children.push((
+          <div style={viStyles}>
+            <VolumeIndicator 
+              key="DockedVolumeIndicator"
+              showDial={false}
+              styles={{
+                baseClassName: 'DockedVolumeIndicator',
+                bundle: styles,
+              }} />
+          </div>
+        ));
       }
     }
     return children;
