@@ -68,7 +68,7 @@ function BrowseScreen(props) {
     const handleError = (data) => {
       showToast({
         type: 'error',
-        message: data.error
+        message: data.message
       });
       stopFakeLoadingBar();
     };
