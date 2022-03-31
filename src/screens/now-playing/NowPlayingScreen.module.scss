@@ -257,6 +257,7 @@
   @extend .Button;
   font-size: 1em;
   opacity: 0.5;
+  pointer-events: initial;
 }
 
 .PopupMenu {
