@@ -1,0 +1,20 @@
+.Clock {
+  --date-color: var(--common-foreground-color);
+  --time-color: var(--common-foreground-color);
+  --font-size: inherit;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--common-foreground-color);
+
+  &__date {
+    font-size: var(--font-size);
+    color: var(--date-color);
+  }
+
+  &__time {
+    font-size: var(--font-size);
+    color: var(--time-color);
+  }
+}
