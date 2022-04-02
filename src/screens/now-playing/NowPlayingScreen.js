@@ -157,9 +157,8 @@ function NowPlayingScreen(props) {
           }
         }
         children.push((
-          <div style={viStyles}>
+          <div key="DockedVolumeIndicator" style={viStyles}>
             <VolumeIndicator 
-              key="DockedVolumeIndicator"
               showDial={false}
               styles={{
                 baseClassName: 'DockedVolumeIndicator',

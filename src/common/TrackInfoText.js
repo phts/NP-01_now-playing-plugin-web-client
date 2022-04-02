@@ -44,7 +44,7 @@ function TrackInfoText(props) {
   const trackInfoContents = trackInfoOrder.map(key => {
     switch(key) {
       case 'title':
-        return <span className={getElementClassName('title')}>{title}</span>;
+        return <span key={key} className={getElementClassName('title')}>{title}</span>;
       case 'artist':
         if (concatArtistAlbum) {
           let artistAlbum = artist;
@@ -52,16 +52,16 @@ function TrackInfoText(props) {
             artistAlbum += artistAlbum ? ' - ' : '';
             artistAlbum += album;
           }
-          return <span className={getElementClassName('artistAlbum')}>{artistAlbum}</span>;
+          return <span key="artistAlbum" className={getElementClassName('artistAlbum')}>{artistAlbum}</span>;
         }
         else {
-          return <span className={getElementClassName('artist')}>{artist}</span>
+          return <span key={key} className={getElementClassName('artist')}>{artist}</span>
         }
       case 'album':
-        return concatArtistAlbum ? null : <span className={getElementClassName('album')}>{album}</span>;
+        return concatArtistAlbum ? null : <span key={key} className={getElementClassName('album')}>{album}</span>;
       case 'mediaInfo':
         return (
-          <div className={getElementClassName('format')}>
+          <div key={key} className={getElementClassName('format')}>
             {formatIcon ? <img src={formatIcon} className={getElementClassName('formatIcon')} alt="" /> : null}
             <span className={getElementClassName('formatResolution')}>{formatResolution}</span>
           </div>
