@@ -5,16 +5,15 @@
 
   display: flex;
   align-items: center;
-  gap: 8px;
+  font-size: var(--font-size);
+  gap: 0.5em;
   color: var(--common-foreground-color);
 
   &__date {
-    font-size: var(--font-size);
     color: var(--date-color);
   }
 
   &__time {
-    font-size: var(--font-size);
     color: var(--time-color);
   }
 }
