@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../common/Button';
 import { useModals } from '../../contexts/ModalStateProvider';
 import classNames from 'classnames';
-import VolumeIndicator from '../../common/VolumeIndicator';
 import { useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
 import { useScreens } from '../../contexts/ScreenContextProvider';
@@ -15,6 +14,7 @@ import InfoView from './InfoView';
 import { useStore } from '../../contexts/StoreProvider';
 import { useRawSettings } from '../../contexts/SettingsProvider';
 import { usePlayerState } from '../../contexts/PlayerProvider';
+import DockedVolumeIndicator from './DockedVolumeIndicator';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
@@ -130,43 +130,18 @@ function NowPlayingScreen(props) {
   const getDockChildren = useCallback((position) => {
     const children = [];
     
-    const viTweaks = screenSettings.volumeIndicator || {};
-    if (viTweaks.visibility === 'always') {
-      const viPlacement = viTweaks.placement || 'bottom-right';
-      if (viPlacement === position) {
-        const viStyles = {};
-        for (const [key, value] of Object.entries(viTweaks)) {
-          switch(key) {
-            case 'fontSize':
-              viStyles['--vi-tweaks-font-size'] = value;
-              break;
-            case 'iconSize':
-              viStyles['--vi-tweaks-icon-size'] = value;
-              viStyles['--vi-tweaks-muted-icon-size'] = value;
-              break;
-            case 'fontColor':
-              viStyles['--vi-tweaks-font-color'] = value;
-              break;
-            case 'iconColor':
-              viStyles['--vi-tweaks-icon-color'] = value;
-              break;
-            case 'margin':
-              viStyles['--vi-tweaks-margin'] = value;
-              break;
-            default:
-          }
-        }
-        children.push((
-          <div key="DockedVolumeIndicator" style={viStyles}>
-            <VolumeIndicator 
-              showDial={false}
-              styles={{
-                baseClassName: 'DockedVolumeIndicator',
-                bundle: styles,
-              }} />
-          </div>
-        ));
-      }
+    const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator || {};
+    if (dockedVolumeIndicator.enabled && dockedVolumeIndicator.placement === position) {
+      const dockedVolumeIndicatorProps = {
+        fontSize: dockedVolumeIndicator.fontSize,
+        iconSize: dockedVolumeIndicator.iconSize,
+        fontColor: dockedVolumeIndicator.fontColor,
+        iconColor: dockedVolumeIndicator.iconColor,
+        margin: dockedVolumeIndicator.margin
+      };
+      children.push(
+        <DockedVolumeIndicator key="dockedVolumeIndicator" {...dockedVolumeIndicatorProps} />
+      );
     }
     return children;
   }, [screenSettings]);

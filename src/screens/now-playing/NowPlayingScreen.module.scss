@@ -1,5 +1,4 @@
 @import '../../common/PopupMenu';
-@import '../../common/VolumeIndicator';
 
 .Layout {
   /* Default styles */
@@ -268,15 +267,4 @@
   &__menuButton {
     font-size: var(--default-base-font-size);
   }
-}
-
-.DockedVolumeIndicator {
-  @extend .VolumeIndicator;
-
-  --font-size: var(--vi-tweaks-font-size, 1em);
-  --icon-size: var(--vi-tweaks-icon-size, 1.2em);
-  --muted-icon-size: var(--vi-tweaks-muted-icon-size, 1.1em);
-  --font-color: var(--vi-tweaks-font-color, #CCCCCC);
-  --icon-color: var(--vi-tweaks-icon-color, #CCCCCC);
-  margin: var(--vi-tweaks-margin, inherit);
 }

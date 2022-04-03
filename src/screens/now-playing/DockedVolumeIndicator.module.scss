@@ -1,0 +1,12 @@
+@import "../../common/VolumeIndicator";
+
+.DockedVolumeIndicator {
+  @extend .VolumeIndicator;
+
+  --font-size: var(--docked-font-size, 1em);
+  --icon-size: var(--docked-icon-size, 1.2em);
+  --muted-icon-size: var(--docked-muted-icon-size, 1.1em);
+  --font-color: var(--docked-font-color, #cccccc);
+  --icon-color: var(--docked-icon-color, #cccccc);
+  margin: var(--docked-margin, inherit);
+}
