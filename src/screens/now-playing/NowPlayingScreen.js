@@ -13,7 +13,7 @@ import PopupMenu from '../../common/PopupMenu';
 import BasicView from './BasicView';
 import InfoView from './InfoView';
 import { useStore } from '../../contexts/StoreProvider';
-import { useCustomStyles } from '../../contexts/SettingsProvider';
+import { useRawSettings } from '../../contexts/SettingsProvider';
 import { usePlayerState } from '../../contexts/PlayerProvider';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
@@ -21,7 +21,7 @@ const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 function NowPlayingScreen(props) {
   const playerState = usePlayerState();
   const {openModal, disableModal, enableModal} = useModals();
-  const {customStyles} = useCustomStyles();
+  const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
   const screenEl = useRef(null);
   const {activeScreenId, switchScreen} = useScreens();
   const store = useStore();
@@ -40,97 +40,97 @@ function NowPlayingScreen(props) {
   // Custom styles
   const css = useMemo(() => {
     const _css = {};
-    if (customStyles.fontSizes === 'custom') { 
-      _css['--title-font-size'] = customStyles.titleFontSize;
-      _css['--artist-font-size'] = customStyles.artistFontSize;
-      _css['--album-font-size'] = customStyles.albumFontSize;
-      _css['--media-info-font-size'] = customStyles.mediaInfoFontSize;
+    if (screenSettings.fontSizes === 'custom') { 
+      _css['--title-font-size'] = screenSettings.titleFontSize;
+      _css['--artist-font-size'] = screenSettings.artistFontSize;
+      _css['--album-font-size'] = screenSettings.albumFontSize;
+      _css['--media-info-font-size'] = screenSettings.mediaInfoFontSize;
     }
 
-    if (customStyles.fontColors === 'custom') { 
-      _css['--title-font-color'] = customStyles.titleFontColor;
-      _css['--artist-font-color'] = customStyles.artistFontColor;
-      _css['--album-font-color'] = customStyles.albumFontColor;
-      _css['--media-info-font-color'] = customStyles.mediaInfoFontColor;
+    if (screenSettings.fontColors === 'custom') { 
+      _css['--title-font-color'] = screenSettings.titleFontColor;
+      _css['--artist-font-color'] = screenSettings.artistFontColor;
+      _css['--album-font-color'] = screenSettings.albumFontColor;
+      _css['--media-info-font-color'] = screenSettings.mediaInfoFontColor;
     }
 
-    if (customStyles.textAlignmentH) {
-      _css['--text-alignment-h'] = customStyles.textAlignmentH;
+    if (screenSettings.textAlignmentH) {
+      _css['--text-alignment-h'] = screenSettings.textAlignmentH;
     }
 
-    if (customStyles.textAlignmentV) {
-      _css['--text-alignment-v'] = customStyles.textAlignmentV;
+    if (screenSettings.textAlignmentV) {
+      _css['--text-alignment-v'] = screenSettings.textAlignmentV;
     }
 
-    if (customStyles.textAlignmentLyrics) {
-      _css['--text-alignment-lyrics'] = customStyles.textAlignmentLyrics;
+    if (screenSettings.textAlignmentLyrics) {
+      _css['--text-alignment-lyrics'] = screenSettings.textAlignmentLyrics;
     }
   
-    if (customStyles.textMargins === 'custom') { 
-      _css['--title-margin'] = customStyles.titleMargin;
-      _css['--artist-margin'] = customStyles.artistMargin;
-      _css['--album-margin'] = customStyles.albumMargin;
-      _css['--media-info-margin'] = customStyles.mediaInfoMargin;    
+    if (screenSettings.textMargins === 'custom') { 
+      _css['--title-margin'] = screenSettings.titleMargin;
+      _css['--artist-margin'] = screenSettings.artistMargin;
+      _css['--album-margin'] = screenSettings.albumMargin;
+      _css['--media-info-margin'] = screenSettings.mediaInfoMargin;    
     }
 
-    if (customStyles.maxLines === 'custom') {
-      _css['--max-title-lines'] = customStyles.maxTitleLines;
-      _css['--max-artist-lines'] = customStyles.maxArtistLines;
-      _css['--max-album-lines'] = customStyles.maxAlbumLines;
+    if (screenSettings.maxLines === 'custom') {
+      _css['--max-title-lines'] = screenSettings.maxTitleLines;
+      _css['--max-artist-lines'] = screenSettings.maxArtistLines;
+      _css['--max-album-lines'] = screenSettings.maxAlbumLines;
     }
 
-    if (customStyles.widgetColors === 'custom') { 
-      _css['--widget-primary-color'] = customStyles.widgetPrimaryColor;
-      _css['--widget-highlight-color'] = customStyles.widgetHighlightColor;
+    if (screenSettings.widgetColors === 'custom') { 
+      _css['--widget-primary-color'] = screenSettings.widgetPrimaryColor;
+      _css['--widget-highlight-color'] = screenSettings.widgetHighlightColor;
     } 
 
-    if (customStyles.widgetVisibility === 'custom') {
-      if (!customStyles.playbackButtonsVisibility) {
+    if (screenSettings.widgetVisibility === 'custom') {
+      if (!screenSettings.playbackButtonsVisibility) {
         _css['--playback-buttons-visibility'] = 'none';
         _css['--seekbar-margin'] = 'auto 0px 0px 0px';
       }
-      if (!customStyles.seekbarVisibility) {
+      if (!screenSettings.seekbarVisibility) {
         _css['--seekbar-visibility'] = 'none';
       }
     } 
 
-    if (customStyles.playbackButtonSizeType === 'custom') { 
-      _css['--playback-buttons-size'] = customStyles.playbackButtonSize;
+    if (screenSettings.playbackButtonSizeType === 'custom') { 
+      _css['--playback-buttons-size'] = screenSettings.playbackButtonSize;
     } 
 
-    if (customStyles.widgetMargins === 'custom') { 
-      _css['--playback-buttons-margin'] = customStyles.playbackButtonsMargin;
-      _css['--seekbar-margin'] = customStyles.seekbarMargin;
+    if (screenSettings.widgetMargins === 'custom') { 
+      _css['--playback-buttons-margin'] = screenSettings.playbackButtonsMargin;
+      _css['--seekbar-margin'] = screenSettings.seekbarMargin;
     }  
 
-    if (customStyles.albumartVisibility !== undefined && !customStyles.albumartVisibility) {
+    if (screenSettings.albumartVisibility !== undefined && !screenSettings.albumartVisibility) {
       _css['--albumart-visibility'] = 'none';
     } 
 
-    if (customStyles.albumartSize === 'custom') { 
-      _css['--albumart-width'] = customStyles.albumartWidth;
-      _css['--albumart-height'] = customStyles.albumartHeight;
+    if (screenSettings.albumartSize === 'custom') { 
+      _css['--albumart-width'] = screenSettings.albumartWidth;
+      _css['--albumart-height'] = screenSettings.albumartHeight;
     } 
 
-    if (customStyles.albumartFit) { 
-      _css['--albumart-fit'] = customStyles.albumartFit;
+    if (screenSettings.albumartFit) { 
+      _css['--albumart-fit'] = screenSettings.albumartFit;
     } 
 
-    if (customStyles.albumartBorder) { 
-      _css['--albumart-border'] = customStyles.albumartBorder;
+    if (screenSettings.albumartBorder) { 
+      _css['--albumart-border'] = screenSettings.albumartBorder;
     }
 
-    if (customStyles.albumartBorderRadius) { 
-      _css['--albumart-border-radius'] = customStyles.albumartBorderRadius;
+    if (screenSettings.albumartBorderRadius) { 
+      _css['--albumart-border-radius'] = screenSettings.albumartBorderRadius;
     }
     
     return _css;
-  }, [customStyles]);
+  }, [screenSettings]);
 
   const getDockChildren = useCallback((position) => {
     const children = [];
     
-    const viTweaks = customStyles.volumeIndicator || {};
+    const viTweaks = screenSettings.volumeIndicator || {};
     if (viTweaks.visibility === 'always') {
       const viPlacement = viTweaks.placement || 'bottom-right';
       if (viPlacement === position) {
@@ -169,18 +169,18 @@ function NowPlayingScreen(props) {
       }
     }
     return children;
-  }, [customStyles]);
+  }, [screenSettings]);
 
   const trackInfoOrder = useMemo(() => {
     const defaultTrackInfoOrder = [
       'title', 'artist', 'album', 'mediaInfo'
     ];
-    if (customStyles.trackInfoOrder === 'custom') {
+    if (screenSettings.trackInfoOrder === 'custom') {
       const customTrackOrder = [
-        {key: 'title', order: !isNaN(customStyles.trackInfoTitleOrder) ? customStyles.trackInfoTitleOrder : -1},
-        {key: 'artist', order: !isNaN(customStyles.trackInfoArtistOrder) ? customStyles.trackInfoArtistOrder : -1},
-        {key: 'album', order: !isNaN(customStyles.trackInfoAlbumOrder) ? customStyles.trackInfoAlbumOrder : -1},
-        {key: 'mediaInfo', order: !isNaN(customStyles.trackInfoMediaInfoOrder) ? customStyles.trackInfoMediaInfoOrder : -1}
+        {key: 'title', order: !isNaN(screenSettings.trackInfoTitleOrder) ? screenSettings.trackInfoTitleOrder : -1},
+        {key: 'artist', order: !isNaN(screenSettings.trackInfoArtistOrder) ? screenSettings.trackInfoArtistOrder : -1},
+        {key: 'album', order: !isNaN(screenSettings.trackInfoAlbumOrder) ? screenSettings.trackInfoAlbumOrder : -1},
+        {key: 'mediaInfo', order: !isNaN(screenSettings.trackInfoMediaInfoOrder) ? screenSettings.trackInfoMediaInfoOrder : -1}
       ];
       customTrackOrder.sort((a, b) => {
         const aOrder = (a.order !== -1) ? a.order : defaultTrackInfoOrder.indexOf(a.key);
@@ -197,19 +197,19 @@ function NowPlayingScreen(props) {
     else {
       return defaultTrackInfoOrder;
     }
-  }, [customStyles]);
+  }, [screenSettings]);
 
   // Disable Volume Indicator modal when its docked
   // counterpart is displayed
   useEffect(() => {
-    const viTweaks = customStyles.volumeIndicator || {};
+    const viTweaks = screenSettings.volumeIndicator || {};
     if (viTweaks.visibility === 'always' && activeScreenId === 'NowPlaying') {
       disableModal(VOLUME_INDICATOR);
     }
     else {
       enableModal(VOLUME_INDICATOR);
     }
-  }, [activeScreenId, customStyles.volumeIndicator, disableModal, enableModal]);
+  }, [activeScreenId, screenSettings.volumeIndicator, disableModal, enableModal]);
 
   // Swipe handling
   const onScreenSwiped = useCallback((e) => {  

@@ -3,10 +3,10 @@ import classNames from 'classnames';
 import { ControlledMenu, MenuDivider, MenuHeader, MenuItem, useMenuState } from '@szhsin/react-menu';
 import { useCallback, useEffect, useRef } from 'react';
 import Button from './Button';
-import { usePerformanceSettings } from '../contexts/SettingsProvider';
+import { usePerformanceContext } from '../contexts/SettingsProvider';
 
 function PopupMenu(props) {
-  const {disableTransitions} = usePerformanceSettings();
+  const {disableTransitions} = usePerformanceContext();
   const {menuItems, onMenuItemClick, onMenuOverlay} = props;
   const menuButtonRef = useRef();
   const menuOverlayRef = useRef();

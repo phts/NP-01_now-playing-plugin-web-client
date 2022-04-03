@@ -1,8 +1,8 @@
 import Modal from "react-modal/lib/components/Modal";
-import { usePerformanceSettings } from "../contexts/SettingsProvider";
+import { usePerformanceContext } from "../contexts/SettingsProvider";
 
 function ContextualModal(props) {
-  const {disableTransitions} = usePerformanceSettings();
+  const {disableTransitions} = usePerformanceContext();
 
   const portalClassName = disableTransitions ? 'ReactModalPortal no-transitions' : null;
 

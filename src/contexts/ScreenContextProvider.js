@@ -5,7 +5,7 @@ import ContextualCSSTransition from "../common/ContextualCSSTransition";
 import TrackBar from "../common/TrackBar";
 import ScreenWrapper from "../screens/ScreenWrapper";
 import './ScreenContext.scss';
-import { usePerformanceSettings } from "./SettingsProvider";
+import { useRawSettings } from "./SettingsProvider";
 
 const ScreenContext = createContext();
 
@@ -30,7 +30,7 @@ const getInitialScreenStates = (children) => {
 const ScreenContextProvider = ({ children }) => {
 
   const lastOrderedScreenIds = useRef(null);
-  const {performanceSettings} = usePerformanceSettings();
+  const {settings: performanceSettings} = useRawSettings('performance');
 
   const screenStatesReducer = (states, data = {}) => {
     for (const screenId of Object.keys(data)) {

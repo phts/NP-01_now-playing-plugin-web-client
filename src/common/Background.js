@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useReducer, useMemo } from "react";
+import { useCallback, useEffect, useRef, useReducer } from "react";
 import './Background.scss';
 import './animations.scss';
 import { sanitizeImageUrl } from "../utils/track";
@@ -7,7 +7,7 @@ import Image from "./Image";
 import { preloadImage } from "../utils/image";
 import classNames from "classnames";
 import ContextualCSSTransition from "./ContextualCSSTransition";
-import { useCustomStyles, usePerformanceSettings } from "../contexts/SettingsProvider";
+import { usePerformanceContext, useRawSettings } from "../contexts/SettingsProvider";
 import { usePlayerState } from "../contexts/PlayerProvider";
 
 /**
@@ -36,10 +36,10 @@ import { usePlayerState } from "../contexts/PlayerProvider";
 function Background(props) {
   const {host} = useAppContext();
   const playerState = usePlayerState();
-  const {customStyles} = useCustomStyles();
+  const {settings: backgroundSettings} = useRawSettings('background');
   const fallbackSrc = host + '/albumart';
   const pendingTargetSrc = useRef(null);
-  const {disableTransitions} = usePerformanceSettings();
+  const {disableTransitions} = usePerformanceContext();
 
   const transitionStateReducer = (state, transitionProps = {}) => {
     return {...state, ...transitionProps};
@@ -48,8 +48,8 @@ function Background(props) {
   const [transitionState, updateTransitionState] = useReducer(transitionStateReducer, initialTransitionState);
 
   const isWebkit = navigator.userAgent.indexOf('AppleWebKit') >= 0;
-  const isTransitionable = (customStyles.backgroundType !== 'volumioBackground' || 
-    customStyles.volumioBackgroundImage === '') && customStyles.backgroundType !== 'color';
+  const isTransitionable = (backgroundSettings.backgroundType !== 'volumioBackground' || 
+    backgroundSettings.volumioBackgroundImage === '') && backgroundSettings.backgroundType !== 'color';
 
   // Handle change in playerState albumart
   useEffect(() => {
@@ -179,44 +179,44 @@ function Background(props) {
 
   // Custom styles
   const css = {};
-  if (customStyles.backgroundType === 'albumart') { 
-    const albumartBackgroundFit = customStyles.albumartBackgroundFit || 'cover'; 
+  if (backgroundSettings.backgroundType === 'albumart') { 
+    const albumartBackgroundFit = backgroundSettings.albumartBackgroundFit || 'cover'; 
     const backgroundSize = albumartBackgroundFit === 'fill' ? '100% 100%' : albumartBackgroundFit; 
-    const backgroundPosition = customStyles.albumartBackgroundPosition || 'center'; 
-    const backgroundBlur = customStyles.albumartBackgroundBlur || '0px'; 
-    const backgroundScale = customStyles.albumartBackgroundScale || '1'; 
+    const backgroundPosition = backgroundSettings.albumartBackgroundPosition || 'center'; 
+    const backgroundBlur = backgroundSettings.albumartBackgroundBlur || '0px'; 
+    const backgroundScale = backgroundSettings.albumartBackgroundScale || '1'; 
     css['--background-size'] = backgroundSize;
     css['--background-position'] = backgroundPosition;
     css['--background-blur'] = backgroundBlur;
     css['--background-scale'] = backgroundScale;
   }
-  else if (customStyles.backgroundType === 'volumioBackground' && customStyles.volumioBackgroundImage !== '') { 
-    const volumioBackgroundFit = customStyles.volumioBackgroundFit || 'cover'; 
+  else if (backgroundSettings.backgroundType === 'volumioBackground' && backgroundSettings.volumioBackgroundImage !== '') { 
+    const volumioBackgroundFit = backgroundSettings.volumioBackgroundFit || 'cover'; 
     const backgroundSize = volumioBackgroundFit === 'fill' ? '100% 100%' : volumioBackgroundFit; 
-    const backgroundPosition = customStyles.volumioBackgroundPosition || 'center'; 
-    const backgroundBlur = customStyles.volumioBackgroundBlur || '0px'; 
-    const backgroundScale = customStyles.volumioBackgroundScale || '1';
-    css['--background-image'] = `url("${ host }/backgrounds/${ customStyles.volumioBackgroundImage }")`;
+    const backgroundPosition = backgroundSettings.volumioBackgroundPosition || 'center'; 
+    const backgroundBlur = backgroundSettings.volumioBackgroundBlur || '0px'; 
+    const backgroundScale = backgroundSettings.volumioBackgroundScale || '1';
+    css['--background-image'] = `url("${ host }/backgrounds/${ backgroundSettings.volumioBackgroundImage }")`;
     css['--background-size'] = backgroundSize;
     css['--background-position'] = backgroundPosition;
     css['--background-blur'] = backgroundBlur;
     css['--background-scale'] = backgroundScale;
   }
-  else if (customStyles.backgroundType === 'color') {
+  else if (backgroundSettings.backgroundType === 'color') {
     css['--background-image'] = 'none';
-    css['--background-color'] = customStyles.backgroundColor || '#000';
+    css['--background-color'] = backgroundSettings.backgroundColor || '#000';
   }
   
-  if (customStyles.backgroundOverlay === 'customColor') { 
-    css['--background-overlay-color'] = customStyles.backgroundOverlayColor;
-    css['--background-overlay-opacity'] = customStyles.backgroundOverlayColorOpacity;
+  if (backgroundSettings.backgroundOverlay === 'customColor') { 
+    css['--background-overlay-color'] = backgroundSettings.backgroundOverlayColor;
+    css['--background-overlay-opacity'] = backgroundSettings.backgroundOverlayColorOpacity;
   }
-  else if (customStyles.backgroundOverlay === 'customGradient') { 
+  else if (backgroundSettings.backgroundOverlay === 'customGradient') { 
     css['--background-overlay-color'] = 'transparent';
-    css['--background-overlay-gradient'] = customStyles.backgroundOverlayGradient;
-    css['--background-overlay-opacity'] = customStyles.backgroundOverlayGradientOpacity || 1;
+    css['--background-overlay-gradient'] = backgroundSettings.backgroundOverlayGradient;
+    css['--background-overlay-opacity'] = backgroundSettings.backgroundOverlayGradientOpacity || 1;
   }
-  else if (customStyles.backgroundOverlay === 'none') { 
+  else if (backgroundSettings.backgroundOverlay === 'none') { 
     css['--background-overlay-display'] = 'none';
   }
   if (isTransitionable) {

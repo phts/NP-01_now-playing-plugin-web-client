@@ -1,13 +1,13 @@
 import ContextualCSSTransition from "../common/ContextualCSSTransition";
 import { useModals } from "../contexts/ModalStateProvider";
-import { usePerformanceSettings } from "../contexts/SettingsProvider";
+import { usePerformanceContext } from "../contexts/SettingsProvider";
 import { ACTION_PANEL } from "../modals/CommonModals";
 import './ScreenWrapper.scss';
 
 const ScreenWrapper = ({ children }) => {
 
   const {isModalOpened} = useModals();
-  const {disableTransitions} = usePerformanceSettings();
+  const {disableTransitions} = usePerformanceContext();
 
   return (
     <ContextualCSSTransition

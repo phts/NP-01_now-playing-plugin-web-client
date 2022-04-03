@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import { Children, cloneElement, useMemo } from "react";
 import { CSSTransition } from "react-transition-group";
-import { usePerformanceSettings } from "../contexts/SettingsProvider";
+import { usePerformanceContext } from "../contexts/SettingsProvider";
 
 function ContextualCSSTransition(props) {
-  const {disableTransitions} = usePerformanceSettings();
+  const {disableTransitions} = usePerformanceContext();
 
   const children = useMemo(() => {
     if (props.children && disableTransitions) {

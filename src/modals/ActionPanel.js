@@ -10,12 +10,12 @@ import styles from './ActionPanel.module.scss';
 import { VOLUME_INDICATOR } from "./CommonModals";
 import volumioIcon from "../assets/volumio-icon.png";
 import ContextualModal from "../common/ContextualModal";
-import { usePerformanceSettings } from "../contexts/SettingsProvider";
+import { usePerformanceContext } from "../contexts/SettingsProvider";
 
 function ActionPanel(props) {
 
   const {disableModal, enableModal} = useModals();
-  const {disableTransitions} = usePerformanceSettings();
+  const {disableTransitions} = usePerformanceContext();
   const {switchScreen} = useScreens();
   const overlayEl = useRef(null);
   const {closePanel} = props;

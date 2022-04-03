@@ -26,17 +26,20 @@ export function getInitialPluginInfo() {
   return getInitialData('pluginInfo', null);
 }
 
-export function getInitialThemeName() {
-  return getInitialData('theme', 'default');
+export function getInitialSettings(namespace) {
+  const settings = getInitialData('settings', {});
+  switch (namespace) {
+    case 'screen.nowPlaying':
+    case 'background':
+      return settings[namespace] || {};
+    case 'theme':
+      return settings[namespace] || 'default';
+    case 'performance':
+      return settings[namespace] || DEFAULT_PERFORMANCE_SETTINGS;
+    default:
+      return null;
+  }
 }
-
-export function getInitialCustomStyles() {
-  return getInitialData('styles', {});
-};
-
-export function getInitialPerformanceSettings() {
-  return getInitialData('performanceSettings', DEFAULT_PERFORMANCE_SETTINGS);
-};
 
 export function checkKiosk() {
   const url = new URL(window.location);
