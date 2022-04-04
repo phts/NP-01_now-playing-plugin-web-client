@@ -30,11 +30,20 @@ const getDateTime = (timeZone, locale) => {
  * 
  */
 
+const sanitizeLocale = (locale) => {
+  try {
+    const supported = Intl.DateTimeFormat.supportedLocalesOf(locale);
+    return supported[0];
+  } catch (e) {
+    return null;
+  }
+};
+
 const Clock = React.forwardRef((props, ref) => {
   const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
   const timeFormat = props.timeFormat || DEFAULT_TIME_FORMAT;
   const timeZone = props.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const locale = props.locale || navigator.language;
+  const locale = sanitizeLocale(props.locale) || Intl.DateTimeFormat().resolvedOptions().locale;
   const [dateTime, setDateTime] = useState(getDateTime(timeZone, locale));
 
   const baseClassName = props.styles ? props.styles.baseClassName : null;
