@@ -15,6 +15,7 @@ import { useStore } from '../../contexts/StoreProvider';
 import { useRawSettings } from '../../contexts/SettingsProvider';
 import { usePlayerState } from '../../contexts/PlayerProvider';
 import DockedVolumeIndicator from './DockedVolumeIndicator';
+import DockedClock from './DockedClock';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
@@ -143,6 +144,20 @@ function NowPlayingScreen(props) {
         <DockedVolumeIndicator key="dockedVolumeIndicator" {...dockedVolumeIndicatorProps} />
       );
     }
+
+    const dockedClock = screenSettings.dockedClock || {};
+    if (dockedClock.enabled && dockedClock.placement === position) {
+      const dockedClockProps = {
+        fontSize: dockedClock.fontSize,
+        dateColor: dockedClock.dateColor,
+        timeColor: dockedClock.timeColor,
+        margin: dockedClock.margin
+      };
+      children.push(
+        <DockedClock key="dockedClock" {...dockedClockProps} />
+      );
+    }
+
     return children;
   }, [screenSettings]);
 
