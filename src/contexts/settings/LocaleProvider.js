@@ -17,17 +17,7 @@ const getClientLocale = () => {
 }
 
 const getSettingsLocale = (settings) => {
-  let locale;
-  switch(settings.localeType) {
-    case 'volumio':
-      locale = settings.volumioLocale;
-      break;
-    case 'custom':
-      locale = settings.locale;
-      break;
-    default:
-      locale = null;
-  }
+  let locale = settings.resolvedLocale;
   if (!locale) {
     locale = getClientLocale();
   }

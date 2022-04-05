@@ -8,17 +8,7 @@ const getClientTimezone = () => {
 }
 
 const getSettingsTimezone = (settings) => {
-  let timezone;
-  switch(settings.timezoneType) {
-    case 'custom':
-      timezone = settings.timezone;
-      break;
-    case 'geoCoordinates':
-      timezone = settings.geoTimezone;
-      break;
-    default:
-      timezone = null;
-  }
+  let timezone = settings.resolvedTimezone;
   if (!timezone) {
     timezone = getClientTimezone();
   }
