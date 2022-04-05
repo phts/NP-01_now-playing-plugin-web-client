@@ -13,6 +13,9 @@ const getSettingsTimezone = (settings) => {
     case 'custom':
       timezone = settings.timezone;
       break;
+    case 'geoCoordinates':
+      timezone = settings.geoTimezone;
+      break;
     default:
       timezone = null;
   }
