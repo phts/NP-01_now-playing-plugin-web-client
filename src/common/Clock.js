@@ -2,6 +2,7 @@ import './Clock.scss';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { DateTime } from 'luxon';
+import { useLocale, useTimezone } from '../contexts/SettingsProvider';
 
 const DEFAULT_DATE_FORMAT = DateTime.DATE_SHORT;
 const DEFAULT_TIME_FORMAT = DateTime.TIME_SIMPLE;
@@ -30,20 +31,11 @@ const getDateTime = (timeZone, locale) => {
  * 
  */
 
-const sanitizeLocale = (locale) => {
-  try {
-    const supported = Intl.DateTimeFormat.supportedLocalesOf(locale);
-    return supported[0];
-  } catch (e) {
-    return null;
-  }
-};
-
 const Clock = React.forwardRef((props, ref) => {
   const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
   const timeFormat = props.timeFormat || DEFAULT_TIME_FORMAT;
-  const timeZone = props.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const locale = sanitizeLocale(props.locale) || Intl.DateTimeFormat().resolvedOptions().locale;
+  const timeZone = useTimezone();
+  const locale = useLocale();
   const [dateTime, setDateTime] = useState(getDateTime(timeZone, locale));
 
   const baseClassName = props.styles ? props.styles.baseClassName : null;
