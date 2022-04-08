@@ -21,6 +21,7 @@ import { ServiceProvider } from './contexts/ServiceProvider';
 import { StoreProvider } from './contexts/StoreProvider';
 import { SettingsProvider } from './contexts/SettingsProvider';
 import { PlayerProvider } from './contexts/PlayerProvider';
+import { WeatherProvider } from './contexts/WeatherProvider';
 
 function App() {
   const [height, setHeight] = useState(window.innerHeight);
@@ -51,27 +52,29 @@ function App() {
                     <NotificationListener />
                     <DisconnectedIndicator />
                     <ServiceProvider>
-                      <ScreenContextProvider>
-                        <NowPlayingScreen
-                          screenId="NowPlaying"
-                          defaultActive
-                          mountOnEnter
-                          unmountOnExit />
-                        <BrowseScreen
-                          screenId="Browse"
-                          usesTrackBar
-                          mountOnEnter />
-                        <QueueScreen
-                          screenId="Queue"
-                          float
-                          usesTrackBar
-                          mountOnEnter />
-                        <VolumioScreen
-                          screenId="Volumio"
-                          mountOnEnter
-                          unmountOnExit />
-                        <CommonModals realVh={vh} />
-                      </ScreenContextProvider>
+                      <WeatherProvider>
+                        <ScreenContextProvider>
+                          <NowPlayingScreen
+                            screenId="NowPlaying"
+                            defaultActive
+                            mountOnEnter
+                            unmountOnExit />
+                          <BrowseScreen
+                            screenId="Browse"
+                            usesTrackBar
+                            mountOnEnter />
+                          <QueueScreen
+                            screenId="Queue"
+                            float
+                            usesTrackBar
+                            mountOnEnter />
+                          <VolumioScreen
+                            screenId="Volumio"
+                            mountOnEnter
+                            unmountOnExit />
+                          <CommonModals realVh={vh} />
+                        </ScreenContextProvider>
+                      </WeatherProvider>
                     </ServiceProvider>
                   </ModalStateProvider>
                 </NotificationProvider>

@@ -1,0 +1,40 @@
+.DockedWeather {
+  --icon-size: 1.5em;
+  --font-size: 1em;
+  --font-color: #cccccc;
+  --icon-mono-color: #cccccc;
+  --icon-mono-url: none;
+  --margin: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin: var(--margin);
+
+  &__icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+  }
+
+  &__icon--mono {
+    background-color: var(--icon-mono-color);
+    mask: var(--icon-mono-url) no-repeat center;
+  }
+
+  &__temp {
+    color: var(--font-color);
+    font-size: var(--font-size);
+  }
+}
+
+
+@import "../../common/Clock";
+
+.DockedClock {
+  @extend .Clock;
+
+  --font-size: var(--docked-font-size, 1em);
+  --date-color: var(--docked-date-color, #cccccc);
+  --time-color: var(--docked-time-color, #cccccc);
+  margin: var(--docked-margin, inherit);
+}

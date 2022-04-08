@@ -16,6 +16,7 @@ import { useRawSettings } from '../../contexts/SettingsProvider';
 import { usePlayerState } from '../../contexts/PlayerProvider';
 import DockedVolumeIndicator from './DockedVolumeIndicator';
 import DockedClock from './DockedClock';
+import DockedWeather from './DockedWeather';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
@@ -155,6 +156,22 @@ function NowPlayingScreen(props) {
       };
       children.push(
         <DockedClock key="dockedClock" {...dockedClockProps} />
+      );
+    }
+
+    const dockedWeather = screenSettings.dockedWeather || {};
+    if (dockedWeather.enabled && dockedWeather.placement === position) {
+      const dockedWeatherProps = {
+        fontSize: dockedWeather.fontSize,
+        fontColor: dockedWeather.fontColor,
+        iconSize: dockedWeather.iconSize,
+        iconStyle: dockedWeather.iconStyle,
+        iconAnimate: dockedWeather.iconAnimate,
+        iconMonoColor: dockedWeather.iconMonoColor,
+        margin: dockedWeather.margin
+      };
+      children.push(
+        <DockedWeather key="dockedWeather" {...dockedWeatherProps} />
       );
     }
 

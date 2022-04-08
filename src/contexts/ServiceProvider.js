@@ -3,6 +3,7 @@ import BrowseService from "../services/BrowseService";
 import MetadataService from "../services/MetadataService";
 import PlaylistService from "../services/PlaylistService";
 import QueueService from "../services/QueueService";
+import WeatherService from "../services/WeatherService";
 import { useAppContext } from "./AppContextProvider";
 import { useSocket } from "./SocketProvider";
 
@@ -16,7 +17,8 @@ const ServiceProvider = ({ children }) => {
     playlistService: new PlaylistService(),
     queueService: new QueueService(),
     browseService: new BrowseService(),
-    metadataService: new MetadataService()
+    metadataService: new MetadataService(),
+    weatherService: new WeatherService()
   }), []);
   
   const apiPath = pluginInfo ? pluginInfo.apiPath : null;
@@ -29,11 +31,12 @@ const ServiceProvider = ({ children }) => {
 
   useEffect(() => {
     services.metadataService.setApiPath(apiPath);
+    services.weatherService.setApiPath(apiPath);
   }, [apiPath, services]);
 
   return (
     <ServiceContext.Provider value={services}>
-      {children}
+        {children}
     </ServiceContext.Provider>
   );
 };
@@ -43,5 +46,6 @@ const usePlaylistService = () => useService('playlistService');
 const useQueueService = () => useService('queueService');
 const useBrowseService = () => useService('browseService');
 const useMetadataService = () => useService('metadataService');
+const useWeatherService = () => useService('weatherService');
 
-export { usePlaylistService, useQueueService, useBrowseService, useMetadataService, ServiceProvider };
+export { usePlaylistService, useQueueService, useBrowseService, useMetadataService, useWeatherService, ServiceProvider };
