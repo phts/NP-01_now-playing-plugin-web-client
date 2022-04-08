@@ -27,6 +27,7 @@ const ServiceProvider = ({ children }) => {
     services.playlistService.setSocket(socket);
     services.queueService.setSocket(socket);
     services.browseService.setSocket(socket);
+    services.weatherService.setSocket(socket);
   }, [socket, services]);
 
   useEffect(() => {

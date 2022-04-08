@@ -4,8 +4,10 @@ import { requestPluginApiEndpoint } from "../utils/api";
 export default class WeatherService {
   constructor() {
     this.apiPath = null;
+    this.socket = null;
     this.emitter = new EventEmitter();
     this.ready = false;
+    this.initSocketEventHandlers();
   }
 
   setApiPath(apiPath) {
@@ -17,8 +19,41 @@ export default class WeatherService {
     }
   }
 
+  initSocketEventHandlers() {
+    this.socketEventHandlers = {
+      'npPushWeatherOnServiceChange': this._handleApiResponse.bind(this)
+    };
+  }
+
+  setSocket(socket) {
+    const oldSocket = this.socket;
+    if (oldSocket === socket) {
+      return;
+    }
+    if (oldSocket) {
+      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
+        oldSocket.off(event, handler);
+      }
+    }
+    this.socket = socket;
+    if (this.socket) {
+      for (const[event, handler] of Object.entries(this.socketEventHandlers)) {
+        this.socket.on(event, handler);
+      }
+    }
+  }
+
   isReady() {
     return this.ready;
+  }
+
+  _handleApiResponse(data) {
+    if (data.success) {
+      this._pushFetched(data.data);
+    }
+    else {
+      this._pushError(data.error);
+    }
   }
 
   async getInfo() {
@@ -26,12 +61,7 @@ export default class WeatherService {
       return;
     }
     const data = await requestPluginApiEndpoint(this.apiPath, '/weather/fetchInfo');
-    if (data.success) {
-      this._pushFetched(data.data);
-    }
-    else {
-      this._pushError(data.error);
-    }
+    this._handleApiResponse(data);
   }
   
   // Event:
