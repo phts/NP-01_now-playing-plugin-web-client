@@ -9,4 +9,5 @@
   --font-color: var(--docked-font-color, #cccccc);
   --icon-color: var(--docked-icon-color, #cccccc);
   margin: var(--docked-margin, inherit);
+  min-height: calc(var(--base-font-size, 1em) * 1.5);
 }

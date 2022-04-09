@@ -10,6 +10,7 @@
   align-items: center;
   gap: 8px;
   margin: var(--margin);
+  min-height: calc(var(--base-font-size, 1em) * 1.5);
 
   &__unit {
     display: flex;

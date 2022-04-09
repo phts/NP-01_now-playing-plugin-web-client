@@ -1,11 +1,15 @@
 .Dock {
-  padding: 0.5em;
+  padding: 0.5em 0;
   position: absolute;
   display: flex;
   align-items: center;
   gap: 0.5em;
   z-index: 2;
   pointer-events: none;
+
+  > * {
+    align-self: flex-start;
+  }
 }
 
 .Dock--topLeft,
@@ -19,7 +23,7 @@
 
 .Dock--topLeft {
   top: 0;
-  left: 0;
+  left: 20px;
 }
 
 .Dock--top {
@@ -30,12 +34,12 @@
 
 .Dock--topRight {
   top: 0;
-  right: 0;
+  right: 10px;
 }
 
 .Dock--bottomLeft {
   bottom: 0;
-  left: 0;
+  left: 20px;
 }
 
 .Dock--bottom {
@@ -46,7 +50,7 @@
 
 .Dock--bottomRight {
   bottom: 0;
-  right: 0;
+  right: 20px;
 }
 
 .Dock--left,
@@ -55,13 +59,13 @@
 }
 
 .Dock--left {
-  left: 0;
+  left: 20px;
   top: 50%;
   transform: translateY(-50%);
 }
 
 .Dock--right {
-  right: 0;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
 }
