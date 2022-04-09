@@ -148,14 +148,8 @@ function NowPlayingScreen(props) {
 
     const dockedClock = screenSettings.dockedClock || {};
     if (dockedClock.enabled && dockedClock.placement === position) {
-      const dockedClockProps = {
-        fontSize: dockedClock.fontSize,
-        dateColor: dockedClock.dateColor,
-        timeColor: dockedClock.timeColor,
-        margin: dockedClock.margin
-      };
       children.push(
-        <DockedClock key="dockedClock" {...dockedClockProps} />
+        <DockedClock key="dockedClock" />
       );
     }
 

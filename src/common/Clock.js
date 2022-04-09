@@ -32,6 +32,7 @@ const getDateTime = (timeZone, locale) => {
  */
 
 const Clock = React.forwardRef((props, ref) => {
+  const {showDate = true, showTime = true} = props;
   const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
   const timeFormat = props.timeFormat || DEFAULT_TIME_FORMAT;
   const timeZone = useTimezone();
@@ -75,8 +76,8 @@ const Clock = React.forwardRef((props, ref) => {
     <div 
       ref={ref} 
       className={mainClassName}>
-        <span className={getElementClassName('date')}>{dateString}</span>
-        <span className={getElementClassName('time')}>{timeString}</span>
+        {showDate ? <span className={getElementClassName('date')}>{dateString}</span> : null}
+        {showTime ? <span className={getElementClassName('time')}>{timeString}</span> : null}
     </div>
   );
 });
