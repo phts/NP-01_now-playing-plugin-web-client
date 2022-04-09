@@ -1,0 +1,15 @@
+@import '../../common/Button';
+
+.DockedActionPanelTriggerWrapper {
+  pointer-events: initial;
+}
+
+.DockedActionPanelTrigger {
+  --button-color: var(--docked-icon-color, var(--widget-primary-color));
+  --button-font-size: var(--docked-icon-size, 1.5em);
+
+  @extend .Button;
+
+  opacity: var(--docked-opacity, 0.5);
+  margin: var(--docked-margin, inherit);
+}

@@ -1,7 +1,6 @@
 import styles from './NowPlayingScreen.module.scss';
 import Dock from '../../common/Dock';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Button from '../../common/Button';
 import { useModals } from '../../contexts/ModalStateProvider';
 import classNames from 'classnames';
 import { useSwipeable } from 'react-swipeable';
@@ -17,6 +16,7 @@ import { usePlayerState } from '../../contexts/PlayerProvider';
 import DockedVolumeIndicator from './DockedVolumeIndicator';
 import DockedClock from './DockedClock';
 import DockedWeather from './DockedWeather';
+import DockedActionPanelTrigger from './DockedActionPanelTrigger';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
@@ -131,6 +131,15 @@ function NowPlayingScreen(props) {
 
   const getDockChildren = useCallback((position) => {
     const children = [];
+
+    if (position === 'top') {
+      const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger || {};
+      if (dockedActionPanelTrigger.enabled === undefined || dockedActionPanelTrigger.enabled) {
+        children.push(
+          <DockedActionPanelTrigger key="actionPanelTrigger" onClick={openActionPanel} />
+        );
+      }
+    }
     
     const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator || {};
     if (dockedVolumeIndicator.enabled && dockedVolumeIndicator.placement === position) {
@@ -161,7 +170,7 @@ function NowPlayingScreen(props) {
     }
 
     return children;
-  }, [screenSettings]);
+  }, [screenSettings, openActionPanel]);
 
   const trackInfoOrder = useMemo(() => {
     const defaultTrackInfoOrder = [
@@ -325,16 +334,7 @@ function NowPlayingScreen(props) {
       { ...swipeHandler } 
       ref={swipeableRefPassthrough}>
       <Dock position="topLeft">{ getDockChildren('top-left') }</Dock>
-      <Dock position="top">
-        <Button 
-          styles={{
-            baseClassName: 'ActionPanelTrigger',
-            bundle: styles
-          }} 
-          onClick={ openActionPanel } 
-          icon="expand_more" />
-        { getDockChildren('top') }
-      </Dock>
+      <Dock position="top">{ getDockChildren('top') }</Dock>
       <Dock position="topRight">
         { getDockChildren('top-right') }
         { getMenu() }
