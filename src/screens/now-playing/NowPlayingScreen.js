@@ -131,16 +131,7 @@ function NowPlayingScreen(props) {
 
   const getDockChildren = useCallback((position) => {
     const children = [];
-
-    if (position === 'top') {
-      const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger || {};
-      if (dockedActionPanelTrigger.enabled === undefined || dockedActionPanelTrigger.enabled) {
-        children.push(
-          <DockedActionPanelTrigger key="actionPanelTrigger" onClick={openActionPanel} />
-        );
-      }
-    }
-    
+  
     const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator || {};
     if (dockedVolumeIndicator.enabled && dockedVolumeIndicator.placement === position) {
       const dockedVolumeIndicatorProps = {
@@ -150,26 +141,41 @@ function NowPlayingScreen(props) {
         iconColor: dockedVolumeIndicator.iconColor,
         margin: dockedVolumeIndicator.margin
       };
-      children.push(
-        <DockedVolumeIndicator key="dockedVolumeIndicator" {...dockedVolumeIndicatorProps} />
-      );
+      children.push({
+        order: dockedVolumeIndicator.displayOrder || 0,
+        component: <DockedVolumeIndicator key="dockedVolumeIndicator" {...dockedVolumeIndicatorProps} />
+      });
     }
 
     const dockedClock = screenSettings.dockedClock || {};
     if (dockedClock.enabled && dockedClock.placement === position) {
-      children.push(
-        <DockedClock key="dockedClock" />
-      );
+      children.push({
+        order: dockedClock.displayOrder || 0,
+        component: <DockedClock key="dockedClock" />
+      });
     }
 
     const dockedWeather = screenSettings.dockedWeather || {};
     if (dockedWeather.enabled && dockedWeather.placement === position) {
-      children.push(
-        <DockedWeather key="dockedWeather" />
-      );
+      children.push({
+        order: dockedWeather.displayOrder || 0,
+        component: <DockedWeather key="dockedWeather" />
+      });
     }
 
-    return children;
+    const orderedChildren = children.sort((c1, c2) => (c1.order - c2.order)).map(c => c.component);
+    
+    if (position === 'top') {
+      const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger || {};
+      if (dockedActionPanelTrigger.enabled === undefined || dockedActionPanelTrigger.enabled) {
+        orderedChildren.unshift(
+          <DockedActionPanelTrigger key="actionPanelTrigger" onClick={openActionPanel} />
+        );
+      }
+    }
+
+    return orderedChildren;
+
   }, [screenSettings, openActionPanel]);
 
   const trackInfoOrder = useMemo(() => {
