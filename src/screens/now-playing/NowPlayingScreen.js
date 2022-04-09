@@ -155,17 +155,8 @@ function NowPlayingScreen(props) {
 
     const dockedWeather = screenSettings.dockedWeather || {};
     if (dockedWeather.enabled && dockedWeather.placement === position) {
-      const dockedWeatherProps = {
-        fontSize: dockedWeather.fontSize,
-        fontColor: dockedWeather.fontColor,
-        iconSize: dockedWeather.iconSize,
-        iconStyle: dockedWeather.iconStyle,
-        iconAnimate: dockedWeather.iconAnimate,
-        iconMonoColor: dockedWeather.iconMonoColor,
-        margin: dockedWeather.margin
-      };
       children.push(
-        <DockedWeather key="dockedWeather" {...dockedWeatherProps} />
+        <DockedWeather key="dockedWeather" />
       );
     }
 

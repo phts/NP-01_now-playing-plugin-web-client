@@ -1,14 +1,18 @@
 import styles from './DockedWeather.module.scss';
 import { useWeather } from '../../contexts/WeatherProvider';
 import classNames from 'classnames';
+import { useRawSettings } from '../../contexts/SettingsProvider';
 
-function DockedWeather(props) {
-  const {fontSize, fontColor, iconSize, iconStyle = 'filled', iconAnimate = false, iconMonoColor, margin} = props;
+function DockedWeather() {
+  const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
+  const dockedWeatherSettings = screenSettings.dockedWeather || {};
+  const {fontSize, fontColor, iconSize, iconStyle = 'filled', iconAnimate = false, iconMonoColor, margin} = dockedWeatherSettings;
   const weather = useWeather();
 
-  const getIcon = () => {
+  const getIcon = (type) => {
     const iconStyleKey = iconStyle + (iconAnimate ? 'Animated' : 'Static');
-    const iconUrl = weather.info.current.iconUrl[iconStyleKey];
+    const iconUrl = weather.info.current.iconUrl[type][iconStyleKey];
+    const iconClassNames = [styles.DockedWeather__icon, styles[`DockedWeather__icon--${type}`]];
     if (!iconUrl) {
       return null;
     }
@@ -18,12 +22,12 @@ function DockedWeather(props) {
         '--icon-mono-color': iconMonoColor
       };
       return <div 
-        className={classNames(styles.DockedWeather__icon, styles['DockedWeather__icon--mono'])}
+        className={classNames(...iconClassNames, styles['DockedWeather__icon--mono'])}
         style={monoStyles}></div>;
     }
     else {
       return <img 
-        className={styles.DockedWeather__icon} 
+        className={classNames(iconClassNames)}
         src={iconUrl} 
         alt="" />;
     }
@@ -40,8 +44,26 @@ function DockedWeather(props) {
 
     return (
       <div className={styles.DockedWeather} style={dockedStyles}>
-        {getIcon()}
-        <span className={styles.DockedWeather__temp}>{info.current.temp}°</span>
+        <div key="temperature" className={styles.DockedWeather__unit}>
+          {getIcon('condition')}
+          <span className={styles.DockedWeather__temp}>{info.current.temp.now.text}°</span>
+        </div>
+        {
+        dockedWeatherSettings.showHumidity ?
+        <div key="humidity" className={styles.DockedWeather__unit}>
+          {getIcon('humidity')}
+          <span className={styles.DockedWeather__humidity}>{info.current.humidity.text}</span>
+        </div>
+        : null
+        }
+        {
+        dockedWeatherSettings.showWindSpeed ?
+        <div key="windspeed" className={styles.DockedWeather__unit}>
+          {getIcon('windspeed')}
+          <span className={styles.DockedWeather__windSpeed}>{info.current.windSpeed.text}</span>
+        </div>
+        : null
+        }
       </div>
     );
   }

@@ -8,8 +8,13 @@
 
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 8px;
   margin: var(--margin);
+
+  &__unit {
+    display: flex;
+    align-items: center;
+  }
 
   &__icon {
     width: var(--icon-size);
@@ -21,7 +26,9 @@
     mask: var(--icon-mono-url) no-repeat center;
   }
 
-  &__temp {
+  &__temp,
+  &__humidity,
+  &__windSpeed {
     color: var(--font-color);
     font-size: var(--font-size);
   }
