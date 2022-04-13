@@ -3,7 +3,8 @@
 .DockedClock {
   @extend .Clock;
 
-  --font-size: var(--docked-font-size, 1em);
+  --date-font-size: var(--docked-font-size, 1em);
+  --time-font-size: var(--docked-font-size, 1em);
   --date-color: var(--docked-date-color, #cccccc);
   --time-color: var(--docked-time-color, #cccccc);
   margin: var(--docked-margin, inherit);

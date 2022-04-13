@@ -46,7 +46,7 @@ function DockedWeather() {
       <div className={styles.DockedWeather} style={dockedStyles}>
         <div key="temperature" className={styles.DockedWeather__unit}>
           {getIcon('condition')}
-          <span className={styles.DockedWeather__temp}>{info.current.temp.now.text}°</span>
+          <span className={styles.DockedWeather__temp}>{info.current.temp.now.text}</span>
         </div>
         {
         dockedWeatherSettings.showHumidity ?

@@ -129,7 +129,7 @@ function NowPlayingScreen(props) {
     return _css;
   }, [screenSettings]);
 
-  const getDockChildren = useCallback((position) => {
+  const getDockChildren = (position) => {
     const children = [];
   
     const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator || {};
@@ -174,9 +174,12 @@ function NowPlayingScreen(props) {
       }
     }
 
-    return orderedChildren;
+    if (position === 'top-right') {
+      orderedChildren.push(getMenu());
+    }
 
-  }, [screenSettings, openActionPanel]);
+    return orderedChildren;
+  };
 
   const trackInfoOrder = useMemo(() => {
     const defaultTrackInfoOrder = [
@@ -321,6 +324,7 @@ function NowPlayingScreen(props) {
           bundle: styles,
           extraClassNames: ['no-swipe']
         }}
+        key="nowPlayingPopupMenu"
         align="end"
         direction="bottom"
         onMenuItemClick={handleMenuItemClicked}
@@ -341,20 +345,18 @@ function NowPlayingScreen(props) {
       ref={swipeableRefPassthrough}>
       <Dock position="topLeft">{ getDockChildren('top-left') }</Dock>
       <Dock position="top">{ getDockChildren('top') }</Dock>
-      <Dock position="topRight">
-        { getDockChildren('top-right') }
-        { getMenu() }
-      </Dock>
+      <Dock position="topRight">{ getDockChildren('top-right') }</Dock>
       <Dock position="left">{ getDockChildren('left') }</Dock>
       <Dock position="right">{ getDockChildren('right') }</Dock>
       <Dock position="bottomLeft">{ getDockChildren('bottom-left') }</Dock>
       <Dock position="bottom">{ getDockChildren('bottom') }</Dock>
       <Dock position="bottomRight">{ getDockChildren('bottom-right') }</Dock>
       <div className={ styles.Layout__view }>
-        {view === 'basic' ? 
-          <BasicView playerState={playerState} trackInfoOrder={trackInfoOrder} />
-          :
-          <InfoView playerState={playerState} />}
+          {view === 'basic' ? 
+            <BasicView playerState={playerState} trackInfoOrder={trackInfoOrder} />
+          : view === 'info' ?
+            <InfoView playerState={playerState} />
+          : null}
       </div>
     </div>
   );

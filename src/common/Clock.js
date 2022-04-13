@@ -33,8 +33,10 @@ const getDateTime = (timeZone, locale) => {
 
 const Clock = React.forwardRef((props, ref) => {
   const {showDate = true, showTime = true} = props;
-  const dateFormat = props.dateFormat || DEFAULT_DATE_FORMAT;
-  const timeFormat = props.timeFormat || DEFAULT_TIME_FORMAT;
+  const formats = {
+    date: props.dateFormat || DEFAULT_DATE_FORMAT,
+    time: props.timeFormat || DEFAULT_TIME_FORMAT
+  };
   const timeZone = useTimezone();
   const locale = useLocale();
   const [dateTime, setDateTime] = useState(getDateTime(timeZone, locale));
@@ -54,8 +56,16 @@ const Clock = React.forwardRef((props, ref) => {
     };
   }, [setDateTime, timeZone, locale]);
 
-  const dateString = dateTime.toLocaleString(dateFormat);
-  const timeString = dateTime.toLocaleString(timeFormat);
+  const getComponentParts = (element) => {
+    const parts = dateTime.toLocaleParts(formats[element]);
+    return parts.map((part, index) => (
+      <span 
+        key={`${element}_part_${index}`} 
+        className={getElementClassName(element + `--${part.type}`)}>
+          {part.value}
+      </span>
+    ));
+  };
 
   const mainClassName = (baseClassName && stylesBundle) ? 
     classNames(
@@ -76,8 +86,8 @@ const Clock = React.forwardRef((props, ref) => {
     <div 
       ref={ref} 
       className={mainClassName}>
-        {showDate ? <span className={getElementClassName('date')}>{dateString}</span> : null}
-        {showTime ? <span className={getElementClassName('time')}>{timeString}</span> : null}
+        {showDate ? <span className={getElementClassName('date')}>{getComponentParts('date')}</span> : null}
+        {showTime ? <span className={getElementClassName('time')}>{getComponentParts('time')}</span> : null}
     </div>
   );
 });
