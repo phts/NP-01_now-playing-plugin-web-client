@@ -6,7 +6,7 @@ import { ThemeContext, ThemeProvider } from "./settings/ThemeProvider";
 import { TimezoneContext, TimezoneProvider } from "./settings/TimezoneProvider";
 
 const contexts = {};
-const namespaces = ['theme', 'performance', 'localization', 'background', 'screen.nowPlaying'];
+const namespaces = ['theme', 'performance', 'localization', 'background', 'screen.nowPlaying', 'screen.idle'];
 namespaces.forEach(ns => {
   contexts[ns] = createContext();
 });

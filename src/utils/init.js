@@ -35,6 +35,7 @@ export function getInitialSettings(namespace) {
   const settings = getInitialData('settings', {});
   switch (namespace) {
     case 'screen.nowPlaying':
+    case 'screen.idle':
     case 'background':
       return settings[namespace] || {};
     case 'theme':
@@ -50,5 +51,5 @@ export function getInitialSettings(namespace) {
 
 export function checkKiosk() {
   const url = new URL(window.location);
-  return url.hostname === 'localhost' || getLocationQueryParam('kiosk', false);
+  return url.hostname === 'localhost' || (JSON.parse(getLocationQueryParam('kiosk', '0')) ? true : false);
 }

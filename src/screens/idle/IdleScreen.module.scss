@@ -1,0 +1,163 @@
+@import "../../common/Clock";
+
+.Layout {
+  --height: calc(var(--vh, 1vh) * 100);
+  --default-base-font-size: 1em;
+  --base-font-size: var(--default-base-font-size);
+  --main-alignment: flex-start;
+
+  width: 100vw;
+  height: var(--height);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  font-size: var(--base-font-size);
+
+  /* Base font sizes */
+
+  // Interpretation of '240' and the multiply factor:
+  // E.g.:
+  // At ratio 4/3, the ideal font size is 9.0px when height is 240px
+  // At ratio 3/5, the ideal font size is 11.0px when width is 240px
+  //
+  // The resulting font size is calculated proportionately to the actual screen width / height
+
+  @media (max-aspect-ratio: 3/5) {  // 0.6 e.g. 480x800
+    --base-font-size: calc(calc(100vw / 240) * 11.0);
+  }
+
+  @media (min-aspect-ratio: 5/8) {  // 0.625 e.g. 800x1280
+    --base-font-size: calc(calc(100vw / 240) * 10.5);
+  }
+
+  @media (min-aspect-ratio: 2/3) {  // 0.666667 e.g. 320x480
+    --base-font-size: calc(calc(100vw / 240) * 10);
+  }
+
+  @media (min-aspect-ratio: 3/4) {  // 0.75 e.g. 600x800
+    --base-font-size: calc(calc(100vw / 240) * 9.5);
+  }
+
+  @media (min-aspect-ratio: 5/6) {  // 0.833333
+    --base-font-size: calc(calc(100vw / 240) * 8.0);
+  }
+
+  @media (min-aspect-ratio: 1/1) {  // 1
+    --base-font-size: calc(calc(var(--height) / 240) * 7.5);
+  }
+
+  @media (min-aspect-ratio: 6/5) {  // 1.2
+    --base-font-size: calc(calc(var(--height) / 240) * 8.5);
+  }
+
+  @media (min-aspect-ratio: 4/3) {  // 1.3333 e.g. 800x600
+    --base-font-size: calc(calc(var(--height) / 240) * 9.0);
+
+    @media (min-aspect-ratio: 3/2) {  // 1.5 e.g. 480x320
+      --base-font-size: calc(calc(var(--height) / 240) * 10);
+    }
+  }
+
+  @media (min-aspect-ratio: 8/5) {  // 1.6 e.g. 1280x800
+    --base-font-size: calc(calc(var(--height) / 240) * 10.5);
+  }
+
+  @media (min-aspect-ratio: 5/3) {  // 1.66667 e.g. 800x480
+    --base-font-size: calc(calc(var(--height) / 240) * 11.0);
+  }
+  
+
+  &__main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: var(--main-alignment);
+    justify-content: center;
+    padding: 2em;
+    box-sizing: border-box;
+
+    &--full {
+      height: 100% !important;
+    }
+
+    @media (orientation: portrait) {
+      height: 50%;
+    }
+
+    @media (orientation: portrait) and (max-height: 600px) {
+      height: 45%;
+    }
+  }
+
+  &__secondary {
+    position: absolute;
+    top: 60%;
+    width: 100%;
+    height: 40%;
+    display: flex;
+    align-items: center;
+    padding: 1em;
+    box-sizing: border-box;
+
+    @media (orientation: portrait) {
+      height: 50%;
+      top: 50%;
+    }
+
+    @media (orientation: portrait) and (max-height: 600px) {
+      height: 55%;
+      top: 45%;
+    }
+  }
+}
+
+.Clock {
+  --time-font-size: 3em;
+  --date-font-size: 1.5em;
+  --time-color: #fff;
+  --date-color: #fff;
+
+  flex-direction: column-reverse;
+  align-items: var(--main-alignment);
+  gap: 0;
+
+  &__time {
+    display: flex;
+    align-items: baseline;
+    text-shadow: 2px 2px 5px #333;
+
+    &--dayPeriod {
+      font-size: 0.5em;
+      font-weight: 700;
+      text-transform: uppercase;
+
+      &:first-of-type {
+        margin-right: 8px;
+      }
+
+      &:last-of-type {
+        margin-left: 8px;
+      }
+    }
+  }
+
+  &__date {
+    text-shadow: 1.5px 1.5px 3px #333;
+  }
+}
+
+.Location {
+  --location-font-size: inherit;
+  --location-color: #fff;
+
+  font-weight: 300;
+  font-size: var(--location-font-size);
+  color: var(--location-color);
+  text-shadow: 2px 2px 2px #333;
+  margin-top: 0.5em;
+}
