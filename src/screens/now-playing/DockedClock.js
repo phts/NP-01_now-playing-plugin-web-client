@@ -2,33 +2,52 @@ import Clock from '../../common/Clock';
 import { useRawSettings } from '../../contexts/SettingsProvider';
 import styles from './DockedClock.module.scss';
 
+const DEFAULT_DATE_FORMAT = {
+  year: undefined,
+  month: 'short',
+  day: 'numeric',
+  weekday: undefined
+};
+
+const DEFAULT_TIME_FORMAT = {
+  hour: 'numeric',
+  minute: 'numeric',
+  second: undefined,
+  hour12: true
+};
+
 function DockedClock() {
   const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
-  const dockedClockSettings = screenSettings.dockedClock || {};
+  const settings = screenSettings.dockedClock || {};
   
   const dockedStyles = {
-    '--docked-font-size': dockedClockSettings.fontSize,
-    '--docked-date-color': dockedClockSettings.dateColor,
-    '--docked-time-color': dockedClockSettings.timeColor,
-    '--docked-margin': dockedClockSettings.margin
+    '--docked-margin': settings.margin
   };
 
-  const dateFormat = {
-    year: dockedClockSettings.showYear ? (dockedClockSettings.yearFormat || 'numeric') : undefined,
-    month: dockedClockSettings.monthFormat || 'short',
-    day: dockedClockSettings.dayFormat || 'numeric',
-    weekday: dockedClockSettings.showDayOfWeek ? (dockedClockSettings.dayOfWeekFormat || 'short') : undefined
-  };
+  if (settings.fontSettings === 'custom') {
+    Object.assign(dockedStyles, {
+      '--docked-font-size': settings.fontSize,
+      '--docked-date-color': settings.dateColor,
+      '--docked-time-color': settings.timeColor,
+    });
+  }
 
-  const timeFormat = {
-    hour: dockedClockSettings.hourFormat || 'numeric',
+  const dateFormat = (settings.dateFormat === 'custom') ? {
+    year: settings.yearFormat === 'none' ? undefined : settings.yearFormat,
+    month: settings.monthFormat,
+    day: settings.dayFormat,
+    weekday: settings.dayOfWeekFormat === 'none' ? undefined : settings.dayOfWeekFormat
+  } : DEFAULT_DATE_FORMAT;
+
+  const timeFormat = (settings.timeFormat === 'custom') ? {
+    hour: settings.hourFormat,
     minute: 'numeric',
-    second: dockedClockSettings.showSeconds ? 'numeric' : undefined,
-    hour12: !(dockedClockSettings.hour24 || false)
-  };
+    second: settings.showSeconds ? 'numeric' : undefined,
+    hour12: !settings.hour24
+  } : DEFAULT_TIME_FORMAT;
 
-  const showDate = (dockedClockSettings.showInfo === 'dateTime' || dockedClockSettings.showInfo === 'date');
-  const showTime = (dockedClockSettings.showInfo === 'dateTime' || dockedClockSettings.showInfo === 'time');
+  const showDate = (settings.showInfo === 'dateTime' || settings.showInfo === 'date');
+  const showTime = (settings.showInfo === 'dateTime' || settings.showInfo === 'time');
     
   return (
     <div style={dockedStyles}>

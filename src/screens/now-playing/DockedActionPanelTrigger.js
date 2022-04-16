@@ -4,16 +4,21 @@ import styles from "./DockedActionPanelTrigger.module.scss";
 
 function DockedActionPanelTrigger(props) {
   const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
-
-  const triggerSettings = screenSettings.dockedActionPanelTrigger || {};
-  const {iconStyle, iconSize, iconColor, opacity, margin} = triggerSettings;
+  const settings = screenSettings.dockedActionPanelTrigger || {};
 
   const dockedStyles = {
-    '--docked-icon-size': iconSize,
-    '--docked-icon-color': iconColor,
-    '--docked-opacity': opacity,
-    '--docked-margin': margin
+    '--docked-opacity': settings.opacity,
+    '--docked-margin': settings.margin
   };
+
+  if (settings.iconSettings === 'custom') {
+    Object.assign(dockedStyles, {
+      '--docked-icon-size': settings.iconSize,
+      '--docked-icon-color': settings.iconColor,
+    });
+  }
+
+  const iconStyle = (settings.iconSettings === 'custom') ? (settings.iconStyle || 'expand_more') : 'expand_more';
 
   return (
     <div className={styles.DockedActionPanelTriggerWrapper} style={dockedStyles}>
@@ -23,7 +28,7 @@ function DockedActionPanelTrigger(props) {
           bundle: styles
         }}
         onClick={props.onClick}
-        icon={iconStyle || 'expand_more'} />
+        icon={iconStyle} />
     </div>
   );
 }

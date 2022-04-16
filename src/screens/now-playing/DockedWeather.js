@@ -3,23 +3,33 @@ import { useWeather } from '../../contexts/WeatherProvider';
 import classNames from 'classnames';
 import { useRawSettings } from '../../contexts/SettingsProvider';
 
+const DEFAULT_ICON_SETTINGS = {
+  style: 'filled',
+  animate: false
+};
+
 function DockedWeather() {
   const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
-  const dockedWeatherSettings = screenSettings.dockedWeather || {};
-  const {fontSize, fontColor, iconSize, iconStyle = 'filled', iconAnimate = false, iconMonoColor, margin} = dockedWeatherSettings;
+  const settings = screenSettings.dockedWeather || {};
   const weather = useWeather();
 
+  const iconSettings = (settings.iconSettings === 'custom') ? {
+    style: settings.iconStyle,
+    animate: settings.iconAnimate,
+    monoColor: settings.iconMonoColor
+  } : DEFAULT_ICON_SETTINGS;
+
   const getIcon = (type) => {
-    const iconStyleKey = iconStyle + (iconAnimate ? 'Animated' : 'Static');
+    const iconStyleKey = iconSettings.style + (iconSettings.animate ? 'Animated' : 'Static');
     const iconUrl = weather.info.current.iconUrl[type][iconStyleKey];
     const iconClassNames = [styles.DockedWeather__icon, styles[`DockedWeather__icon--${type}`]];
     if (!iconUrl) {
       return null;
     }
-    if (iconStyle === 'mono') {
+    if (iconSettings.style === 'mono') {
       const monoStyles = {
         '--icon-mono-url': `url(${iconUrl})`,
-        '--icon-mono-color': iconMonoColor
+        '--icon-mono-color': iconSettings.monoColor
       };
       return <div 
         className={classNames(...iconClassNames, styles['DockedWeather__icon--mono'])}
@@ -36,11 +46,19 @@ function DockedWeather() {
   if (weather.status === 'fetched') {
     const info = weather.info;
     const dockedStyles = {
-      '--font-size': fontSize,
-      '--font-color': fontColor,
-      '--icon-size': iconSize,
-      '--margin': margin
+      '--margin': settings.margin
     };
+    if (settings.fontSettings === 'custom') {
+      Object.assign(dockedStyles, {
+        '--font-size': settings.fontSize,
+        '--font-color': settings.fontColor,
+      });
+    }
+    if (settings.iconSettings === 'custom') {
+      Object.assign(dockedStyles, {
+        '--icon-size': settings.iconSize
+      });
+    }
 
     return (
       <div className={styles.DockedWeather} style={dockedStyles}>
@@ -49,7 +67,7 @@ function DockedWeather() {
           <span className={styles.DockedWeather__temp}>{info.current.temp.now.text}</span>
         </div>
         {
-        dockedWeatherSettings.showHumidity ?
+        settings.showHumidity ?
         <div key="humidity" className={styles.DockedWeather__unit}>
           {getIcon('humidity')}
           <span className={styles.DockedWeather__humidity}>{info.current.humidity.text}</span>
@@ -57,7 +75,7 @@ function DockedWeather() {
         : null
         }
         {
-        dockedWeatherSettings.showWindSpeed ?
+        settings.showWindSpeed ?
         <div key="windspeed" className={styles.DockedWeather__unit}>
           {getIcon('windspeed')}
           <span className={styles.DockedWeather__windSpeed}>{info.current.windSpeed.text}</span>

@@ -1,18 +1,28 @@
 import VolumeIndicator from '../../common/VolumeIndicator';
+import { useRawSettings } from '../../contexts/SettingsProvider';
 import styles from './DockedVolumeIndicator.module.scss';
 
-function DockedVolumeIndicator(props) {
-  const {fontSize, iconSize, fontColor, iconColor, margin} = props;
+function DockedVolumeIndicator() {
+  const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
+  const settings = screenSettings.dockedVolumeIndicator || {};
 
   const dockedStyles = {
-    '--docked-font-size': fontSize,
-    '--docked-icon-size': iconSize,
-    '--docked-muted-icon-size': iconSize,
-    '--docked-font-color': fontColor,
-    '--docked-icon-color': iconColor,
-    '--docked-margin': margin
+    '--docked-margin': settings.margin
   };
-  
+  if (settings.fontSettings === 'custom') {
+    Object.assign(dockedStyles, {
+      '--docked-font-size': settings.fontSize,
+      '--docked-font-color': settings.fontColor
+    });
+  }
+  if (settings.iconSettings === 'custom') {
+    Object.assign(dockedStyles, {
+      '--docked-icon-size': settings.iconSize,
+      '--docked-muted-icon-size': settings.iconSize,
+      '--docked-icon-color': settings.iconColor
+    });
+  }
+
   return (
     <div style={dockedStyles}>
       <VolumeIndicator

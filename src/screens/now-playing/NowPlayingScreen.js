@@ -134,16 +134,9 @@ function NowPlayingScreen(props) {
   
     const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator || {};
     if (dockedVolumeIndicator.enabled && dockedVolumeIndicator.placement === position) {
-      const dockedVolumeIndicatorProps = {
-        fontSize: dockedVolumeIndicator.fontSize,
-        iconSize: dockedVolumeIndicator.iconSize,
-        fontColor: dockedVolumeIndicator.fontColor,
-        iconColor: dockedVolumeIndicator.iconColor,
-        margin: dockedVolumeIndicator.margin
-      };
       children.push({
         order: dockedVolumeIndicator.displayOrder || 0,
-        component: <DockedVolumeIndicator key="dockedVolumeIndicator" {...dockedVolumeIndicatorProps} />
+        component: <DockedVolumeIndicator key="dockedVolumeIndicator" />
       });
     }
 
