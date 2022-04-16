@@ -18,6 +18,8 @@ export default class QueueService {
 
   initSocketEventHandlers() {
     this.socketEventHandlers = {
+      'connect': this._handleSocketConnnect.bind(this),
+      'reconnect': this._handleSocketConnnect.bind(this),
       'pushQueue': this._setQueue.bind(this)
     };
   }
@@ -41,9 +43,15 @@ export default class QueueService {
       // Reset
       this.initState();
 
-      // Request queue
-      this.socket.emit('getQueue');
+      if (this.socket.connected) {
+        // Request queue
+        this.socket.emit('getQueue');
+      }
     }
+  }
+
+  _handleSocketConnnect() {
+    this.socket.emit('getQueue');
   }
 
   // Event:

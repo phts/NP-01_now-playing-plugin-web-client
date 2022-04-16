@@ -14,10 +14,21 @@ const PlayerStateProvider = ({ children }) => {
         setPlayerState(state);
       };
 
+      const handleSocketConnect = () => {
+        socket.emit('getState');
+      };
+
       socket.on('pushState', handlePushState);
-      socket.emit('getState');
+      socket.on('connect', handleSocketConnect);
+      socket.on('reconnect', handleSocketConnect);
+
+      if (socket.connected) {
+        socket.emit('getState');
+      }
 
       return () => {
+        socket.off('reconnect', handleSocketConnect);
+        socket.off('connect', handleSocketConnect);
         socket.off('pushState', handlePushState);
       };
     }

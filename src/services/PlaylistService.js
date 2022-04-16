@@ -14,6 +14,8 @@ export default class PlaylistService {
 
   initSocketEventHandlers() {
     this.socketEventHandlers = {
+      'connect': this._handleSocketConnnect.bind(this),
+      'reconnect': this._handleSocketConnnect.bind(this),
       'pushListPlaylist': this.setPlaylists.bind(this)
     };
   }
@@ -37,9 +39,15 @@ export default class PlaylistService {
       // Reset
       this.initState();
 
-      // Request playlists
-      this.socket.emit('listPlaylist');
+      if (this.socket.connected) {
+        // Request playlists
+        this.socket.emit('listPlaylist');
+      }
     }
+  }
+
+  _handleSocketConnnect() {
+    this.socket.emit('listPlaylist');
   }
 
   on(event, handler) {

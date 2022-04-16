@@ -30,6 +30,8 @@ export default class BrowseService {
 
   initSocketEventHandlers() {
     this.socketEventHandlers = {
+      'connect': this._handleSocketConnnect.bind(this),
+      'reconnect': this._handleSocketConnnect.bind(this),
       'pushBrowseSources': this._setBrowseSources.bind(this),
       'pushBrowseLibrary': this._handlePushBrowseLibrary.bind(this),
       'pushAddWebRadio': this._handlePushAddWebRadio.bind(this)
@@ -58,8 +60,10 @@ export default class BrowseService {
       this.initState();
       this.hasReset = true;
 
-      // Request browse sources
-      this.socket.emit('getBrowseSources');
+      if (this.socket.connected) {
+        // Request browse sources
+        this.socket.emit('getBrowseSources');
+      }
 
     }
     else {
@@ -69,6 +73,10 @@ export default class BrowseService {
 
   isReady() {
     return this.socket && this.socket.connected && this.host;
+  }
+
+  _handleSocketConnnect() {
+    this.socket.emit('getBrowseSources');
   }
 
   // Event:
