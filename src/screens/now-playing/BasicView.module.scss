@@ -205,6 +205,8 @@
   --seekbar-thumb-color: var(--widget-highlight-color);
   --seekbar-track-played-color: var(--widget-highlight-color);
   --seekbar-track-remaining-color: var(--widget-primary-color);
+  --seekbar-text-font-size: var(--seek-time-font-size);
+  --seekbar-text-color: var(--seek-time-font-color);
 
   margin: var(--seekbar-margin);
 }
