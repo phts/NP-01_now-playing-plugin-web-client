@@ -1,10 +1,10 @@
 export function preloadImage(src, fallbackSrc, callback = {}) {
-  const img = document.createElement('img');
+  let img = document.createElement('img');
   let loadingSrc;
 
   const onImageLoaded = () => {
     if (callback.ready) {
-      callback.ready(loadingSrc);
+      callback.ready.call(preloader, loadingSrc);
     }
   };
   const onImageError = (err) => {
@@ -14,7 +14,7 @@ export function preloadImage(src, fallbackSrc, callback = {}) {
     else {
       loadingSrc = null;
       if (callback.error) {
-        callback.error(err);
+        callback.error.call(preloader, err);
       }
     }
   };
@@ -27,14 +27,20 @@ export function preloadImage(src, fallbackSrc, callback = {}) {
   };
 
   const dispose = () => {
-    img.removeEventListener('load', onImageLoaded);
-    img.removeEventListener('error', onImageError);
-  }
+    if (img) {
+      img.removeEventListener('load', onImageLoaded);
+      img.removeEventListener('error', onImageError);
+      img.src = null;
+      img = null;
+    }
+  };
 
-  setSrc(src);
- 
-  return {
+  const preloader = {
     setSrc: setSrc.bind(this),
     dispose: dispose.bind(this)
   };
+
+  setSrc(src);
+
+  return preloader;
 }

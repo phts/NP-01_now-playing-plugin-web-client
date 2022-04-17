@@ -103,7 +103,8 @@ function Background(props) {
       return;
     }
 
-    const onImageLoaded = (src) => {
+    const onImageLoaded = function(src) {
+      this.dispose();
       // For webkit browsers where we rely on background-image transition, or 
       // otherwise background is fixed, we skip straight to the 'afterTransition' phase.
       if (!isTransitionable || isWebkit) {
@@ -121,7 +122,8 @@ function Background(props) {
         });
       }
     };
-    const onImageError = () => {
+    const onImageError = function() {
+      this.dispose();
       processPendingOrReset();
     };
 
