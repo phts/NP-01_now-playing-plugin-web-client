@@ -208,5 +208,6 @@
   --seekbar-text-font-size: var(--seek-time-font-size);
   --seekbar-text-color: var(--seek-time-font-color);
 
+  display: var(--seekbar-visibility);
   margin: var(--seekbar-margin);
 }
