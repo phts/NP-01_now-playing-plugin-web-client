@@ -1,6 +1,6 @@
 import classNames from "classnames";
+import Slider from "rc-slider";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Range } from "react-range";
 import { usePlayerSeek } from "../contexts/PlayerProvider";
 import { millisecondsToString } from "../utils/track";
 import './Seekbar.scss';
@@ -28,20 +28,18 @@ function Seekbar(props) {
     setDisplaySeek(beginVal);
   }, [setDisplaySeek]);
 
-  const endSeek = useCallback((values) => {
-    const endVal = values[0];
+  const endSeek = useCallback((value) => {
     isSeekingRef.current = false;
-    setDisplaySeek(endVal);
-    seekTo(endVal);
+    setDisplaySeek(value);
+    seekTo(value);
   }, [setDisplaySeek, seekTo]);
 
-  const onSliderValueChanged = useCallback((values) => {
-    const changedVal = values[0];
+  const onSliderValueChanged = useCallback((value) => {
     if (isSeekingRef.current) {
-      setDisplaySeek(changedVal);
+      setDisplaySeek(value);
     }
     else {
-      beginSeek(changedVal);
+      beginSeek(value);
     }
   }, [setDisplaySeek, beginSeek]);
 
@@ -74,38 +72,17 @@ function Seekbar(props) {
     }
   }, [baseClassName, stylesBundle]);
 
-  const renderSliderTrack = useCallback(({ props, children }) => {
-    return (
-    <div {...props} className={getElementClassName('slider')} style={{'--seek-percent': seekPercent}}>
-      <div
-        ref={props.ref}
-        className={getElementClassName('track')}>
-      </div>
-      {children}
-    </div>
-  )}, [seekPercent, getElementClassName]);
-
-  const renderSliderThumb = useCallback(({ props }) => {
-    return (<div
-      {...props}
-      className={getElementClassName('thumb')}
-      style={{
-        left: seekPercent
-      }}
-    />);
-  }, [seekPercent, getElementClassName]);
-
   const showText = props.showText !== undefined ? props.showText : true;
 
   return (
-    <div className={mainClassName}>
-      <Range 
-        values={[Math.min(displaySeek, duration)]}
+    <div className={mainClassName} style={{'--seek-percent': seekPercent}}>
+      <Slider 
+        className={getElementClassName('slider')}
+        value={[Math.min(displaySeek, duration)]}
         max={Math.max(duration, 1)}
         onChange={onSliderValueChanged}
-        onFinalChange={endSeek}
-        renderTrack={renderSliderTrack}
-        renderThumb={renderSliderThumb} />
+        onAfterChange={endSeek}
+        />
       { showText ? 
         <><span className={getElementClassName('seek')}>{ seekText }</span><span className={getElementClassName('duration')}>{ durationText }</span></>
         : null }
