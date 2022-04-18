@@ -30,7 +30,7 @@ export function preloadImage(src, fallbackSrc, callback = {}) {
     if (img) {
       img.removeEventListener('load', onImageLoaded);
       img.removeEventListener('error', onImageError);
-      img.src = null;
+      img.src = '';
       img = null;
     }
   };
