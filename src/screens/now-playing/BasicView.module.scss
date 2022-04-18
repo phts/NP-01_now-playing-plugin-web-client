@@ -138,6 +138,10 @@
     z-index: 1;
   }
 
+  &--toggled {
+    --button-color: var(--widget-highlight-color);
+  }
+
   &--repeat,
   &--random {
     display: none;
