@@ -2,6 +2,9 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.2.1
+- Minor bug fix
+
 0.2.0
 - Add Idle Screen
 - Add support for Dock Components:
