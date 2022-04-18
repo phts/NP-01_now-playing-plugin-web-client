@@ -20,7 +20,6 @@ function Seekbar(props) {
   const seekText = millisecondsToString(displaySeek);
   const duration = (playerState.duration || 0) * 1000;
   const durationText = millisecondsToString(duration);
-  const seekPercent = (duration > 0) ? ((currentSeekPosition / duration) * 100) + '%' : 0;
   const disabled = playerState.duration === 0 || playerState.status === 'stop';
 
   const beginSeek = useCallback((beginVal) => {
@@ -75,7 +74,7 @@ function Seekbar(props) {
   const showText = props.showText !== undefined ? props.showText : true;
 
   return (
-    <div className={mainClassName} style={{'--seek-percent': seekPercent}}>
+    <div className={mainClassName}>
       <Slider 
         className={getElementClassName('slider')}
         value={[Math.min(displaySeek, duration)]}
