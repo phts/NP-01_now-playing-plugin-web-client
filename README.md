@@ -2,6 +2,18 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.2.0
+- Add Idle Screen
+- Add support for Dock Components:
+  - Action Panel trigger
+  - Volume Indicator (replaces Volume Indicator Tweaks)
+  - Clock
+  - Weather
+- Add support for seek time font size and color
+- Fix state not updating on socket reconnect
+- Fix seekbar's unreasonably high memory consumption (caused by `react-range` component; switched to `rc-slider` instead)
+- Various other bug fixes
+
 0.1.2
 - Add support for the following style settings:
   - Track info display order
