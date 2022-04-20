@@ -9,20 +9,25 @@ const PlayerSeekProvider = ({ children }) => {
   const {socket} = useSocket();
   const playerState = useContext(PlayerStateContext);
   const [currentSeekPosition, setCurrentSeekPosition] = useState(0);
-  const trackTimer = useRef(new TrackTimer());
-
-  const seekTo = useCallback(val => {
-    socket.emit('seek', val/1000);
-  }, [socket]);
+  const trackTimer = useRef(null);
 
   useEffect(() => {
+    if (trackTimer.current === null) {
+      trackTimer.current = new TrackTimer();
+    }
+
     const tt = trackTimer.current;
     tt.on('seek', setCurrentSeekPosition);
 
     return () => {
-      tt.off('seek', setCurrentSeekPosition);
+      tt.destroy();
+      trackTimer.current = null;
     }
-  }, [setCurrentSeekPosition]);
+  }, []);
+
+  const seekTo = useCallback(val => {
+    socket.emit('seek', val/1000);
+  }, [socket]);
 
   useEffect(() => {
     const tt = trackTimer.current;

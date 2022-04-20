@@ -1,6 +1,5 @@
 import { EventEmitter } from "eventemitter3";
 
-
 export function sanitizeImageUrl(url, host) {
   if (!url) {
     return host + '/albumart';
@@ -102,46 +101,47 @@ export function getFormatIcon(trackType, host) {
 export class TrackTimer {
 
   constructor() {
-    this.seek = 0;
-    this.timer = null;
+    this.worker = new Worker(new URL('./timer-worker.js', import.meta.url));
     this.eventEmitter = new EventEmitter();
-  }
 
-  getSeek() {
-    return this.seek;
+    this.worker.onmessage = (e) => {
+      if (e.data.event === 'seek') {
+
+        this.eventEmitter.emit('seek', e.data.seek);
+      }
+    };
   }
 
   start(beginSeek) {
-    if (beginSeek !== undefined) {
-      this.stop();
-      this.seek = beginSeek;
+    if (this.worker === undefined) {
+      return;
     }
-    if (!this.timer) {
-      this.timer = setInterval(() => {
-        this.seek += 1000;
-        this.eventEmitter.emit('seek', this.seek);
-      }, 1000);
-    }
+    this.worker.postMessage({command: 'start', beginSeek});
     return this;
   }
 
   pause() {
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
+    if (this.worker === undefined) {
+      return;
     }
+    this.worker.postMessage({command: 'pause'});
     return this;
   }
 
   stop() {
-    this.pause();
-    this.seek = 0;
-    return this;
+    if (this.worker === undefined) {
+      return;
+    }
+    this.worker.postMessage({command: 'stop'});
   }
 
   destroy() {
     this.stop();
     this.eventEmitter.removeAllListeners();
+    if (this.worker) {
+      this.worker.terminate();
+      this.worker = undefined;
+    }
   }
 
   on(event, handler) {
