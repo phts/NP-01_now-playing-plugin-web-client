@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { createPortal } from 'react-dom';
 import Clock from '../../common/Clock';
 import { useRawSettings } from '../../contexts/SettingsProvider';
 import { useWeather } from '../../contexts/WeatherProvider';
@@ -57,7 +58,7 @@ function IdleScreen(props) {
     !hasWeather ? styles['Layout__main--full'] : null
   );
 
-  return (
+  return createPortal(
     <div className={styles.Layout} onClick={props.onClick}>
       {backgroundComponent}
       <div className={mainClassNames} style={mainStyles}>
@@ -88,6 +89,7 @@ function IdleScreen(props) {
         </div>
       : null}
     </div>
+    , document.body
   );
 }
 
