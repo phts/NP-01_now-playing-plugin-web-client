@@ -27,16 +27,18 @@ function App() {
   const [height, setHeight] = useState(window.innerHeight);
 
   useEffect(() => {
-    const handleWindowResized = () => {
-      setHeight(window.innerHeight);
+    const setRealVh = () => {
+      const realVh = (window.innerHeight * 0.01) + 'px';
+      document.body.style.setProperty('--vh', realVh);
     };
 
-    window.addEventListener('resize', handleWindowResized);
+    setRealVh();
+    window.addEventListener('resize', setRealVh);
 
-    return () => { window.removeEventListener('resize', handleWindowResized); };
+    return () => { window.removeEventListener('resize', setRealVh); };
   }, []);
 
-  const vh = (height * 0.01) + 'px';
+  //const vh = (height * 0.01) + 'px';
 
   return (
     <AppContextProvider>
@@ -45,7 +47,7 @@ function App() {
           <PlayerProvider>
             <SettingsProvider>
               <AppStartup />
-              <div className="App" style={{ '--vh': vh }}>
+              <div className="App">
                 <NotificationProvider>
                   <ModalStateProvider>
                     <VolumeChangeListener />
@@ -72,7 +74,7 @@ function App() {
                             screenId="Volumio"
                             mountOnEnter
                             unmountOnExit />
-                          <CommonModals realVh={vh} />
+                          <CommonModals />
                         </ScreenContextProvider>
                       </WeatherProvider>
                     </ServiceProvider>

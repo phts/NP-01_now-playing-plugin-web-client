@@ -6,7 +6,7 @@ import ContextualModal from "../common/ContextualModal";
 
 function MetadataModal(props) {
   const overlayEl = useRef(null);
-  const { closeDialog, realVh } = props;
+  const { closeDialog } = props;
   const {song, album, artist, placeholderImage} = props.modalData || {};
 
   const modalOverlayClassNames = {
@@ -27,9 +27,6 @@ function MetadataModal(props) {
       overlayClassName={modalOverlayClassNames}
       className={modalClassNames}
       overlayRef={node => (overlayEl.current = node)}
-      style={{
-        overlay: {'--vh': realVh}
-      }}
       {...props}>
       <div className={styles.Layout__header}>
         <Button

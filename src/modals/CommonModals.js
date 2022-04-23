@@ -14,7 +14,6 @@ export const METADATA_MODAL = 'metadataModal';
 
 function CommonModals(props) {
   const { isModalOpened, isModalDisabled, closeModal, getModalData } = useModals();
-  const {realVh} = props;
   
   const closeActionPanel = useCallback(() => {
     closeModal(ACTION_PANEL);
@@ -65,8 +64,7 @@ function CommonModals(props) {
         contentLabel="modal"
         onRequestClose={closeMetadataModal}
         closeDialog={closeMetadataModal}
-        modalData={getModalData(METADATA_MODAL)}
-        realVh={realVh} />
+        modalData={getModalData(METADATA_MODAL)} />
     </>
   );
 }
