@@ -207,14 +207,14 @@ function NowPlayingScreen(props) {
   // Disable Volume Indicator modal when its docked
   // counterpart is displayed
   useEffect(() => {
-    const viTweaks = screenSettings.volumeIndicator || {};
-    if (viTweaks.visibility === 'always' && activeScreenId === 'NowPlaying') {
+    const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator || {};
+    if (dockedVolumeIndicator.enabled && activeScreenId === 'NowPlaying') {
       disableModal(VOLUME_INDICATOR);
     }
     else {
       enableModal(VOLUME_INDICATOR);
     }
-  }, [activeScreenId, screenSettings.volumeIndicator, disableModal, enableModal]);
+  }, [activeScreenId, screenSettings, disableModal, enableModal]);
 
   // Swipe handling
   const onScreenSwiped = useCallback((e) => {  
