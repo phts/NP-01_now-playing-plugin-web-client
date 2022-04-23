@@ -14,7 +14,7 @@ import BrowseScreen from './screens/browse/BrowseScreen';
 import { NotificationProvider } from './contexts/NotificationProvider';
 import { ScreenContextProvider } from './contexts/ScreenContextProvider';
 import QueueScreen from './screens/queue/QueueScreen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import CommonModals from './modals/CommonModals';
 import VolumioScreen from './screens/volumio/VolumioScreen';
 import { ServiceProvider } from './contexts/ServiceProvider';
@@ -24,8 +24,6 @@ import { PlayerProvider } from './contexts/PlayerProvider';
 import { WeatherProvider } from './contexts/WeatherProvider';
 
 function App() {
-  const [height, setHeight] = useState(window.innerHeight);
-
   useEffect(() => {
     const setRealVh = () => {
       const realVh = (window.innerHeight * 0.01) + 'px';
@@ -37,8 +35,6 @@ function App() {
 
     return () => { window.removeEventListener('resize', setRealVh); };
   }, []);
-
-  //const vh = (height * 0.01) + 'px';
 
   return (
     <AppContextProvider>
