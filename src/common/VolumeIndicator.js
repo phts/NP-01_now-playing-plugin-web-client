@@ -1,9 +1,9 @@
 import classNames from "classnames";
-import { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { usePlayerState } from "../contexts/PlayerProvider";
 import "./VolumeIndicator.scss";
 
-function VolumeIndicator(props) {
+const VolumeIndicator = React.forwardRef((props, ref) => {
   const playerState = usePlayerState();
   const isMuted = playerState.mute !== undefined ? playerState.mute : false;
   const volume = playerState.volume || 0;
@@ -81,6 +81,7 @@ function VolumeIndicator(props) {
   
   return (
     <div 
+      ref={ref}
       className={mainClassName} 
       style={{'--volume-level': volume + 'px'}}
       onClick={props.onClick}>
@@ -94,6 +95,8 @@ function VolumeIndicator(props) {
       </div>
     </div>
   );
-}
+});
+
+VolumeIndicator.displayName = 'VolumeIndicator';
 
 export default VolumeIndicator;
