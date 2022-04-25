@@ -2,6 +2,9 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.2.3
+- Fix volume bar of docked volume indicator closing on click
+
 0.2.2
 - Improve seekbar accuracy when screen is inactive
 - Add support for option to show volume bar when docked volume indicator is clicked
