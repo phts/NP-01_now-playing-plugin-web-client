@@ -238,14 +238,16 @@ function DockedVolumeIndicator() {
   };
 
   return (
-    <div style={dockedStyles} onClick={showVolumeBarOnClick ? toggleVolumeBar : null}>
-      <VolumeIndicator
-        ref={indicatorRef}
-        showDial={false}
-        styles={{
-          baseClassName: 'DockedVolumeIndicator',
-          bundle: styles
-        }} />
+    <>
+      <div style={dockedStyles} onClick={showVolumeBarOnClick ? toggleVolumeBar : null}>
+        <VolumeIndicator
+          ref={indicatorRef}
+          showDial={false}
+          styles={{
+            baseClassName: 'DockedVolumeIndicator',
+            bundle: styles
+          }} />
+      </div>
       <ContextualModal 
         isOpen={volumeBarVisible}
         onAfterOpen={onVolumeBarModalOpened}
@@ -259,7 +261,7 @@ function DockedVolumeIndicator() {
           <VolumeSlider orientation={volumeBarOrientation} />
         </div>
       </ContextualModal>
-    </div>
+    </>
   );
 }
 

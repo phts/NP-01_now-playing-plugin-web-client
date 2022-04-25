@@ -46,7 +46,7 @@
   inset: var(--volume-bar-wrapper-inset);
   text-align: center;
   overflow: hidden;
-  //pointer-events: none;
+  pointer-events: none;
 
   .VolumeBar {
     --volume-slider-border: var(--trackbar-volumebar-border);
