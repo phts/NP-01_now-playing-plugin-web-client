@@ -1,0 +1,59 @@
+{
+  "screen": {
+    "nowPlaying": {
+      "basicView": "基本模式",
+      "infoView": "資訊模式"
+    }
+  },
+  "modal": {
+    "addToPlaylist": {
+      "title": "新增至...",
+      "createButton": "建立播放清單",
+      "namePlaceholder": "輸入播放清單名稱",
+      "confirmCreateButton": "建立"
+    },
+    "webRadio": {
+      "edit": {
+        "title": "編輯網路電台",
+        "confirmButton": "儲存"
+      },
+      "add": {
+        "title": "加入網路電台",
+        "confirmButton": "加入"
+      },
+      "namePlaceholder": "名稱",
+      "urlPlaceholder": "連結"
+    }
+  },
+  "metadata": {
+    "serviceUnavailable": "資訊服務不存在",
+    "songUnavailable": "歌曲資訊不存在",
+    "artistUnavailable": "演出者資訊不存在",
+    "albumUnavailable": "專輯資訊不存在",
+    "lyricsUnavailable": "歌詞不存在"
+  },
+  "weather": {
+    "today": "今天"
+  },
+  "action": {
+    "play": "播放",
+    "addToQueue": "加入貯列中",
+    "clearAndPlay": "清除與播放",
+    "addToPlaylist": "加到播放列表",
+    "removeFromPlaylist": "從播放列表中刪除",
+    "deletePlaylist": "刪除播放列表",
+    "removeDrive": "安全移除媒體",
+    "updateFolder": "更新資料夾",
+    "deleteFolder": "刪除資料夾",
+    "addToFavorites": "加到收藏",
+    "removeFromFavorites": "從收藏中刪除",
+    "addWebRadio": "加入網路電台",
+    "editWebRadio": "編輯網路電台",
+    "deleteWebRadio": "刪除網路電台",
+    "addWebRadioToFavorites": "加到電台收藏",
+    "removeWebRadioFromFavorites": "從電台收藏中刪除",
+    "viewInfo": "查看資訊",
+    "gotoArtist": "轉到演出者",
+    "gotoAlbum": "轉到專輯"
+  }
+}

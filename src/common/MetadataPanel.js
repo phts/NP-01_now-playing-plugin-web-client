@@ -7,6 +7,7 @@ import './MetadataPanel.scss';
 import { useMetadataService } from '../contexts/ServiceProvider';
 import { useToasts } from '../contexts/NotificationProvider';
 import { useStore } from '../contexts/StoreProvider';
+import { useTranslation } from 'react-i18next';
 
 const DEFAULT_INFO_CHOOSER_BUTTON_STYLES = {
   baseClassName: 'MetadataPanelInfoChooserButton',
@@ -43,6 +44,7 @@ function MetadataPanel(props) {
   const metadataService = useMetadataService();
   const showToast = useToasts();
   const scrollbarRefs = useRef({});
+  const {t} = useTranslation();
 
   const store = useStore();
   const restoreState = useMemo(() => {
@@ -237,12 +239,12 @@ function MetadataPanel(props) {
       setState({
         status: 'error',
         error: {
-          message: 'Metadata service unavailable'
+          message: t('metadata.serviceUnavailable')
         },
         forProps
       });
     }
-  }, [metadataService, song, artist, album, state, setState]);
+  }, [metadataService, song, artist, album, state, setState, t]);
 
   // Components
 
@@ -346,7 +348,7 @@ function MetadataPanel(props) {
         if (forInfoType === 'song' || forInfoType === 'artist' || forInfoType === 'album') {
           const description = state.info[forInfoType] ? state.info[forInfoType].description : null;
           isEmpty = !description || description === '?';
-          contents = !isEmpty ? description : `${forInfoType} description unavailable`;
+          contents = !isEmpty ? description : t(`metadata.${forInfoType}Unavailable`);
         }
         else if (forInfoType === 'lyrics') {
           isEmpty = !state.info.song || !state.info.song.embedContents || state.info.song.embedContents.contentParts.length === 0;
@@ -365,7 +367,7 @@ function MetadataPanel(props) {
               dangerouslySetInnerHTML={{__html: wrapper.innerHTML}} /> 
           }
           else {
-            contents = `${forInfoType} unavailable`;
+            contents = t(`metadata.${forInfoType}Unavailable`);
           }
         }
       }
@@ -405,7 +407,7 @@ function MetadataPanel(props) {
         );
       }
     });
-  }, [availableInfoTypes, state, getElementClassName]);
+  }, [availableInfoTypes, state, getElementClassName, t]);
 
   // Toggle 'active' class on infoType or state change
   useEffect(() => {

@@ -1,0 +1,21 @@
+[
+  {
+    "locales": ["zh-Hant", "zh-HK", "zh-MO", "zh-TW"],
+    "fallback": "zh-TW"
+  },
+  {
+    "locales": [
+      "en-AU",
+      "en-BN",
+      "en-KH",
+      "en-CN",
+      "en-HK",
+      "en-IN",
+      "en-MY",
+      "en-MM",
+      "en-NZ",
+      "en-SG"
+    ],
+    "fallback": "en-GB"
+  }
+]

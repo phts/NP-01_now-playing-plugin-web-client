@@ -3,6 +3,7 @@ import { useWeather } from '../../contexts/WeatherProvider';
 import classNames from 'classnames';
 import { useLocale, useRawSettings, useTimezone } from '../../contexts/SettingsProvider';
 import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
 
 const getBackgroundStyles = (settings) => {
   const weatherBackgroundType = settings.weatherBackground || 'default';
@@ -27,6 +28,7 @@ const getBackgroundStyles = (settings) => {
 }
 
 function IdleScreenWeather() {
+  const {t} = useTranslation();
   const {settings: screenSettings} = useRawSettings('screen.idle');
   const customFontSizes = screenSettings.fontSizes === 'custom';
   const customFontColors = screenSettings.fontColors === 'custom';
@@ -97,7 +99,7 @@ function IdleScreenWeather() {
         <div className={styles.Current__info}>
           <div className={styles.Current__dayTitleWrapper}>
             <span className={styles.Current__dayTitle}>
-              Today
+              {t('weather.today')}
             </span>
           </div>
           <span className={styles.Current__currentTemp}>

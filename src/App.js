@@ -14,7 +14,7 @@ import BrowseScreen from './screens/browse/BrowseScreen';
 import { NotificationProvider } from './contexts/NotificationProvider';
 import { ScreenContextProvider } from './contexts/ScreenContextProvider';
 import QueueScreen from './screens/queue/QueueScreen';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import CommonModals from './modals/CommonModals';
 import VolumioScreen from './screens/volumio/VolumioScreen';
 import { ServiceProvider } from './contexts/ServiceProvider';
@@ -22,6 +22,7 @@ import { StoreProvider } from './contexts/StoreProvider';
 import { SettingsProvider } from './contexts/SettingsProvider';
 import { PlayerProvider } from './contexts/PlayerProvider';
 import { WeatherProvider } from './contexts/WeatherProvider';
+import I18nLoader from './i18n/I18nLoader';
 
 function App() {
   useEffect(() => {
@@ -36,6 +37,12 @@ function App() {
     return () => { window.removeEventListener('resize', setRealVh); };
   }, []);
 
+  const getInitialLoadingScreen = () => {
+    return (
+      <div className='InitialLoading'></div>
+    );
+  }
+
   return (
     <AppContextProvider>
       <StoreProvider>
@@ -43,40 +50,43 @@ function App() {
           <PlayerProvider>
             <SettingsProvider>
               <AppStartup />
-              <div className="App">
-                <NotificationProvider>
-                  <ModalStateProvider>
-                    <VolumeChangeListener />
-                    <NotificationListener />
-                    <DisconnectedIndicator />
-                    <ServiceProvider>
-                      <WeatherProvider>
-                        <ScreenContextProvider>
-                          <NowPlayingScreen
-                            screenId="NowPlaying"
-                            defaultActive
-                            mountOnEnter
-                            unmountOnExit />
-                          <BrowseScreen
-                            screenId="Browse"
-                            usesTrackBar
-                            mountOnEnter />
-                          <QueueScreen
-                            screenId="Queue"
-                            float
-                            usesTrackBar
-                            mountOnEnter />
-                          <VolumioScreen
-                            screenId="Volumio"
-                            mountOnEnter
-                            unmountOnExit />
-                          <CommonModals />
-                        </ScreenContextProvider>
-                      </WeatherProvider>
-                    </ServiceProvider>
-                  </ModalStateProvider>
-                </NotificationProvider>
-              </div>
+              <I18nLoader />
+              <Suspense fallback={getInitialLoadingScreen()}>
+                <div className="App">
+                  <NotificationProvider>
+                    <ModalStateProvider>
+                      <VolumeChangeListener />
+                      <NotificationListener />
+                      <DisconnectedIndicator />
+                      <ServiceProvider>
+                        <WeatherProvider>
+                          <ScreenContextProvider>
+                            <NowPlayingScreen
+                              screenId="NowPlaying"
+                              defaultActive
+                              mountOnEnter
+                              unmountOnExit />
+                            <BrowseScreen
+                              screenId="Browse"
+                              usesTrackBar
+                              mountOnEnter />
+                            <QueueScreen
+                              screenId="Queue"
+                              float
+                              usesTrackBar
+                              mountOnEnter />
+                            <VolumioScreen
+                              screenId="Volumio"
+                              mountOnEnter
+                              unmountOnExit />
+                            <CommonModals />
+                          </ScreenContextProvider>
+                        </WeatherProvider>
+                      </ServiceProvider>
+                    </ModalStateProvider>
+                  </NotificationProvider>
+                </div>
+              </Suspense>
             </SettingsProvider>
           </PlayerProvider>
         </SocketProvider>

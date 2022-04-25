@@ -5,6 +5,7 @@ import { usePlaylistService } from "../contexts/ServiceProvider";
 import { Scrollbars } from 'rc-scrollbars';
 import TextField from "../common/TextField";
 import ContextualModal from "../common/ContextualModal";
+import { useTranslation } from "react-i18next";
 
 function WebRadioDialog(props) {
 
@@ -15,6 +16,7 @@ function WebRadioDialog(props) {
   const okButtonRef = useRef(null);
   const { closeDialog } = props;
   const mode = props.modalData ? (props.modalData.mode || 'add') : 'add';
+  const {t} = useTranslation();
 
   const modalOverlayClassNames = {
     base: styles.Overlay,
@@ -80,8 +82,8 @@ function WebRadioDialog(props) {
     closeDialog();
   }, [mode, playlistService, closeDialog]);
 
-  const title = (mode === 'add' ? 'Add' : 'Edit') + ' Web Radio';
-  const okText = mode === 'add' ? 'Add' : 'Save';
+  const title = t(`modal.webRadio.${mode}.title`);
+  const okText = t(`modal.webRadio.${mode}.confirmButton`);
 
   return (
     <ContextualModal
@@ -112,8 +114,8 @@ function WebRadioDialog(props) {
         autoHide
         >
         <div className={styles.ContentsWrapper}>
-          <TextField ref={nameInputRef} placeholder="Name" icon="radio" onChange={onInputChange} />
-          <TextField ref={urlInputRef} placeholder="URL" icon="link" onChange={onInputChange} />
+          <TextField ref={nameInputRef} placeholder={t('modal.webRadio.namePlaceholder')} icon="radio" onChange={onInputChange} />
+          <TextField ref={urlInputRef} placeholder={t('modal.webRadio.urlPlaceholder')} icon="link" onChange={onInputChange} />
         </div>
       </Scrollbars>
       <div className={styles.Layout__footer}>

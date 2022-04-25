@@ -17,6 +17,7 @@ import DockedVolumeIndicator from './DockedVolumeIndicator';
 import DockedClock from './DockedClock';
 import DockedWeather from './DockedWeather';
 import DockedActionPanelTrigger from './DockedActionPanelTrigger';
+import { useTranslation } from 'react-i18next';
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
@@ -29,6 +30,7 @@ function NowPlayingScreen(props) {
   const store = useStore();
   const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
   const [view, setView] = useState(restoreState.view || props.view || 'basic');
+  const {t} = useTranslation();
 
   // Update restoreState on view changed
   useEffect(() => {
@@ -288,7 +290,7 @@ function NowPlayingScreen(props) {
           action: 'toggleView'
         },
         icon: view === 'basic' ? 'newspaper' : 'art_track',
-        title: view === 'basic' ? 'Info View' : 'Basic View'
+        title: view === 'basic' ? t('screen.nowPlaying.infoView') : t('screen.nowPlaying.basicView')
       },
       {
         type: 'divider',
@@ -300,7 +302,7 @@ function NowPlayingScreen(props) {
           action: 'gotoArtist'
         },
         icon: 'person',
-        title: 'Go to Artist'
+        title: t('action.gotoArtist')
       },
       {
         key: 'gotoAlbum',
@@ -308,7 +310,7 @@ function NowPlayingScreen(props) {
           action: 'gotoAlbum'
         },
         icon: 'album',
-        title: 'Go to Album'
+        title: t('action.gotoAlbum')
       }
     ];
 

@@ -97,3 +97,10 @@ body {
     transition: none !important;
   }
 }
+
+// Initial loading screen
+.InitialLoading {
+  position: absolute;
+  inset: 0;
+  background-color: #000;
+}

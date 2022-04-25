@@ -1,0 +1,59 @@
+{
+  "screen": {
+    "nowPlaying": {
+      "basicView": "基本模式",
+      "infoView": "资讯模式"
+    }
+  },
+  "modal": {
+    "addToPlaylist": {
+      "title": "新增至...",
+      "createButton": "建立播放清单",
+      "namePlaceholder": "输入播放清单名称",
+      "confirmCreateButton": "建立"
+    },
+    "webRadio": {
+      "edit": {
+        "title": "编辑网路电台",
+        "confirmButton": "储存"
+      },
+      "add": {
+        "title": "加入网路电台",
+        "confirmButton": "加入"
+      },
+      "namePlaceholder": "名称",
+      "urlPlaceholder": "连结"
+    }
+  },
+  "metadata": {
+    "serviceUnavailable": "资讯服务不存在",
+    "songUnavailable": "歌曲资讯不存在",
+    "artistUnavailable": "演出者资讯不存在",
+    "albumUnavailable": "专辑资讯不存在",
+    "lyricsUnavailable": "歌词不存在"
+  },
+  "weather": {
+    "today": "今天"
+  },
+  "action": {
+    "play": "播放",
+    "addToQueue": "加入贮列中",
+    "clearAndPlay": "清除与播放",
+    "addToPlaylist": "加到播放列表",
+    "removeFromPlaylist": "从播放列表中删除",
+    "deletePlaylist": "删除播放列表",
+    "removeDrive": "安全移除媒体",
+    "updateFolder": "更新资料夹",
+    "deleteFolder": "删除资料夹",
+    "addToFavorites": "加到收藏",
+    "removeFromFavorites": "从收藏中删除",
+    "addWebRadio": "加入网路电台",
+    "editWebRadio": "编辑网路电台",
+    "deleteWebRadio": "删除网路电台",
+    "addWebRadioToFavorites": "加到电台收藏",
+    "removeWebRadioFromFavorites": "从电台收藏中删除",
+    "viewInfo": "查看资讯",
+    "gotoArtist": "转到演出者",
+    "gotoAlbum": "转到专辑"
+  }
+}

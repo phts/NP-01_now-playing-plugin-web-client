@@ -5,10 +5,12 @@ import { secondsToString } from "../../utils/track";
 import { getItemActions, hasPlayButton } from "./helper";
 import { eventPathHasClass } from "../../utils/event";
 import PopupMenu from "../../common/PopupMenu";
+import { useTranslation } from "react-i18next";
 
 function Item(props) {
   const itemRef = useRef(null);
   const {styles, data, index} = props;
+  const {t} = useTranslation();
 
   const getAlbumArtContents = useCallback((data) => {
     if (data.albumart || (!data.icon && data.tracknumber === undefined)) {
@@ -70,14 +72,14 @@ function Item(props) {
       return null;
     }
 
-    const menuItems = itemActions.map(({action, icon, title}) => ({
+    const menuItems = itemActions.map(({action, icon}) => ({
       key: `${action}_${index}`,
       value: {
         itemIndex: index,
         action
       },
       icon,
-      title
+      title: t(`action.${action}`)
     }));
 
     const menu = (

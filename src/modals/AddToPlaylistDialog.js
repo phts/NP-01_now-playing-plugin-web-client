@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { Scrollbars } from 'rc-scrollbars';
 import ContextualCSSTransition from "../common/ContextualCSSTransition";
 import ContextualModal from "../common/ContextualModal";
+import { useTranslation } from 'react-i18next';
 
 function AddToPlaylistDialog(props) {
 
@@ -16,6 +17,7 @@ function AddToPlaylistDialog(props) {
   const createPlaylistTextBoxRef = useRef(null);
   const createPlaylistConfirmButtonRef = useRef(null);
   const { closeDialog } = props;
+  const {t} = useTranslation();
 
   useEffect(() => {
     const handlePlaylistsChanged = (data) => {
@@ -143,7 +145,7 @@ function AddToPlaylistDialog(props) {
       onAfterClose={onDialogClose}
       {...props}>
       <div className={styles.Layout__header}>
-        <span className={styles.Title}>Add To...</span>
+        <span className={styles.Title}>{t('modal.addToPlaylist.title')}</span>
         <Button
           styles={{
             baseClassName: 'Button',
@@ -176,7 +178,7 @@ function AddToPlaylistDialog(props) {
                   extraClassNames: [styles['Button--create']]
                 }}
                 icon="add"
-                text="Create new playlist"
+                text={t('modal.addToPlaylist.createButton')}
                 onClick={toggleCreatePlaylistMode}
               />
             </div>
@@ -200,7 +202,7 @@ function AddToPlaylistDialog(props) {
                 type="text" 
                 ref={createPlaylistTextBoxRef}
                 className={styles.CreatePlaylistTextBox}
-                placeholder="Enter playlist name"
+                placeholder={t('modal.addToPlaylist.namePlaceholder')}
                 onChange={onCreatePlaylistTextBoxChange} />
               <Button
                 ref={createPlaylistConfirmButtonRef}
@@ -209,7 +211,7 @@ function AddToPlaylistDialog(props) {
                   bundle: styles,
                   extraClassNames: [styles['Button--confirmCreate']]
                 }}
-                text="Create"
+                text={t('modal.addToPlaylist.confirmCreateButton')}
                 disabled
                 onClick={createAndAddToPlaylist} />
             </div>
