@@ -1,6 +1,6 @@
 {
   "name": "now-playing-reactjs-client",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "dependencies": {
     "@szhsin/react-menu": "^2.3.3",

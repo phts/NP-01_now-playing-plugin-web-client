@@ -2,6 +2,12 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.2.2
+- Improve seekbar accuracy when screen is inactive
+- Add support for option to show volume bar when docked volume indicator is clicked
+- Add translation support
+- Misc UI fixes
+
 0.2.1
 - Minor bug fix
 
