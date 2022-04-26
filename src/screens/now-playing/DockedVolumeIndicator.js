@@ -15,6 +15,7 @@ function DockedVolumeIndicator() {
   const volumeBarOrientation = settings.volumeBarOrientation || 'horizontal';
   const [volumeBarVisible, showVolumeBar] = useState(false);
   const [windowSize, setWindowSize] = useState({width: window.innerWidth, height: window.innerHeight});
+  const indicatorWrapperRef = useRef(null);
   const indicatorRef = useRef(null);
   const volumeBarRef = useRef(null);
 
@@ -207,14 +208,20 @@ function DockedVolumeIndicator() {
   const volumeBarClassNames = showVolumeBarOnClick ? classNames(
     styles.VolumeBar,
     styles[`VolumeBar--${volumeBarOrientation}`],
-    styles[`VolumeBar--${volumeBarPosition}-${placement}`],
+    styles[`VolumeBar--${volumeBarPosition}`],
+    volumeBarPosition === 'anchored' ? styles[`VolumeBar--anchored-${placement}`] : null,
   ) : null;
+
+  const indicatorWrapperFontSize = indicatorWrapperRef.current ? 
+    getComputedStyle(indicatorWrapperRef.current).getPropertyValue('font-size') 
+    : null;
 
   const volumeBarModalInlineStyles = showVolumeBarOnClick ? {
     content: {
       '--volume-bar-wrapper-inset': getVolumeBarWrapperInset(),
       '--volume-bar-inset': volumeBarInset,
-      '--volume-bar-before-close': volumeBarBeforeClose
+      '--volume-bar-before-close': volumeBarBeforeClose,
+      'fontSize': volumeBarPosition === 'center' ? indicatorWrapperFontSize : null
     }
   } : null;
 
@@ -239,7 +246,10 @@ function DockedVolumeIndicator() {
 
   return (
     <>
-      <div style={dockedStyles} onClick={showVolumeBarOnClick ? toggleVolumeBar : null}>
+      <div 
+        ref={indicatorWrapperRef} 
+        style={dockedStyles} 
+        onClick={showVolumeBarOnClick ? toggleVolumeBar : null}>
         <VolumeIndicator
           ref={indicatorRef}
           showDial={false}
