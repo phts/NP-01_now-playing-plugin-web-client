@@ -17,6 +17,8 @@ i18next
       });
   }))
   .init({
+    load: 'currentOnly',
+
     fallbackLng: (code) => {
       if (cachedFallbacks[code]) {
         return cachedFallbacks[code];
