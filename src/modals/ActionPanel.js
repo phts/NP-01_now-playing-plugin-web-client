@@ -10,10 +10,10 @@ import styles from './ActionPanel.module.scss';
 import { VOLUME_INDICATOR } from "./CommonModals";
 import volumioIcon from "../assets/volumio-icon.png";
 import ContextualModal from "../common/ContextualModal";
-import { usePerformanceContext } from "../contexts/SettingsProvider";
+import { usePerformanceContext, useRawSettings } from "../contexts/SettingsProvider";
 
 function ActionPanel(props) {
-
+  const {settings} = useRawSettings('actionPanel');
   const {disableModal, enableModal} = useModals();
   const {disableTransitions} = usePerformanceContext();
   const {switchScreen} = useScreens();
@@ -72,6 +72,8 @@ function ActionPanel(props) {
     baseClassName: 'ExtraButton',
     bundle: styles
   };
+
+  const showVolumeSlider = settings.showVolumeSlider !== undefined ? settings.showVolumeSlider : true;
   
   return (
     <ContextualModal 
@@ -81,7 +83,7 @@ function ActionPanel(props) {
       overlayRef={node => (overlayEl.current = node)}
       onAfterOpen={onModalOpened}
       {...props}>
-      <VolumeSlider />
+      {showVolumeSlider ? <VolumeSlider /> : null}
       <div className={styles.Layout__row}>
         <ScreenSwitcher onSwitch={closePanel}/>
         <div className={styles.Layout__extraButtonsWrapper}>

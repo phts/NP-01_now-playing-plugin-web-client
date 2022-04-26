@@ -37,6 +37,7 @@ export function getInitialSettings(namespace) {
     case 'screen.nowPlaying':
     case 'screen.idle':
     case 'background':
+    case 'actionPanel':
       return settings[namespace] || {};
     case 'theme':
       return settings[namespace] || 'default';
