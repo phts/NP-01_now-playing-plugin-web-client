@@ -45,6 +45,20 @@
       }
     }
   }
+
+  &--list.Layout--maximized {
+    @media (min-width: 1024px) {
+      .Items--list {
+        .Item {
+          border-radius: 0;
+
+          &:last-of-type {
+            border-bottom: var(--browse-screen-list-item-divider);
+          }
+        }
+      }
+    }
+  }
 }
 
 .Title {
