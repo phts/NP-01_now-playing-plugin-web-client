@@ -56,8 +56,13 @@ const Toolbar = React.forwardRef((props, ref) => {
     extraClassNames: [styles[`Button--${buttonName}`], 'no-swipe']
   });
 
+  const toolbarClassNames = classNames(
+    styles.Layout,
+    props.screenMaximized ? styles['Layout--maximized'] : null
+  );
+
   return (
-    <div ref={ref} className={styles.Layout}>
+    <div ref={ref} className={toolbarClassNames}>
       <div className={styles['Layout__main']}>
         <Button 
           styles={getButtonStyles('home')}
@@ -92,6 +97,15 @@ const Toolbar = React.forwardRef((props, ref) => {
         </div>
       </div>
       <div className={styles['Layout__screen']}>
+        {
+          props.screenMaximizable ? 
+            <Button
+              styles={getButtonStyles('toggleScreenMaximize')}
+              icon={!props.screenMaximized ? 'fullscreen' : 'fullscreen_exit'}
+              data-action="toggleScreenMaximize"
+              onClick={handleButtonClicked} />
+            : null
+        }
         <Button 
           styles={getButtonStyles('actionPanel')} 
           icon="more_horiz"

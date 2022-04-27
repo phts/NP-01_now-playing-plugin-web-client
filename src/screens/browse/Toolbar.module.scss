@@ -13,11 +13,15 @@
     padding: 1em;
     box-sizing: border-box;
     column-gap: 1em;
+  }
 
-    @media all and (min-width: 1024px) {
-      max-width: 80%;
-      margin: 0 auto;
-    }
+  @mixin screen-position {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
   }
 
   &__screen {
@@ -29,13 +33,23 @@
 
     // Float screen buttons (note 479px corresponds to
     // where the search input floats to second row)
-    @media all and (min-width: 1024px), all and (max-width: 479px) {
-      position: absolute;
-      top: 1em;
-      right: 1em;
-      margin-left: 0;
-      margin-right: 0;
-      margin-top: 0;
+    @media all and (max-width: 479px) {
+      @include screen-position();
+    }
+  }
+
+  &:not(&--maximized) {
+    .Layout__main {
+      @media all and (min-width: 1024px) {
+        max-width: 80%;
+        margin: 0 auto;
+      }
+    }
+
+    .Layout__screen {
+      @media all and (min-width: 1024px) {
+        @include screen-position();
+      }
     }
   }
 }
@@ -65,6 +79,10 @@
 
   @media all and (min-width: 1024px) {
     width: 20em;
+  }
+
+  @media all and (min-width: 1024px) and (max-width: 1259px) {
+    padding-right: 1.5em;
   }
 
   // This will push the search input to second row

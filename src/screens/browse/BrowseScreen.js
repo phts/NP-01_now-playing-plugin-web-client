@@ -25,9 +25,13 @@ const HOME = {
 };
 
 const RESTORE_STATE_KEY = 'BrowseScreen.restoreState';
+const SCREEN_MAXIMIZED_KEY = 'screen.browse.maximized';
+
+const isScreenMaximizable = () => window.innerWidth >= 1024;
 
 function BrowseScreen(props) {
   const store = useStore();
+  const persistentStore = useStore('persistent');
   const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
   const {socket} = useSocket();
   const showToast = useToasts();
@@ -44,6 +48,26 @@ function BrowseScreen(props) {
   const toolbarEl = useRef(null);
   const screenRef = useRef(null);
   const scrollPositionRef = useRef(0);
+  const [screenMaximizable, setScreenMaximizable] = useState(isScreenMaximizable());
+  const [screenMaximized, maximizeScreen] = useState(persistentStore.get(SCREEN_MAXIMIZED_KEY) || false);
+
+  // Detect window resize for updating screenMaximizable
+
+  useEffect(() => {
+    const updateScreenMaximizable = () => {
+      setScreenMaximizable(isScreenMaximizable());
+    };
+
+    window.addEventListener('resize', updateScreenMaximizable);
+
+    return () => { window.removeEventListener('resize', updateScreenMaximizable); };
+  }, []);
+
+  // -- Save screenMaximized to localStorage when its value changes
+
+  useEffect(() => {
+    persistentStore.set(SCREEN_MAXIMIZED_KEY, screenMaximized);
+  }, [persistentStore, screenMaximized]);
 
   // Browse / navigation handling
 
@@ -191,6 +215,9 @@ function BrowseScreen(props) {
       case 'toggleListView':
         toggleListView();
         break;
+      case 'toggleScreenMaximize':
+        maximizeScreen(!screenMaximized);
+        break;
       case 'openActionPanel':
         openActionPanel();
         break;
@@ -201,7 +228,7 @@ function BrowseScreen(props) {
         break;
       default:
     }
-  }, [browse, goBack, toggleListView, openActionPanel, switchScreen]);
+  }, [browse, goBack, toggleListView, openActionPanel, switchScreen, screenMaximized]);
 
 
   // Item actions
@@ -371,22 +398,23 @@ function BrowseScreen(props) {
     if (contents.navigation && Array.isArray(contents.navigation.lists)) {
       const keyPrefix = currentLocation.current.uri + '_section-';
       const sections = contents.navigation.lists.map((list, index) =>
-      (
-        <Section
-          key={keyPrefix + index}
-          list={list}
-          location={currentLocation.current}
-          preferredListView={listView}
-          sectionIndex={index}
-          onItemClick={handleItemClicked}
-          onPlayClick={handlePlayClicked}
-          callItemAction={callItemAction} />
-      )
+        (
+          <Section
+            key={keyPrefix + index}
+            list={list}
+            location={currentLocation.current}
+            preferredListView={listView}
+            sectionIndex={index}
+            onItemClick={handleItemClicked}
+            onPlayClick={handlePlayClicked}
+            callItemAction={callItemAction}
+            maximized={screenMaximized} />
+        )
       );
       return sections;
     }
     return null;
-  }, [contents.navigation, listView, handleItemClicked, handlePlayClicked, callItemAction]);
+  }, [contents.navigation, listView, handleItemClicked, handlePlayClicked, callItemAction, screenMaximized]);
 
   const header = useMemo(() => {
     if (contents.navigation && contents.navigation.info) {
@@ -494,7 +522,9 @@ function BrowseScreen(props) {
         currentListView={listView}
         onButtonClick={handleToolbarButtonClicked}
         onSearchQuery={onSearchQuery}
-        initialSearchQuery={restoreState.searchQuery || ''} />
+        initialSearchQuery={restoreState.searchQuery || ''}
+        screenMaximizable={screenMaximizable}
+        screenMaximized={screenMaximized} />
       <Scrollbars 
         ref={scrollbarsRef}
         className={styles.Layout__contents}

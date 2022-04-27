@@ -118,8 +118,14 @@ function Section(props) {
     return html;
   }, [host]);
 
+  const sectionClassNames = classNames(
+    styles.Layout,
+    styles[`Layout--${listView}`],
+    props.maximized ? styles[`Layout--maximized`] : null
+  );
+
   return (
-    <section className={classNames(styles.Layout, styles[`Layout--${listView}`])}>
+    <section className={sectionClassNames}>
       <div 
         className={titleClassNames} 
         dangerouslySetInnerHTML={{ __html: formatRichTitle(title)}} />

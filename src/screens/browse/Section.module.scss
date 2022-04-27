@@ -1,10 +1,11 @@
 .Layout {
+  --title-padding-top: 2em;
+  --title-padding-right: 0.8em;
+  --title-padding-bottom: 0.5em;
+  --title-padding-left: 0.8em;
+
   width: 100%;
   margin: 0 auto;
-
-  @media (min-width: 1024px) {
-    max-width: 80%;
-  }
 
   &--grid {
     &:last-of-type {
@@ -14,38 +15,50 @@
 
   &--list {
     .Title:not(.Title--empty) {
-      padding-bottom: 1em;
+      --title-padding-bottom: 1em;
     }
+  }
 
+  &:not(&--maximized) {
     @media (min-width: 1024px) {
-      .Title--first.Title--empty {
-        display: block;
-        padding: 0;
-      }
+      max-width: 80%;
+      --title-padding-top: 1.5em;
+    }
+  }
 
+  &--list:not(&--maximized) {
+    @media (min-width: 1024px) {
       &:last-of-type {
         padding-bottom: 0.5em;
+      }
+
+      .Title--first.Title--empty {
+        display: block;
+        --title-padding-top: 0;
+        --title-padding-right: 0;
+        --title-padding-bottom: 0;
+        --title-padding-left: 0;
+      }
+
+      .Items--list {
+        margin-bottom: 1em;
       }
     }
   }
 }
 
 .Title {
-  padding: 2em 0.8em 0.5em 0.8em;
+  padding: var(--title-padding-top) var(--title-padding-right) var(--title-padding-bottom) var(--title-padding-left);
   color: #ccc;
   font-family: var(--browse-screen-section-title-font-family);
   font-size: var(--browse-screen-section-title-font-size);
-
-  @media (min-width: 1024px) {
-    padding-top: 1.5em;
-  }
 
   &--empty {
     display: none;
   }
 
   &--first {
-    padding-top: 1.2em;
+    --title-padding-top: 1.2em;
   }
 
   /*
@@ -88,11 +101,6 @@
     --display-duration: inherit;
 
     display: block;
-    //margin-top: 0.5em;
-
-    @media (min-width: 1024px) {
-      margin-bottom: 1em;
-    }
 
     @import './ListItem';
 
