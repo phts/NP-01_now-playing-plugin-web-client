@@ -50,7 +50,7 @@ function IdleScreenWeather() {
   };
   const iconSettings = {
     style: customIconSettings && screenSettings.weatherIconStyle ? screenSettings.weatherIconStyle : 'filled',
-    currentIconAnimate: customIconSettings && screenSettings.weatherCurrentIconAnimate !== undefined ? screenSettings.weatherCurrentIconAnimate : true,
+    currentIconAnimate: customIconSettings && screenSettings.weatherCurrentIconAnimate !== undefined ? screenSettings.weatherCurrentIconAnimate : false,
     currentMonoColor: customIconSettings && screenSettings.weatherCurrentIconMonoColor ? screenSettings.weatherCurrentIconMonoColor : null,
     forecastMonoColor: customIconSettings && screenSettings.weatherForecastIconMonoColor ? screenSettings.weatherForecastIconMonoColor : null,
   };
