@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import Button from '../../common/Button';
 import Image from '../../common/Image';
 import PopupMenu from '../../common/PopupMenu';
@@ -88,8 +89,13 @@ function Header(props) {
       onMenuOverlay={props.onMenuOverlay} />
   ));
 
+  const headerClassNames = classNames(
+    styles.Layout,
+    props.screenMaximized ? styles['Layout--maximized'] : null
+  );
+
   return (
-    <div className={styles.Layout}>
+    <div className={headerClassNames}>
       <div className={styles.Layout__background}>
         <Image className={styles.BackgroundImage} src={data.albumart} />
       </div>

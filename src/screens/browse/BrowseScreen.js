@@ -422,11 +422,12 @@ function BrowseScreen(props) {
         <Header 
           screenRef={screenRef}
           info={contents.navigation.info} 
-          callItemAction={callItemAction} />
+          callItemAction={callItemAction}
+          screenMaximized={screenMaximized} />
       );
     }
     return null;
-  }, [contents.navigation, callItemAction]);
+  }, [contents.navigation, callItemAction, screenMaximized]);
 
   useEffect(() => {
     if (scrollbarsRef.current) {

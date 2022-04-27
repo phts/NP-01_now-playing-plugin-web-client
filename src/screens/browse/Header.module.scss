@@ -7,8 +7,14 @@ $albumartHeight: 10em;
   width: 100%;
   position: relative;
 
-  @media (min-width: 1024px) {
-    margin-bottom: 1em;
+  &:not(&--maximized) {
+    @media (min-width: 1024px) {
+      margin-bottom: 1em;
+
+      .Layout__contents {
+        max-width: 80%;
+      }
+    }
   }
 
   &__background {
@@ -29,10 +35,6 @@ $albumartHeight: 10em;
     position: relative;
     align-items: center;
     gap: 1em;
-
-    @media (min-width: 1024px) {
-      max-width: 80%;
-    }
 
     @media (max-width: 479px) {
       flex-direction: column;
