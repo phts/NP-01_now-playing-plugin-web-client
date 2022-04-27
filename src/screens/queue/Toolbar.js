@@ -38,6 +38,15 @@ const Toolbar = React.forwardRef((props, ref) => {
       onClick={handleButtonClicked} />
   );
 
+  const maximizeScreenButton = props.screenMaximizable ? 
+    <Button
+      key="maximizeScreen"
+      styles={getButtonStyles('toggleScreenMaximize')}
+      icon={!props.screenMaximized ? 'fullscreen' : 'fullscreen_exit'}
+      data-action="toggleScreenMaximize"
+      onClick={handleButtonClicked} />
+    : null;
+
   const buttonGroupClassNames = classNames([
     styles.PlayerButtonGroup,
     'no-swipe'
@@ -60,7 +69,7 @@ const Toolbar = React.forwardRef((props, ref) => {
       <PlayerButtonGroup
           className={buttonGroupClassNames}
           buttonStyles={baseButtonStyles}
-          buttons={['random', 'repeat', addToPlaylistButton, clearButton]}
+          buttons={['random', 'repeat', addToPlaylistButton, clearButton, maximizeScreenButton]}
           playerState={props.playerState} />
       </div>
     </div>

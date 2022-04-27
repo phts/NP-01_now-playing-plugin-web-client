@@ -14,9 +14,13 @@ import { useStore } from '../../contexts/StoreProvider';
 import { usePlayerState } from '../../contexts/PlayerProvider';
 
 const RESTORE_STATE_KEY = 'QueueScreen.restoreState';
+const SCREEN_MAXIMIZED_KEY = 'screen.queue.maximized';
+
+const isScreenMaximizable = () => window.innerWidth >= 1024;
 
 function QueueScreen(props) {
   const store = useStore();
+  const persistentStore = useStore('persistent');
   const restoreState = store.get(RESTORE_STATE_KEY, {}, true);
   const playerState = usePlayerState();
   const { openModal } = useModals();
@@ -26,6 +30,26 @@ function QueueScreen(props) {
   const toolbarEl = useRef(null);
   const scrollbarsRef = useRef(null);
   const scrollPositionRef = useRef(0);
+  const [screenMaximizable, setScreenMaximizable] = useState(isScreenMaximizable());
+  const [screenMaximized, maximizeScreen] = useState(persistentStore.get(SCREEN_MAXIMIZED_KEY) || false);
+
+  // Detect window resize for updating screenMaximizable
+
+  useEffect(() => {
+    const updateScreenMaximizable = () => {
+      setScreenMaximizable(isScreenMaximizable());
+    };
+
+    window.addEventListener('resize', updateScreenMaximizable);
+
+    return () => { window.removeEventListener('resize', updateScreenMaximizable); };
+  }, []);
+
+  // -- Save screenMaximized to localStorage when its value changes
+
+  useEffect(() => {
+    persistentStore.set(SCREEN_MAXIMIZED_KEY, screenMaximized);
+  }, [persistentStore, screenMaximized]);
 
   useEffect(() => {
     const handleQueueChanged = (data) => {
@@ -91,9 +115,12 @@ function QueueScreen(props) {
       case 'clear':
         queueService.clearQueue();
         break;
+      case 'toggleScreenMaximize':
+        maximizeScreen(!screenMaximized);
+        break;
       default:
     }
-  }, [closeScreen, openModal, queueService]);
+  }, [closeScreen, openModal, queueService, screenMaximized]);
 
   const handleItemClicked = useCallback((position) => {
     queueService.playQueue(position);
@@ -127,7 +154,8 @@ function QueueScreen(props) {
 
   const layoutWrapperClasses = classNames([
     styles.LayoutWrapper,
-    props.className
+    props.className,
+    screenMaximized ? styles['LayoutWrapper--maximized'] : null
   ]);
 
   return (
@@ -141,7 +169,9 @@ function QueueScreen(props) {
           styles={styles} 
           itemCount={items.length}
           playerState={playerState}
-          onButtonClick={handleToolbarButtonClicked} />
+          onButtonClick={handleToolbarButtonClicked}
+          screenMaximizable={screenMaximizable}
+          screenMaximized={screenMaximized} />
         <Scrollbars
           ref={scrollbarsRef}
           className={styles.Layout__contents}
