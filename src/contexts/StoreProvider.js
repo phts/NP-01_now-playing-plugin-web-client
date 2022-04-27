@@ -4,7 +4,10 @@ import Store from "../utils/store";
 const StoreContext = createContext();
 
 const StoreProvider = ({ children }) => {
-  const store = useMemo(() => new Store(), []);
+  const store = useMemo(() => ({
+    session: new Store('session'),
+    persistent: new Store('persistent')
+  }), []);
 
   return (
     <StoreContext.Provider value={store}>
@@ -13,6 +16,6 @@ const StoreProvider = ({ children }) => {
   );
 };
 
-const useStore = () => useContext(StoreContext);
+const useStore = (type = 'session') => useContext(StoreContext)[type];
 
 export { useStore, StoreProvider };
