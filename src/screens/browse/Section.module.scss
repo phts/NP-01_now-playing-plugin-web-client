@@ -137,28 +137,24 @@
   }
 
   &--grid {
-    --grid-columns: 2;
+    --min-column-width: 135px;
     display: grid;
-    grid-template-columns: repeat(var(--grid-columns), 1fr);
-    grid-gap: 1em;
-    margin: 1em;
+    grid-template-columns: repeat(auto-fill, minmax(var(--min-column-width), 1fr));
+    grid-gap: 1rem;
+    margin: 1rem;
 
     @import './GridItem';
 
-    @media (min-width: 480px) {
-      --grid-columns: 3;
+    @media (min-width: 790px) {
+      --min-column-width: 180px;
     }
 
-    @media (min-width: 640px) {
-      --grid-columns: 4;
-    }
-
-    @media (min-width: 900px) {
-      --grid-columns: 5;
+    @media (min-width: 1480px) {
+      --min-column-width: 200px;
     }
 
     @media (min-width: 1920px) {
-      --grid-columns: 6;
+      --min-column-width: 220px;
     }
   }
 }
