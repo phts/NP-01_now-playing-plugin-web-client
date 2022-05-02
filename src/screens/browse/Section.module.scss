@@ -137,7 +137,7 @@
   }
 
   &--grid {
-    --min-column-width: 135px;
+    --min-column-width: 8.4375em; // 135px
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--min-column-width), 1fr));
     grid-gap: 1rem;
@@ -146,15 +146,15 @@
     @import './GridItem';
 
     @media (min-width: 790px) {
-      --min-column-width: 180px;
+      --min-column-width: 11.25em; // 180px
     }
 
     @media (min-width: 1480px) {
-      --min-column-width: 200px;
+      --min-column-width: 12.5em; // 200px
     }
 
     @media (min-width: 1920px) {
-      --min-column-width: 220px;
+      --min-column-width: 13.75em; // 220px
     }
   }
 }

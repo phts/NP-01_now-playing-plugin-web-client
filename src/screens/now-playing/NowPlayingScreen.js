@@ -50,6 +50,7 @@ function NowPlayingScreen(props) {
       _css['--album-font-size'] = screenSettings.albumFontSize;
       _css['--media-info-font-size'] = screenSettings.mediaInfoFontSize;
       _css['--seek-time-font-size'] = screenSettings.seekTimeFontSize;
+      _css['--metadata-font-size'] = screenSettings.metadataFontSize;
     }
 
     if (screenSettings.fontColors === 'custom') { 
@@ -58,6 +59,7 @@ function NowPlayingScreen(props) {
       _css['--album-font-color'] = screenSettings.albumFontColor;
       _css['--media-info-font-color'] = screenSettings.mediaInfoFontColor;
       _css['--seek-time-font-color'] = screenSettings.seekTimeFontColor;
+      _css['--metadata-font-color'] = screenSettings.metadataFontColor;
     }
 
     if (screenSettings.textAlignmentH) {

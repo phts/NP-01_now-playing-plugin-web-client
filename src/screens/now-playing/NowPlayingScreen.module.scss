@@ -8,11 +8,13 @@
   --default-album-font-size: 0.8em;
   --default-media-info-font-size: 0.7em;
   --default-seek-time-font-size: var(--seekbar-text-font-size); // From theme
+  --default-metadata-font-size: 1em;
   --default-title-font-color: #fff;
   --default-artist-font-color: #ccc;
   --default-album-font-color: #ccc;
   --default-media-info-font-color: #ccc;
   --default-seek-time-font-color: var(--seekbar-text-color); // From theme
+  --default-metadata-font-color: #ccc;
   --default-text-alignment-h: unset;
   --default-text-alignment-v: unset;
   --default-text-alignment-lyrics: center;
@@ -49,11 +51,13 @@
   --album-font-size: var(--default-album-font-size);
   --media-info-font-size: var(--default-media-info-font-size);
   --seek-time-font-size: var(--default-seek-time-font-size);
+  --metadata-font-size: var(--default-metadata-font-size);
   --title-font-color: var(--default-title-font-color);
   --artist-font-color: var(--default-artist-font-color);
   --album-font-color: var(--default-album-font-color);
   --media-info-font-color: var(--default-media-info-font-color);
   --seek-time-font-color: var(--default-seek-time-font-color);
+  --metadata-font-color: var(--default-metadata-font-color);
   --text-alignment-h: var(--default-text-alignment-h);
   --text-alignment-v: var(--default-text-alignment-v);
   --text-alignment-lyrics: var(--default-text-alignment-lyrics);
