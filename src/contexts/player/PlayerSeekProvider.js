@@ -40,6 +40,15 @@ const PlayerSeekProvider = ({ children }) => {
       tt.pause();
     }
   }, [playerState.seek, playerState.status, setCurrentSeekPosition]);
+
+  // Workaround for services that don't push 'stop' state when playback
+  // finishes and causes seek position to exceed duration
+  useEffect(() => {
+    const tt = trackTimer.current;
+    if (currentSeekPosition > playerState.duration * 1000) {
+      tt.stop();
+    }
+  }, [currentSeekPosition, playerState.duration]);
   
 
   return (

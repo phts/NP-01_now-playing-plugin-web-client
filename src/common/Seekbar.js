@@ -73,11 +73,15 @@ function Seekbar(props) {
 
   const showText = props.showText !== undefined ? props.showText : true;
 
+  // Reset slider position for services that don't push 'stop' state when playback
+  // finishes and causes displaySeek to exceed duration
+  const sliderValue = displaySeek > duration ? 0 : displaySeek;
+
   return (
     <div className={mainClassName}>
       <Slider 
         className={getElementClassName('slider')}
-        value={[Math.min(displaySeek, duration)]}
+        value={[sliderValue]}
         max={Math.max(duration, 1)}
         onChange={onSliderValueChanged}
         onAfterChange={endSeek}
