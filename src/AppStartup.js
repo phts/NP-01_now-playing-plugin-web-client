@@ -3,6 +3,7 @@ import Modal from "react-modal/lib/components/Modal";
 import { useAppContext } from "./contexts/AppContextProvider";
 import { useSocket } from "./contexts/SocketProvider";
 import io from "socket.io-client";
+import { usePerformanceContext } from "./contexts/SettingsProvider";
 
 const refresh = () => {
   window.location.reload();
@@ -10,6 +11,7 @@ const refresh = () => {
 
 function AppStartup() {
   const {host, pluginInfo, setPluginInfo} = useAppContext();
+  const {disableTransitions} = usePerformanceContext();
   const {socket, setSocket} = useSocket();
   const currentPluginInfo = useRef(null);
 
@@ -23,6 +25,16 @@ function AppStartup() {
       });
     }
   }, [host, setSocket]);
+
+  useEffect(() => {
+    if (disableTransitions) {
+      document.body.classList.add('no-transitions');
+    }
+    
+    return () => {
+      document.body.classList.remove('no-transitions');
+    }
+  }, [disableTransitions]);
 
   useEffect(() => {
     if (socket) {
