@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { useLocale, useRawSettings, useTimezone } from '../../contexts/SettingsProvider';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import Scrollbars from 'rc-scrollbars';
 
 const getBackgroundStyles = (settings) => {
   const weatherBackgroundType = settings.weatherBackground || 'default';
@@ -135,10 +136,22 @@ function IdleScreenWeather() {
     const info = weather.info;
     return (
       <div className={styles.Layout} style={backgroundStyles}>
-        {getCurrentBlock(info.current)}
-        {info.forecast.slice(0, 5).map((data, index) => 
-          getForecastBlock(data, `forecast_${index}`)
-        )}
+        <Scrollbars 
+          classes={{
+            thumbHorizontal: 'Scrollbar__handle'
+          }}
+          autoHide>
+            <div className={styles.DayView}>
+              <div className={styles.DayView__currentWrapper}>
+                {getCurrentBlock(info.current)}
+              </div>
+              <div className={styles.DayView__forecastWrapper}>
+                {info.forecast.map((data, index) => 
+                  getForecastBlock(data, `forecast_${index}`)
+                )}
+              </div>
+            </div>
+        </Scrollbars>
       </div>
     );
   }
