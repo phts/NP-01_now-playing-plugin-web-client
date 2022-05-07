@@ -33,7 +33,8 @@
     "lyricsUnavailable": "Lyrics unavailable"
   },
   "weather": {
-    "today": "Today"
+    "today": "Today",
+    "now": "Now"
   },
   "action": {
     "play": "Play",

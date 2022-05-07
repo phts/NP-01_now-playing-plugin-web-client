@@ -26,7 +26,7 @@
   }
 }
 
-.DayView {
+.Contents {
   --viewport-forecast-columns: 5;
   --forecast-width: calc(100% / var(--viewport-forecast-columns));
 
@@ -35,9 +35,11 @@
   height: 100%;
   column-gap: 1em;
 
-  &__currentWrapper {
-    height: 100%;
-  }
+  align-items: center;
+
+  /*&__currentWrapper {
+    
+  }*/
 
   &__forecastWrapper {
     display: grid;
@@ -53,7 +55,7 @@
     --viewport-forecast-columns: 3;
   }
 
-  @media (min-aspect-ratio: 21/9) { // ultrawide screens can show more
+  @media (orientation: landscape) and (min-aspect-ratio: 21/9) { // ultrawide screens can show more
     --viewport-forecast-columns: 7;
   }
 
@@ -63,13 +65,27 @@
     
     &__currentWrapper {
       position: fixed;
-      height: 30%;
+      top: 50%;
+      margin-top: 0.5em;
     }
 
     &__forecastWrapper {
       position: relative;
       top: 100%;
-      margin-top: -1em;
+      margin-top: -1.8em;
+    }
+  }
+
+  @media (orientation: portrait) and (max-height: 600px) {
+    &__currentWrapper {
+      top: 46%;
+      margin-top: 0;
+    }
+  }
+
+  @media (orientation: portrait) and (max-aspect-ratio: 9/21) {
+    &__currentWrapper {
+      top: 55%;
     }
   }
 
@@ -78,14 +94,13 @@
   }
 }
 
-@mixin day-block($direction) {
+@mixin period-block($direction) {
   display:flex;
   align-items: center;
   flex-direction: $direction;
   color: #fff;
   overflow: hidden;
-  font-size: var(--day-base-font-size);
-  height: 100%;
+  font-size: var(--period-base-font-size);
 
   &__icon {
     width: var(--icon-size, 2em);
@@ -105,33 +120,33 @@
     margin: var(--info-margin, 0);
   }
 
-  &__dayTitleWrapper {
-    margin-bottom: var(--day-title-bottom-margin, 0);
+  &__periodTitleWrapper {
+    margin-bottom: var(--period-title-bottom-margin, 0);
   }
 
-  &__dayTitle {
+  &__periodTitle {
     //padding: 5px 10px;
     //background: #383838;
-    //border-radius: var(--day-title-font-size, 0.8em);
-    color: var(--day-title-color);
-    font-size: var(--day-title-font-size, 0.8em);
+    //border-radius: var(--period-title-font-size, 0.8em);
+    color: var(--period-title-color);
+    font-size: var(--period-title-font-size, 0.8em);
     text-transform: uppercase;
   }
 
-  &__tempRange {
+  &__tempRange,
+  &__temp {
     color: var(--temp-range-color, #fff);
     font-size: var(--temp-range-font-size, 0.8em);
-
   }
 }
 
 .Current {
-  @include day-block(row);
-
-  --day-base-font-size: 1em;
+  @include period-block(row);
+  
+  --period-base-font-size: 1em;
   --icon-size: 6em;
   --temp-range-color: #bebebe;
-  --day-title-bottom-margin: 5px;
+  --period-title-bottom-margin: 5px;
 
   &__currentTemp {
     color: var(--current-temp-color);
@@ -144,14 +159,14 @@
 }
 
 .Forecast {
-  @include day-block(column);
+  @include period-block(column);
 
   justify-content: center;
 
-  --day-base-font-size: 1em;
+  --period-base-font-size: 1em;
   --icon-size: 3em;
   --info-margin: 10px 0 0 0;
-  --day-title-bottom-margin: 10px;
-  --day-title-font-size: 0.7em;
+  --period-title-bottom-margin: 10px;
+  --period-title-font-size: 0.7em;
   --temp-range-font-size: 0.7em;
 }

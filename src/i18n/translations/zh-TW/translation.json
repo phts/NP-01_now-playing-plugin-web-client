@@ -33,7 +33,8 @@
     "lyricsUnavailable": "歌詞不存在"
   },
   "weather": {
-    "today": "今天"
+    "today": "今天",
+    "now": "現在"
   },
   "action": {
     "play": "播放",
