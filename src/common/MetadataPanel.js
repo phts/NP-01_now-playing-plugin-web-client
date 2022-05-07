@@ -337,7 +337,7 @@ function MetadataPanel(props) {
       return (
         <div className={infoClassNames}>
           <span className="material-icons spin">rotate_right</span>
-          <div>Loading...</div>
+          <div>{t('metadata.loading')}</div>
         </div>
       );
     }

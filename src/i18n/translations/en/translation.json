@@ -26,6 +26,7 @@
     }
   },
   "metadata": {
+    "loading": "Loading...",
     "serviceUnavailable": "Metadata service unavailable",
     "songUnavailable": "Song description unavailable",
     "artistUnavailable": "Artist description unavailable",

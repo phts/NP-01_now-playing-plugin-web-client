@@ -26,6 +26,7 @@
     }
   },
   "metadata": {
+    "loading": "加載中...",
     "serviceUnavailable": "資訊服務不存在",
     "songUnavailable": "歌曲資訊不存在",
     "artistUnavailable": "演出者資訊不存在",

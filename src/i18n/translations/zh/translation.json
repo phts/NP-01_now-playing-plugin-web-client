@@ -26,6 +26,7 @@
     }
   },
   "metadata": {
+    "loading": "加载中...",
     "serviceUnavailable": "资讯服务不存在",
     "songUnavailable": "歌曲资讯不存在",
     "artistUnavailable": "演出者资讯不存在",
