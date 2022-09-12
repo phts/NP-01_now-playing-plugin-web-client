@@ -174,7 +174,10 @@ function NowPlayingScreen(props) {
     }
 
     if (position === 'top-right') {
-      orderedChildren.push(getMenu());
+      const dockedMenu = screenSettings.dockedMenu || {};
+      if (dockedMenu.enabled === undefined || dockedMenu.enabled) {
+        orderedChildren.push(getMenu());
+      }
     }
 
     return orderedChildren;
