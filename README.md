@@ -2,6 +2,11 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.2.5:
+- Idle screen Unsplash background: fetch image URL from API endpoint instead of constructing directly in the client.
+- Add shutdown button to Action Panel
+- Add support for 'Dock Component - Menu' setting
+
 0.2.4
 - Add hourly weather to idle screen (tap / click "Current" weather to toggle between daily and hourly).
 - Idle screen now shows all available forecast periods - scroll horizontally to view.
