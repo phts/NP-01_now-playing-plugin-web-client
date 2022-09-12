@@ -3,16 +3,31 @@ import { DateTime } from 'luxon';
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useAppContext } from '../../contexts/AppContextProvider';
 import { useRawSettings, useTimezone } from '../../contexts/SettingsProvider';
+import { requestPluginApiEndpoint } from '../../utils/api';
 import { preloadImage } from '../../utils/image';
 import styles from './IdleScreenBackground.module.scss';
 
 const IdleScreenBackgroundContext = createContext();
 
-const getUnsplashUrl = (keywords, matchScreenSize) => {
-  const qs = keywords ? encodeURIComponent(keywords) : '';
+const getUnsplashUrl = async (apiPath, keywords, matchScreenSize) => {
+  const params = {
+    keywords
+  };
+  if (matchScreenSize) {
+    params.w = window.innerWidth;
+    params.h = window.innerHeight;
+  }
+  const result = await requestPluginApiEndpoint(apiPath, '/unsplash/getRandomPhoto', params);
+  if (result.success) {
+    return result.data;
+  }
+
+  return null;
+
+/*  const qs = keywords ? encodeURIComponent(keywords) : '';
   const screenSizePart = matchScreenSize ? `${window.innerWidth}x${window.innerHeight}/` : '';
   const url = `https://source.unsplash.com/random/${screenSizePart}${qs ? '?' + qs : ''}`;
-  return url + (qs ? '&' : '?') + `sig=${Date.now()}`;
+  return url + (qs ? '&' : '?') + `sig=${Date.now()}`;*/
 };
 
 const hourToKeywords = (hour) => {
@@ -108,13 +123,15 @@ const backgroundSettingsReducer = (currentSettings, newSettings) => deepEqual(cu
 function IdleScreenBackgroundProvider({children}) {
   const {settings: screenSettings} = useRawSettings('screen.idle');
   const timeZone = useTimezone();
-  const {host} = useAppContext();
+  const {host, pluginInfo} = useAppContext();
   const [backgroundSource, setBackgroundSource] = useReducer(backgroundSettingsReducer, getBackgroundSource(screenSettings, host));
   const [backgroundStyles, applyBackgroundStyles] = useReducer(backgroundSettingsReducer, getBackgroundStyles(screenSettings));
   const refreshTimerRef = useRef(null);
   const [background, setBackground] = useState(null);
 
-  const getBackground = useCallback(() => {
+  const apiPath = pluginInfo ? pluginInfo.apiPath : null;
+
+  const getBackground = useCallback(async () => {
     if (backgroundSource.type === 'volumio') {
       return {
         src: backgroundSource.url,
@@ -126,21 +143,21 @@ function IdleScreenBackgroundProvider({children}) {
       if (backgroundSource.unsplashKeywords) {
         keywords.push(backgroundSource.unsplashKeywords);
       }
-      if (backgroundSource.unsplashKeywordsAppendDayPeriod) {
+      if (!backgroundSource.unsplashKeywords?.trim() || backgroundSource.unsplashKeywordsAppendDayPeriod) {
         const dateTime = DateTime.local({zone: timeZone, locale: 'en'});
         keywords.push(hourToKeywords(dateTime.hour));
       }
       return {
         type: 'unsplash',
-        src: getUnsplashUrl(keywords.join(' '), backgroundSource.unsplashMatchScreenSize),
+        src: await getUnsplashUrl(apiPath, keywords.join(' '), backgroundSource.unsplashMatchScreenSize),
         nextRefresh: backgroundSource.unsplashRefreshInterval || 0
       };
     }
     return {};
-  }, [backgroundSource, timeZone]);
+  }, [apiPath, backgroundSource, timeZone]);
 
-  const refresh = useCallback(() => {
-    setBackground(getBackground());
+  const refresh = useCallback(async () => {
+    setBackground(await getBackground());
   }, [setBackground, getBackground]);
 
   const clearRefreshTimer = useCallback(() => {
