@@ -10,6 +10,9 @@ import styles from './IdleScreenBackground.module.scss';
 const IdleScreenBackgroundContext = createContext();
 
 const getUnsplashUrl = async (apiPath, keywords, matchScreenSize) => {
+  if (!apiPath) {
+    return null;
+  }
   const params = {
     keywords
   };
