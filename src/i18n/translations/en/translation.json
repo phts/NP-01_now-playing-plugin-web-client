@@ -23,6 +23,11 @@
       },
       "namePlaceholder": "Name",
       "urlPlaceholder": "URL"
+    },
+    "shutdown": {
+      "title": "Shutdown",
+      "powerOff": "Power Off",
+      "restart": "Restart"
     }
   },
   "metadata": {

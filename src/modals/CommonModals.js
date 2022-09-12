@@ -3,6 +3,7 @@ import { useModals } from "../contexts/ModalStateProvider";
 import ActionPanel from "./ActionPanel";
 import AddToPlaylistDialog from "./AddToPlaylistDialog";
 import MetadataModal from "./MetadataModal";
+import ShutdownDialog from "./ShutdownDialog";
 import VolumeIndicatorPanel from "./VolumeIndicatorPanel";
 import WebRadioDialog from "./WebRadioDialog";
 
@@ -11,8 +12,9 @@ export const VOLUME_INDICATOR = 'volumeIndicator';
 export const ADD_TO_PLAYLIST_DIALOG = 'addToPlaylistDialog';
 export const WEB_RADIO_DIALOG = 'webRadioDialog';
 export const METADATA_MODAL = 'metadataModal';
+export const SHUTDOWN_DIALOG = 'shutdownDialog';
 
-function CommonModals(props) {
+function CommonModals() {
   const { isModalOpened, isModalDisabled, closeModal, getModalData } = useModals();
   
   const closeActionPanel = useCallback(() => {
@@ -33,6 +35,10 @@ function CommonModals(props) {
 
   const closeMetadataModal = useCallback(() => {
     closeModal(METADATA_MODAL);
+  }, [closeModal]);
+
+  const closeShutdownDialog = useCallback(() => {
+    closeModal(SHUTDOWN_DIALOG);
   }, [closeModal]);
 
   return (
@@ -65,6 +71,11 @@ function CommonModals(props) {
         onRequestClose={closeMetadataModal}
         closeDialog={closeMetadataModal}
         modalData={getModalData(METADATA_MODAL)} />
+      <ShutdownDialog
+        isOpen={isModalOpened(SHUTDOWN_DIALOG) && !isModalDisabled(SHUTDOWN_DIALOG)}
+        contentLabel="modal"
+        onRequestClose={closeShutdownDialog}
+        closeDialog={closeShutdownDialog} />
     </>
   );
 }

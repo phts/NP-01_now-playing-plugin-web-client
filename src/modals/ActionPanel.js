@@ -7,14 +7,14 @@ import { useModals } from "../contexts/ModalStateProvider";
 import { useScreens } from "../contexts/ScreenContextProvider";
 import { eventPathHasNoSwipe } from "../utils/event";
 import styles from './ActionPanel.module.scss';
-import { VOLUME_INDICATOR } from "./CommonModals";
+import { SHUTDOWN_DIALOG, VOLUME_INDICATOR } from "./CommonModals";
 import volumioIcon from "../assets/volumio-icon.png";
 import ContextualModal from "../common/ContextualModal";
 import { usePerformanceContext, useRawSettings } from "../contexts/SettingsProvider";
 
 function ActionPanel(props) {
   const {settings} = useRawSettings('actionPanel');
-  const {disableModal, enableModal} = useModals();
+  const {disableModal, enableModal, openModal} = useModals();
   const {disableTransitions} = usePerformanceContext();
   const {switchScreen} = useScreens();
   const overlayEl = useRef(null);
@@ -68,6 +68,10 @@ function ActionPanel(props) {
     closePanel();
   }, [switchScreen, closePanel]);
 
+  const shutdown = useCallback(() => {
+    openModal(SHUTDOWN_DIALOG);
+  }, [openModal]);
+
   const extraButtonStyles = {
     baseClassName: 'ExtraButton',
     bundle: styles
@@ -95,6 +99,10 @@ function ActionPanel(props) {
             styles={extraButtonStyles} 
             image={volumioIcon} 
             onClick={switchToVolumio} />
+          <Button 
+            styles={extraButtonStyles} 
+            icon="power_settings_new"
+            onClick={shutdown} />
         </div>
       </div>
     </ContextualModal>

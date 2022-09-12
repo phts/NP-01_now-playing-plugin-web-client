@@ -1,0 +1,105 @@
+.Overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+  background: var(--dialog-overlay-background);
+
+  &--after-open {
+    opacity: 1;
+  }
+
+  &--before-close {
+    opacity: 0;
+  }
+}
+
+.Layout {
+  --left: calc(50vw - 50%);
+  --top: calc(calc(50vh - 3em) - 50%);
+  --min-vmargin: 8em;
+  --max-dialog-height: calc(100vh - var(--min-vmargin));
+
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--dialog-background);
+  border: var(--dialog-border);
+  border-radius: var(--dialog-border-radius);
+  box-shadow: var(--dialog-box-shadow);
+  outline: none;
+  transform: translate(var(--left), var(--top));
+  transition: opacity 200ms;
+  width: 30vw;
+  max-width: 500px;
+  min-width: 250px;
+  height: auto;
+  max-height: var(--max-dialog-height);
+  opacity: 0;
+  backdrop-filter: var(--dialog-backdrop-filter);
+
+  @media (max-height: 479px) {
+    --top: calc(50vh - 50%);
+    --min-vmargin: 1.5em;
+  }
+
+  @media (max-height: 319px) {
+    --top: calc(50vh - 50%);
+    --min-vmargin: 1em;
+  }
+
+  &--after-open {
+    opacity: 1;
+  }
+
+  &--before-close {
+    opacity: 0;
+  }
+
+  &__header {
+    padding: 0 1em;
+    display: flex;
+    align-items: center;
+    border-bottom: var(--dialog-border);
+    height: 4em;
+    min-height: 4em;
+    box-sizing: border-box;
+  }
+
+  &__contents {
+    // --max-contents-height is passed as Scrollbars prop
+    --max-contents-height: calc(var(--max-dialog-height) - 8em);
+    width: 100%;
+  }
+}
+
+.Title {
+  font-size: 1.1em;
+  color: var(--common-foreground-color);
+}
+
+@import "../common/Button";
+
+.Button {
+  --button-color: var(--toolbar-button-color);
+  --button-hover-color: var(--toolbar-button-hover-color);
+  --button-toggled-color: var(--toolbar-button-toggled-color);
+
+  .Button__text {
+    font-size: 1.1em;
+  }
+
+  &--close {
+    margin-left: auto;
+  }
+}
+
+.ContentsWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5em;
+  padding: 2em 1em 3em 1em;
+  box-sizing: border-box;
+}

@@ -23,6 +23,11 @@
       },
       "namePlaceholder": "名稱",
       "urlPlaceholder": "連結"
+    },
+    "shutdown": {
+      "title": "關機",
+      "powerOff": "關機",
+      "restart": "重啟"
     }
   },
   "metadata": {
