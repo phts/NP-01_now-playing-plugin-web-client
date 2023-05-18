@@ -32,24 +32,21 @@ const PlayerSeekProvider = ({ children }) => {
   useEffect(() => {
     const tt = trackTimer.current;
     const seekVal = playerState.seek || 0;
+    const max = (playerState.duration || 0) * 1000;
     setCurrentSeekPosition(seekVal);
-    if (playerState.status === 'play') {
-      tt.start(seekVal);
+    switch(playerState.status) {
+      case 'play':
+        tt.start(seekVal, max);
+        break;
+      case 'pause':
+        tt.pause(seekVal, max);
+        break;
+      case 'stop':
+        tt.stop();
+        break;
+      default:
     }
-    else {
-      tt.pause();
-    }
-  }, [playerState.seek, playerState.status, setCurrentSeekPosition]);
-
-  // Workaround for services that don't push 'stop' state when playback
-  // finishes and causes seek position to exceed duration
-  useEffect(() => {
-    const tt = trackTimer.current;
-    if (currentSeekPosition > playerState.duration * 1000) {
-      tt.stop();
-    }
-  }, [currentSeekPosition, playerState.duration]);
-  
+  }, [playerState, setCurrentSeekPosition]);
 
   return (
     <PlayerSeekContext.Provider value={{currentSeekPosition, seekTo}}>

@@ -98,33 +98,33 @@ export function getFormatIcon(trackType, host) {
   }
 }
 
-export class TrackTimer {
+export class TrackTimer extends EventEmitter {
 
   constructor() {
+    super();
     this.worker = new Worker(new URL('./timer-worker.js', import.meta.url));
-    this.eventEmitter = new EventEmitter();
 
     this.worker.onmessage = (e) => {
       if (e.data.event === 'seek') {
-
-        this.eventEmitter.emit('seek', e.data.seek);
+        this.emit('seek', e.data.seek);
       }
     };
   }
 
-  start(beginSeek) {
+  start(beginSeek, max) {
     if (this.worker === undefined) {
       return;
     }
-    this.worker.postMessage({command: 'start', beginSeek});
+
+    this.worker.postMessage({command: 'start', beginSeek, max});
     return this;
   }
 
-  pause() {
+  pause(pauseSeek, max) {
     if (this.worker === undefined) {
       return;
     }
-    this.worker.postMessage({command: 'pause'});
+    this.worker.postMessage({command: 'pause', pauseSeek, max});
     return this;
   }
 
@@ -133,22 +133,15 @@ export class TrackTimer {
       return;
     }
     this.worker.postMessage({command: 'stop'});
+    return this;
   }
 
   destroy() {
     this.stop();
-    this.eventEmitter.removeAllListeners();
+    this.removeAllListeners();
     if (this.worker) {
       this.worker.terminate();
       this.worker = undefined;
     }
-  }
-
-  on(event, handler) {
-    this.eventEmitter.on(event, handler);
-  }
-
-  off(event, handler) {
-    this.eventEmitter.removeListener(event, handler);
   }
 }
