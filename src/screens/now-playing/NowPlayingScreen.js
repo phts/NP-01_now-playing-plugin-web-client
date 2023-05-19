@@ -339,6 +339,8 @@ function NowPlayingScreen(props) {
     props.className
   ]);
 
+  const marqueeTitle = screenSettings.trackInfoMarqueeTitle !== undefined ? screenSettings.trackInfoMarqueeTitle : false;
+
   return (
     <div 
       className={layoutClasses} 
@@ -355,7 +357,7 @@ function NowPlayingScreen(props) {
       <Dock position="bottomRight">{ getDockChildren('bottom-right') }</Dock>
       <div className={ styles.Layout__view }>
           {view === 'basic' ? 
-            <BasicView playerState={playerState} trackInfoOrder={trackInfoOrder} />
+            <BasicView playerState={playerState} trackInfoOrder={trackInfoOrder} marqueeTitle={marqueeTitle} />
           : view === 'info' ?
             <InfoView playerState={playerState} />
           : null}

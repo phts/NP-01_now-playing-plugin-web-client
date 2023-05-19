@@ -21,6 +21,21 @@
     line-height: 1.5em;
   }
 
+  &__title--marqueeRunning {
+    padding-right: 3em;
+  }
+
+  &__title--marqueeStopped {
+    flex: 0 0 auto;
+  }
+
+  &__marqueeTitleWrapper {
+    width: 100%;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: var(--text-alignment-h);
+  }
+
   &__artist {
     line-height: 1.4em;
 //    max-height: 1.4em;

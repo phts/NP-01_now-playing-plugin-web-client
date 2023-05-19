@@ -32,7 +32,8 @@ function BasicView(props) {
               bundle: styles
             }}
             playerState={playerState}
-            trackInfoOrder={props.trackInfoOrder} />
+            trackInfoOrder={props.trackInfoOrder}
+            marqueeTitle={props.marqueeTitle} />
           : null}
         <PlayerButtonGroup
           className={playerButtonGroupClasses}
