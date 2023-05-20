@@ -6,6 +6,7 @@ import { useWeather } from '../../contexts/WeatherProvider';
 import styles from './IdleScreen.module.scss';
 import { useIdleScreenBackgroundComponent } from './IdleScreenBackgroundProvider';
 import IdleScreenWeather from './IdleScreenWeather';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 function IdleScreen(props) { 
   const weather = useWeather();
@@ -18,8 +19,12 @@ function IdleScreen(props) {
   };
   const customFontSizes = screenSettings.fontSizes === 'custom';
   const customFontColors = screenSettings.fontColors === 'custom';
+
+  const [mainAlignment, setMainAlignment] = useState(screenSettings.mainAlignment === 'cycle' ? 'flex-start' : screenSettings.mainAlignment);
+  const mainAlignmentCycleTimer = useRef(null);
+
   const mainStyles = {
-    '--main-alignment': screenSettings.mainAlignment || null
+    '--main-alignment': mainAlignment || null
   }
   const clockStyles = {
     '--time-font-size': customFontSizes && screenSettings.timeFontSize ? screenSettings.timeFontSize : null,
@@ -57,6 +62,37 @@ function IdleScreen(props) {
     styles.Layout__main,
     !hasWeather ? styles['Layout__main--full'] : null
   );
+
+  const clearMainAlignmentCycleTimer = () => {
+    if (mainAlignmentCycleTimer.current) {
+      clearTimeout(mainAlignmentCycleTimer.current);
+      mainAlignmentCycleTimer.current = null;
+    }
+  };
+
+  const startMainAlignmentCycleTimer = useCallback(() => {
+    const interval = (screenSettings.mainAlignmentCycleInterval || 60) * 1000;
+    const cycles = ['flex-start', 'center', 'flex-end'];
+    mainAlignmentCycleTimer.current = setTimeout(() => {
+      mainAlignmentCycleTimer.current = null;
+      let nextIndex = Math.max(cycles.indexOf(mainAlignment) + 1, 0);
+      if (nextIndex >= cycles.length) {
+        nextIndex = 0;
+      }
+      const nextAlignment = cycles[nextIndex];
+      setMainAlignment(nextAlignment);
+    }, interval);
+  }, [screenSettings, mainAlignment]);
+
+  useEffect(() => {
+   if(screenSettings.mainAlignment !== 'cycle') {
+    clearMainAlignmentCycleTimer();
+    setMainAlignment(screenSettings.mainAlignment);
+   }
+   else if (!mainAlignmentCycleTimer.current) {
+    startMainAlignmentCycleTimer();
+   }
+  }, [screenSettings, startMainAlignmentCycleTimer]);
 
   return createPortal(
     <div className={styles.Layout} onClick={props.onClick}>
