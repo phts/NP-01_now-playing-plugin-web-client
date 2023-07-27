@@ -88,6 +88,10 @@ $albumartHeight: 10em;
     font-weight: 700;
   }
 
+  &__artist {
+    font-size: inherit;
+  }
+
   &__extra {
     display: flex;
     align-items: center;

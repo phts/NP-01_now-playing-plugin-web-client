@@ -2,6 +2,10 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.4.0:
+- Migrate to TypeScript
+- Change settings handling
+
 0.3.0:
 - Fix seekbar not working when moving to shorter song
 - Add support for track info marquee title setting
