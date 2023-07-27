@@ -388,7 +388,7 @@ function MetadataPanel(props: MetadataPanelProps) {
         if (forInfoType === 'song' || forInfoType === 'artist' || forInfoType === 'album') {
           const description = state.info?.[forInfoType] ? state.info[forInfoType]?.description : null;
           isEmpty = !description || description === '?';
-          contents = (description && description !== '?') ? <>description</> : t(`metadata.${forInfoType}Unavailable`);
+          contents = (description && description !== '?') ? <>{description}</> : t(`metadata.${forInfoType}Unavailable`);
         }
         else if (forInfoType === 'lyrics') {
           const embedContents = state.info?.song?.embedContents?.contentParts.join();
