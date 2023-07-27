@@ -26,8 +26,8 @@ export interface TrackBarProps {
 
 function TrackBar(props: TrackBarProps) {
   const playerState = usePlayerState();
-  const {disableModal, enableModal} = useModals();
-  const {switchScreen, exitActiveScreen} = useScreens();
+  const { disableModal, enableModal } = useModals();
+  const { switchScreen, exitActiveScreen } = useScreens();
   const [ volumeBarVisible, showVolumeBar ] = useState(false);
   const trackBarEl = useRef<HTMLDivElement | null>(null);
 

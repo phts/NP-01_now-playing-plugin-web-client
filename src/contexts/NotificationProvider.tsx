@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext } from 'react';
-import toaster from 'toasted-notes' ;
+import toaster from 'toasted-notes';
 import Toast, { ToastProps } from '../common/Toast';
 import './NotificationProvider.scss';
 import { MessageOptionalOptions } from 'toasted-notes/lib/ToastManager';

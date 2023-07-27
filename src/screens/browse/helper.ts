@@ -19,10 +19,10 @@ export function isPlayOnDirectClick(itemType?: string) {
 
 export function isHome(location: BrowseServiceLocation) {
   return location.type === 'browse' &&
-      (location.uri === '/' || location.uri === '');
+    (location.uri === '/' || location.uri === '');
 }
 
-export function getServiceByUri(uri: string, browseSources: BrowseSource[]) : BrowseSourceService | null {
+export function getServiceByUri(uri: string, browseSources: BrowseSource[]): BrowseSourceService | null {
   if (!uri) {
     return null;
   }
@@ -91,16 +91,16 @@ export function hasMenu(item: BrowseContentsListItem) {
 
 export function canAddToQueue(item: BrowseContentsListItem) {
   const ret = item.type === 'folder' || item.type === 'song' ||
-      item.type === 'mywebradio' || item.type === 'webradio' ||
-      item.type === 'playlist' || item.type === 'remdisk' ||
-      item.type === 'cuefile' || item.type === 'folder-with-favourites' ||
-      item.type === 'internal-folder';
+    item.type === 'mywebradio' || item.type === 'webradio' ||
+    item.type === 'playlist' || item.type === 'remdisk' ||
+    item.type === 'cuefile' || item.type === 'folder-with-favourites' ||
+    item.type === 'internal-folder';
   return ret;
 }
 export function canAddToPlaylist(item: BrowseContentsListItem) {
   const ret = item.type === 'folder' || item.type === 'song' ||
-  item.type === 'remdisk' || item.type === 'folder-with-favourites' ||
-  item.type === 'internal-folder';
+    item.type === 'remdisk' || item.type === 'folder-with-favourites' ||
+    item.type === 'internal-folder';
   return ret;
 }
 

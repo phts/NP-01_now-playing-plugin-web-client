@@ -7,8 +7,9 @@ import Image from './Image';
 import { preloadImage } from '../utils/image';
 import classNames from 'classnames';
 import ContextualCSSTransition from './ContextualCSSTransition';
-import { usePerformanceContext, useRawSettings } from '../contexts/SettingsProvider';
+import { usePerformanceContext, useSettings } from '../contexts/SettingsProvider';
 import { usePlayerState } from '../contexts/PlayerProvider';
+import { CommonSettingsCategory } from 'now-playing-common';
 
 export interface BackgroundProps {
   enteringScreenId: string | null;
@@ -49,15 +50,15 @@ const initialTransitionState: BackgroundTransitionState = {
 };
 
 function Background(props: BackgroundProps) {
-  const {host} = useAppContext();
+  const { host } = useAppContext();
   const playerState = usePlayerState();
-  const {settings: backgroundSettings} = useRawSettings('background');
+  const { settings: backgroundSettings } = useSettings(CommonSettingsCategory.Background);
   const fallbackSrc = `${host}/albumart`;
   const pendingTargetSrc = useRef<string | null>(null);
-  const {disableTransitions} = usePerformanceContext();
+  const { disableTransitions } = usePerformanceContext();
 
   const transitionStateReducer: Reducer<BackgroundTransitionState, BackgroundTransitionAction> = (state, transitionProps = {}) => {
-    return {...state, ...transitionProps};
+    return { ...state, ...transitionProps };
   };
 
   const [ transitionState, updateTransitionState ] = useReducer(transitionStateReducer, initialTransitionState);
@@ -118,7 +119,7 @@ function Background(props: BackgroundProps) {
       return;
     }
 
-    const onImageLoaded = function(src: string) {
+    const onImageLoaded = function (src: string) {
       preloader.dispose();
       // For webkit browsers where we rely on background-image transition, or
       // Otherwise background is fixed, we skip straight to the 'afterTransition' phase.
@@ -137,7 +138,7 @@ function Background(props: BackgroundProps) {
         });
       }
     };
-    const onImageError = function() {
+    const onImageError = function () {
       preloader.dispose();
       processPendingOrReset();
     };
@@ -201,9 +202,9 @@ function Background(props: BackgroundProps) {
   // Custom styles
   const css: any = {};
   if (backgroundSettings.backgroundType === 'albumart') {
-    const albumartBackgroundFit = backgroundSettings.albumartBackgroundFit || 'cover';
+    const albumartBackgroundFit = backgroundSettings.albumartBackgroundFit;
     const backgroundSize = albumartBackgroundFit === 'fill' ? '100% 100%' : albumartBackgroundFit;
-    const backgroundPosition = backgroundSettings.albumartBackgroundPosition || 'center';
+    const backgroundPosition = backgroundSettings.albumartBackgroundPosition;
     const backgroundBlur = backgroundSettings.albumartBackgroundBlur || '0px';
     const backgroundScale = backgroundSettings.albumartBackgroundScale || '1';
     css['--background-size'] = backgroundSize;
@@ -212,9 +213,9 @@ function Background(props: BackgroundProps) {
     css['--background-scale'] = backgroundScale;
   }
   else if (backgroundSettings.backgroundType === 'volumioBackground' && backgroundSettings.volumioBackgroundImage !== '') {
-    const volumioBackgroundFit = backgroundSettings.volumioBackgroundFit || 'cover';
+    const volumioBackgroundFit = backgroundSettings.volumioBackgroundFit;
     const backgroundSize = volumioBackgroundFit === 'fill' ? '100% 100%' : volumioBackgroundFit;
-    const backgroundPosition = backgroundSettings.volumioBackgroundPosition || 'center';
+    const backgroundPosition = backgroundSettings.volumioBackgroundPosition;
     const backgroundBlur = backgroundSettings.volumioBackgroundBlur || '0px';
     const backgroundScale = backgroundSettings.volumioBackgroundScale || '1';
     css['--background-image'] = `url("${host}/backgrounds/${backgroundSettings.volumioBackgroundImage}")`;
@@ -225,7 +226,7 @@ function Background(props: BackgroundProps) {
   }
   else if (backgroundSettings.backgroundType === 'color') {
     css['--background-image'] = 'none';
-    css['--background-color'] = backgroundSettings.backgroundColor || '#000';
+    css['--background-color'] = backgroundSettings.backgroundColor;
   }
 
   if (backgroundSettings.backgroundOverlay === 'customColor') {
@@ -268,7 +269,7 @@ function Background(props: BackgroundProps) {
     <div
       className={classNames([ 'Background', isWebkit && !disableTransitions ? 'Background--webkit' : null ])}
       style={css}>
-      { isTransitionable && !isWebkit && (transitionState.phase === 'beforeTransition' || transitionState.phase === 'transition') ?
+      {isTransitionable && !isWebkit && (transitionState.phase === 'beforeTransition' || transitionState.phase === 'transition') ?
         <ContextualCSSTransition
           in={transitionState.phase === 'transition'}
           classNames="bg-fadein"
@@ -279,7 +280,7 @@ function Background(props: BackgroundProps) {
             className="Background__transitioning"
           />
         </ContextualCSSTransition>
-        : null }
+        : null}
     </div>
   );
 }

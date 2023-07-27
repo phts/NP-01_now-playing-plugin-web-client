@@ -2,16 +2,18 @@
 
 import React from 'react';
 import Button, { ButtonProps } from '../../common/Button';
-import { useRawSettings } from '../../contexts/SettingsProvider';
+import { useSettings } from '../../contexts/SettingsProvider';
 import styles from './DockedActionPanelTrigger.module.scss';
+import { CommonSettingsCategory, DefaultNowPlayingScreenSettings } from 'now-playing-common';
 
 export interface DockedActionPanelTriggerProps {
   onClick: ButtonProps['onClick'];
 }
 
 function DockedActionPanelTrigger(props: DockedActionPanelTriggerProps) {
-  const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
-  const settings = screenSettings.dockedActionPanelTrigger || {};
+  const { settings: screenSettings } = useSettings(CommonSettingsCategory.NowPlayingScreen);
+  const settings = screenSettings.dockedActionPanelTrigger;
+  const defaults = DefaultNowPlayingScreenSettings.dockedActionPanelTrigger;
 
   const dockedStyles = {
     '--docked-opacity': settings.opacity,
@@ -25,7 +27,7 @@ function DockedActionPanelTrigger(props: DockedActionPanelTriggerProps) {
     });
   }
 
-  const iconStyle = (settings.iconSettings === 'custom') ? (settings.iconStyle || 'expand_more') : 'expand_more';
+  const iconStyle = (settings.iconSettings === 'custom') ? settings.iconStyle : defaults.iconStyle;
 
   return (
     <div className={styles.DockedActionPanelTriggerWrapper} style={dockedStyles}>

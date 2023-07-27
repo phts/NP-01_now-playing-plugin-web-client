@@ -12,8 +12,8 @@ export interface VolumioScreenProps extends ScreenProps {
 }
 
 function VolumioScreen(props: VolumioScreenProps) {
-  const {host} = useAppContext();
-  const {exitActiveScreen} = useScreens();
+  const { host } = useAppContext();
+  const { exitActiveScreen } = useScreens();
 
   const layoutClasses = classNames([
     styles.Layout,

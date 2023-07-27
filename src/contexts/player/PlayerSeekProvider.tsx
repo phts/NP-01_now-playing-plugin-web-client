@@ -1,8 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { TrackTimer } from '../../utils/track';
 import { useSocket } from '../SocketProvider';
 import { PlayerStateContext } from './PlayerStateProvider';
-import React from 'react';
 
 interface PlayerSeekContextValue {
   currentSeekPosition: number;
@@ -11,8 +10,8 @@ interface PlayerSeekContextValue {
 
 const PlayerSeekContext = createContext({} as PlayerSeekContextValue);
 
-const PlayerSeekProvider = ({ children }: { children: React.ReactNode}) => {
-  const {socket} = useSocket();
+const PlayerSeekProvider = ({ children }: { children: React.ReactNode }) => {
+  const { socket } = useSocket();
   const playerState = useContext(PlayerStateContext);
   const [ currentSeekPosition, setCurrentSeekPosition ] = useState(0);
   const trackTimer = useRef<TrackTimer | null>(null);
@@ -60,7 +59,7 @@ const PlayerSeekProvider = ({ children }: { children: React.ReactNode}) => {
   }, [ playerState, setCurrentSeekPosition ]);
 
   return (
-    <PlayerSeekContext.Provider value={{currentSeekPosition, seekTo}}>
+    <PlayerSeekContext.Provider value={{ currentSeekPosition, seekTo }}>
       {children}
     </PlayerSeekContext.Provider>
   );

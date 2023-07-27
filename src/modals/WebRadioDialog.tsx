@@ -27,7 +27,7 @@ function WebRadioDialog(props: WebRadioDialogProps) {
   const okButtonRef = useRef<ButtonElement | null>(null);
   const { closeDialog } = props;
   const mode = props.modalData ? (props.modalData.mode || 'add') : 'add';
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const modalOverlayClassNames = {
     base: styles.Overlay,

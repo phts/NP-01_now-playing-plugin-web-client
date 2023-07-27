@@ -1,6 +1,7 @@
 import React, { createContext } from 'react';
 import { useAppContext } from '../AppContextProvider';
-import { useRawSettings } from '../SettingsProvider';
+import { useSettings } from '../SettingsProvider';
+import { CommonSettingsCategory } from 'now-playing-common';
 
 export interface PerformanceContextValue {
   disableTransitions: boolean;
@@ -9,15 +10,15 @@ export interface PerformanceContextValue {
 const PerformanceContext = createContext<PerformanceContextValue>({ disableTransitions: false });
 
 const PerformanceContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const {isKiosk} = useAppContext();
-  const {settings} = useRawSettings('performance');
+  const { isKiosk } = useAppContext();
+  const { settings } = useSettings(CommonSettingsCategory.Performance);
 
   const disableTransitions = !((isKiosk && settings.transitionEffectsKiosk) ||
-    (!isKiosk && (settings.transitionEffectsOtherDevices !== undefined ? settings.transitionEffectsOtherDevices : true)));
+    (!isKiosk && settings.transitionEffectsOtherDevices));
 
   return (
     <PerformanceContext.Provider
-      value={{disableTransitions}}>
+      value={{ disableTransitions }}>
       {children}
     </PerformanceContext.Provider>
   );

@@ -50,7 +50,7 @@ const Toolbar = React.forwardRef<BrowseScreenToolbarElement, BrowseScreenToolbar
     if (contents.navigation && Array.isArray(contents.navigation.lists)) {
       return contents.navigation.lists.find((list) =>
         Array.isArray(list.availableListViews) &&
-        list.availableListViews.length > 1 );
+        list.availableListViews.length > 1);
     }
     return false;
   };
@@ -94,18 +94,18 @@ const Toolbar = React.forwardRef<BrowseScreenToolbarElement, BrowseScreenToolbar
           data-action="home"
           onClick={handleButtonClicked}
         />
-        { !isHome(props.currentLocation) ? <Button
+        {!isHome(props.currentLocation) ? <Button
           styles={getButtonStyles('back')}
           icon="arrow_back"
           data-action="back"
           onClick={handleButtonClicked} />
-          : null }
-        { supportsMultipleListViews() ? <Button
+          : null}
+        {supportsMultipleListViews() ? <Button
           styles={getButtonStyles('toggleListView')}
           icon={getToggleListViewIcon()}
           data-action="toggleListView"
           onClick={handleButtonClicked} />
-          : null }
+          : null}
         <Button
           styles={getButtonStyles('search')}
           icon="search"

@@ -8,7 +8,7 @@ type ContextualCSSTransitionProps<Ref extends undefined | HTMLElement = undefine
 }
 
 function ContextualCSSTransition(props: ContextualCSSTransitionProps) {
-  const {disableTransitions} = usePerformanceContext();
+  const { disableTransitions } = usePerformanceContext();
 
   const timeout = disableTransitions ? 0 : props.timeout;
 

@@ -46,7 +46,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((props, ref
   return (
     <div
       className={mainClassName}>
-      { props.icon ? <span className={getElementClassName('icon')}>{ props.icon }</span> : null }
+      {props.icon ? <span className={getElementClassName('icon')}>{props.icon}</span> : null}
       <input
         ref={ref}
         type="text"

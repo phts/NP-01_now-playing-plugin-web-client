@@ -12,8 +12,8 @@ import { ACTION_PANEL, VOLUME_INDICATOR } from '../../modals/CommonModals';
 import PopupMenu, { PopupMenuItem } from '../../common/PopupMenu';
 import BasicView from './BasicView';
 import InfoView from './InfoView';
+import { useSettings } from '../../contexts/SettingsProvider';
 import { useStore } from '../../contexts/StoreProvider';
-import { useRawSettings } from '../../contexts/SettingsProvider';
 import { usePlayerState } from '../../contexts/PlayerProvider';
 import DockedVolumeIndicator from './DockedVolumeIndicator';
 import DockedClock from './DockedClock';
@@ -22,6 +22,7 @@ import DockedActionPanelTrigger from './DockedActionPanelTrigger';
 import { useTranslation } from 'react-i18next';
 import { ClickEvent } from '@szhsin/react-menu';
 import { TrackInfoTextProps } from '../../common/TrackInfoText';
+import { CommonSettingsCategory } from 'now-playing-common';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
@@ -38,14 +39,14 @@ const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
 function NowPlayingScreen(props: NowPlayingScreenProps) {
   const playerState = usePlayerState();
-  const {openModal, disableModal, enableModal} = useModals();
-  const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
+  const { openModal, disableModal, enableModal } = useModals();
+  const { settings: screenSettings } = useSettings(CommonSettingsCategory.NowPlayingScreen);
   const screenEl = useRef<HTMLDivElement | null>(null);
-  const {activeScreenId, switchScreen} = useScreens();
+  const { activeScreenId, switchScreen } = useScreens();
   const store = useStore();
   const restoreState = store.get<NowPlayingScreenRestoreState>(RESTORE_STATE_KEY, {}, true);
   const [ view, setView ] = useState(restoreState.view || props.view || 'basic');
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   // Update restoreState on view changed
   useEffect(() => {
@@ -153,7 +154,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
   const getDockChildren = (position: string) => { // TODO: restrict position type
     const children: { order: number; component: React.JSX.Element; }[] = [];
 
-    const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator || {};
+    const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator;
     if (dockedVolumeIndicator.enabled && dockedVolumeIndicator.placement === position) {
       children.push({
         order: Number(dockedVolumeIndicator.displayOrder) || 0,
@@ -161,7 +162,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       });
     }
 
-    const dockedClock = screenSettings.dockedClock || {};
+    const dockedClock = screenSettings.dockedClock;
     if (dockedClock.enabled && dockedClock.placement === position) {
       children.push({
         order: Number(dockedClock.displayOrder) || 0,
@@ -180,8 +181,8 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     const orderedChildren = children.sort((c1, c2) => (c1.order - c2.order)).map((c) => c.component);
 
     if (position === 'top') {
-      const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger || {};
-      if (dockedActionPanelTrigger.enabled === undefined || dockedActionPanelTrigger.enabled) {
+      const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger;
+      if (dockedActionPanelTrigger.enabled) {
         orderedChildren.unshift(
           <DockedActionPanelTrigger key="actionPanelTrigger" onClick={openActionPanel} />
         );
@@ -189,8 +190,8 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     }
 
     if (position === 'top-right') {
-      const dockedMenu = screenSettings.dockedMenu || {};
-      if (dockedMenu.enabled === undefined || dockedMenu.enabled) {
+      const dockedMenu = screenSettings.dockedMenu;
+      if (dockedMenu.enabled) {
         orderedChildren.push(getMenu());
       }
     }
@@ -204,10 +205,10 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     ];
     if (screenSettings.trackInfoOrder === 'custom') {
       const customTrackOrder = [
-        {key: 'title', order: Number(screenSettings.trackInfoTitleOrder) || -1},
-        {key: 'artist', order: Number(screenSettings.trackInfoArtistOrder) || -1},
-        {key: 'album', order: Number(screenSettings.trackInfoAlbumOrder) || -1},
-        {key: 'mediaInfo', order: Number(screenSettings.trackInfoMediaInfoOrder) || -1}
+        { key: 'title', order: Number(screenSettings.trackInfoTitleOrder) || -1 },
+        { key: 'artist', order: Number(screenSettings.trackInfoArtistOrder) || -1 },
+        { key: 'album', order: Number(screenSettings.trackInfoAlbumOrder) || -1 },
+        { key: 'mediaInfo', order: Number(screenSettings.trackInfoMediaInfoOrder) || -1 }
       ];
       customTrackOrder.sort((a, b) => {
         const aOrder = (a.order !== -1) ? a.order : defaultTrackInfoOrder.indexOf(a.key);
@@ -229,7 +230,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
   // Disable Volume Indicator modal when its docked
   // Counterpart is displayed
   useEffect(() => {
-    const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator || {};
+    const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator;
     if (dockedVolumeIndicator.enabled && activeScreenId === 'NowPlaying') {
       disableModal(VOLUME_INDICATOR);
     }
@@ -282,7 +283,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
 
   const handleMenuItemClicked = (e: ClickEvent) => {
     e.syntheticEvent.stopPropagation();
-    const {action} = e.value;
+    const { action } = e.value;
     switch (action) {
       case 'toggleView':
         setView(view === 'basic' ? 'info' : 'basic');
@@ -364,23 +365,23 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     props.className
   ]);
 
-  const marqueeTitle = screenSettings.trackInfoMarqueeTitle !== undefined ? screenSettings.trackInfoMarqueeTitle : false;
+  const marqueeTitle = screenSettings.trackInfoMarqueeTitle;
 
   return (
     <div
       className={layoutClasses}
-      style={{...css, ...props.style}}
-      { ...swipeHandler }
+      style={{ ...css, ...props.style }}
+      {...swipeHandler}
       ref={swipeableRefPassthrough}>
-      <Dock position="topLeft">{ getDockChildren('top-left') }</Dock>
-      <Dock position="top">{ getDockChildren('top') }</Dock>
-      <Dock position="topRight">{ getDockChildren('top-right') }</Dock>
-      <Dock position="left">{ getDockChildren('left') }</Dock>
-      <Dock position="right">{ getDockChildren('right') }</Dock>
-      <Dock position="bottomLeft">{ getDockChildren('bottom-left') }</Dock>
-      <Dock position="bottom">{ getDockChildren('bottom') }</Dock>
-      <Dock position="bottomRight">{ getDockChildren('bottom-right') }</Dock>
-      <div className={ styles.Layout__view }>
+      <Dock position="topLeft">{getDockChildren('top-left')}</Dock>
+      <Dock position="top">{getDockChildren('top')}</Dock>
+      <Dock position="topRight">{getDockChildren('top-right')}</Dock>
+      <Dock position="left">{getDockChildren('left')}</Dock>
+      <Dock position="right">{getDockChildren('right')}</Dock>
+      <Dock position="bottomLeft">{getDockChildren('bottom-left')}</Dock>
+      <Dock position="bottom">{getDockChildren('bottom')}</Dock>
+      <Dock position="bottomRight">{getDockChildren('bottom-right')}</Dock>
+      <div className={styles.Layout__view}>
         {view === 'basic' ?
           <BasicView playerState={playerState} trackInfoOrder={trackInfoOrder} marqueeTitle={marqueeTitle} />
           : view === 'info' ?

@@ -300,17 +300,17 @@ export default class BrowseService extends EventEmitter {
 
   #pushRefresh(contents: BrowseContentsPage) {
     this.#currentLoading = null;
-    this.emit('contentsRefreshed', {contents});
+    this.emit('contentsRefreshed', { contents });
     this.#currentDisplayed.contents = contents;
   }
 
   #pushError(message: string) {
     this.#currentLoading = null;
-    this.emit('error', {message});
+    this.emit('error', { message });
   }
 
   #pushLoading(location?: BrowseServiceLocation) {
-    this.emit('contentsLoading', {location});
+    this.emit('contentsLoading', { location });
   }
 
   async #requestRestApi(url: string) {
@@ -422,7 +422,7 @@ export default class BrowseService extends EventEmitter {
       type: 'goto',
       params: {
         type,
-        playerState: {...playerState}
+        playerState: { ...playerState }
       },
       service: getServiceByName(playerState.service, this.getBrowseSources())
     };

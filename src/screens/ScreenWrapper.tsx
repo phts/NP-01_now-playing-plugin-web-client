@@ -3,11 +3,12 @@ import ContextualCSSTransition from '../common/ContextualCSSTransition';
 import { useAppContext } from '../contexts/AppContextProvider';
 import { useModals } from '../contexts/ModalStateProvider';
 import { usePlayerState } from '../contexts/PlayerProvider';
-import { usePerformanceContext, useRawSettings } from '../contexts/SettingsProvider';
+import { usePerformanceContext, useSettings } from '../contexts/SettingsProvider';
 import { ACTION_PANEL } from '../modals/CommonModals';
 import IdleScreen from './idle/IdleScreen';
 import { IdleScreenBackgroundProvider } from './idle/IdleScreenBackgroundProvider';
 import './ScreenWrapper.scss';
+import { CommonSettingsCategory } from 'now-playing-common';
 
 const ScreenWrapper = ({ children }: { children: React.ReactNode }) => {
   const playerState = usePlayerState();
@@ -15,11 +16,11 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => {
   const { disableTransitions } = usePerformanceContext();
   const idleScreenWaitTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [ idleScreenActive, setIdleScreenActive ] = useState(false);
-  const { settings: idleScreenSettings } = useRawSettings('screen.idle');
-  const {isKiosk} = useAppContext();
-  const idleScreenWaitTime = idleScreenSettings.waitTime || 30;
+  const { settings: idleScreenSettings } = useSettings(CommonSettingsCategory.IdleScreen);
+  const { isKiosk } = useAppContext();
+  const idleScreenWaitTime = idleScreenSettings.waitTime;
   const idleScreenEnabled = (() => {
-    const enableValue = idleScreenSettings.enabled !== undefined ? idleScreenSettings.enabled : 'kiosk';
+    const enableValue = idleScreenSettings.enabled;
     switch (enableValue) {
       case 'kiosk':
         return isKiosk;

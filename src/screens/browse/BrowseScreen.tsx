@@ -54,7 +54,7 @@ function BrowseScreen(props: BrowseScreenProps) {
   const store = useStore();
   const persistentStore = useStore('persistent');
   const restoreState = store.get<BrowseScreenRestoreState>(RESTORE_STATE_KEY, {}, true);
-  const {socket} = useSocket();
+  const { socket } = useSocket();
   const showToast = useToasts();
   const { openModal } = useModals();
   const playlistService = usePlaylistService();
@@ -99,18 +99,18 @@ function BrowseScreen(props: BrowseScreenProps) {
       startFakeLoadingBar();
     };
 
-    const handleContentsLoaded = (data: {contents: BrowseContentsPage, context: BrowseServiceContentsLoaderContext}) => {
-      const {contents, context} = data;
+    const handleContentsLoaded = (data: { contents: BrowseContentsPage, context: BrowseServiceContentsLoaderContext }) => {
+      const { contents, context } = data;
       if (!context.isBack && !context.isRestore) {
         browseService.addCurrentToHistory(getScrollPosition());
       }
       currentLocation.current = context.location;
-      setContents({...contents, __scroll: context.scrollPosition});
+      setContents({ ...contents, __scroll: context.scrollPosition });
       stopFakeLoadingBar(true);
     };
 
-    const handleContentsRefreshed = (data: {contents: BrowseContentsPage}) => {
-      setContents({...data.contents, __scroll: getScrollPosition()});
+    const handleContentsRefreshed = (data: { contents: BrowseContentsPage }) => {
+      setContents({ ...data.contents, __scroll: getScrollPosition() });
     };
 
     const handleError = (data: { message: any }) => {
@@ -203,7 +203,7 @@ function BrowseScreen(props: BrowseScreenProps) {
       search(location.query, service);
     }
     else if (location.type === 'goto') {
-      const {type: currentPlayingType, playerState} = location.params;
+      const { type: currentPlayingType, playerState } = location.params;
       if (currentPlayingType && playerState) {
         browseService.gotoCurrentPlaying(currentPlayingType, playerState);
       }

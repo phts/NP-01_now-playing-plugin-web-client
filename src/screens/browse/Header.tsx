@@ -49,7 +49,7 @@ function Header(props: BrowseScreenHeaderProps) {
 
   const handleMenuItemClicked = (e: ClickEvent) => {
     e.syntheticEvent.stopPropagation();
-    const {action} = e.value;
+    const { action } = e.value;
     props.callItemAction(data, action);
   };
 

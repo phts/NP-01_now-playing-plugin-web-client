@@ -39,7 +39,7 @@ function QueueScreen(props: QueueScreenProps) {
   const { openModal } = useModals();
   const queueService = useQueueService();
   const [ items, setItems ] = useState(queueService.getQueue());
-  const {exitActiveScreen} = useScreens();
+  const { exitActiveScreen } = useScreens();
   const toolbarEl = useRef<QueueScreenToolbarElement | null>(null);
   const scrollbarsRef = useRef<Scrollbars | null>(null);
   const scrollPositionRef = useRef(0);

@@ -21,8 +21,8 @@ export interface BrowseScreenItemProps {
 
 function Item(props: BrowseScreenItemProps) {
   const itemRef = useRef(null);
-  const {styles, data, index} = props;
-  const {t} = useTranslation();
+  const { styles, data, index } = props;
+  const { t } = useTranslation();
 
   const getAlbumArtContents = useCallback((data: BrowseContentsListItem) => {
     if (data.albumart || (!data.icon && data.tracknumber === undefined)) {
@@ -86,7 +86,7 @@ function Item(props: BrowseScreenItemProps) {
       return null;
     }
 
-    const menuItems = itemActions.map<PopupMenuItem>(({action, icon}) => ({
+    const menuItems = itemActions.map<PopupMenuItem>(({ action, icon }) => ({
       type: 'item',
       key: `${action}_${index}`,
       value: {

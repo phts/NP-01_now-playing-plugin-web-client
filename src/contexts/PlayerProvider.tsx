@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { PlayerSeekContext, PlayerSeekProvider } from './player/PlayerSeekProvider';
 import { PlayerStateContext, PlayerStateProvider } from './player/PlayerStateProvider';
 
-const PlayerProvider = ({ children }: { children: React.ReactNode}) => {
+const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <PlayerStateProvider>
       <PlayerSeekProvider>

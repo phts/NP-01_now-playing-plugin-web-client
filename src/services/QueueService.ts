@@ -138,7 +138,7 @@ export default class QueueService extends EventEmitter {
       });
     }
     else {
-      this.#socket.emit('enqueue', {name: item.title});
+      this.#socket.emit('enqueue', { name: item.title });
     }
   }
 

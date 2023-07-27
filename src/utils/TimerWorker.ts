@@ -15,7 +15,7 @@ onmessage = (e) => {
       stopTimer();
       break;
     default:
-      // Do nothing
+    // Do nothing
   }
 };
 
@@ -26,7 +26,7 @@ function startTimer(beginSeek: number, max: number) {
   if (!timer) {
     timer = setInterval(() => {
       seek = Math.min(seek + 1000, max);
-      postMessage({event: 'seek', seek});
+      postMessage({ event: 'seek', seek });
     }, 1000);
   }
 }
@@ -42,7 +42,7 @@ function pauseTimer(pauseSeek: number, max: number) {
 function stopTimer() {
   clearTimer();
   seek = 0;
-  postMessage({event: 'seek', seek: 0});
+  postMessage({ event: 'seek', seek: 0 });
 }
 
 function clearTimer() {
@@ -57,5 +57,5 @@ function setMax(value: number) {
   if (seek > max) {
     seek = max;
   }
-  postMessage({event: 'seek', seek});
+  postMessage({ event: 'seek', seek });
 }

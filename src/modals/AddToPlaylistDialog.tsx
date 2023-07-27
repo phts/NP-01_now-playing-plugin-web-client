@@ -30,7 +30,7 @@ function AddToPlaylistDialog(props: AddToPlaylistDialogProps) {
   const createPlaylistTextBoxRef = useRef<TextFieldElement | null>(null);
   const createPlaylistConfirmButtonRef = useRef<ButtonElement | null>(null);
   const { closeDialog } = props;
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handlePlaylistsChanged = (data: Playlist[]) => {

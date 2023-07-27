@@ -11,7 +11,7 @@ export interface Volume {
 const AUTO_CLOSE_MS = 1500;
 
 function VolumeChangeListener() {
-  const {openModal} = useModals();
+  const { openModal } = useModals();
   const playerState = usePlayerState();
   const oldVolumeRef = useRef<Volume | null>(null);
 

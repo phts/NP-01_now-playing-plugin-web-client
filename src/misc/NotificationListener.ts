@@ -4,7 +4,7 @@ import { useToasts } from '../contexts/NotificationProvider';
 
 function NotificationListener() {
 
-  const {socket} = useSocket();
+  const { socket } = useSocket();
   const showToast = useToasts();
 
   useEffect(() => {

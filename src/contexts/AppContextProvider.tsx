@@ -31,7 +31,7 @@ const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AppContext.Provider
-      value={{host, setHost, pluginInfo, setPluginInfo, isKiosk, setKiosk}}>
+      value={{ host, setHost, pluginInfo, setPluginInfo, isKiosk, setKiosk }}>
       {children}
     </AppContext.Provider>
   );

@@ -4,37 +4,27 @@ import { PerformanceContext, PerformanceContextProvider } from './settings/Perfo
 import { SettingsProviderImpl } from './settings/SettingsProviderImpl';
 import { ThemeContext, ThemeProvider } from './settings/ThemeProvider';
 import { TimezoneContext, TimezoneProvider } from './settings/TimezoneProvider';
-import { SettingsCategory, SettingsOf } from '../types/settings/Settings';
+import { CommonSettingsCategory, CommonSettingsOf } from 'now-playing-common';
 
-export interface SettingsContextValue<T extends SettingsCategory> {
-  settings: SettingsOf<T>;
-  updateSettings: (settings: SettingsOf<T>) => void;
+export interface SettingsContextValue<T extends CommonSettingsCategory> {
+  settings: CommonSettingsOf<T>;
+  updateSettings: (settings: CommonSettingsOf<T>) => void;
 }
 
-const categories: SettingsCategory[] = [
-  'theme',
-  'performance',
-  'localization',
-  'background',
-  'actionPanel',
-  'screen.nowPlaying',
-  'screen.idle'
-];
+export type SettingsContext<T extends CommonSettingsCategory> = React.Context<SettingsContextValue<T>>;
 
-export type SettingsContext<T extends SettingsCategory> = React.Context<SettingsContextValue<T>>;
-
-const contexts: Record<SettingsCategory, SettingsContext<SettingsCategory>> = {
-  theme: createContext({} as SettingsContextValue<'theme'>),
-  performance: createContext({} as SettingsContextValue<'performance'>),
-  localization: createContext({} as SettingsContextValue<'localization'>),
-  background: createContext({} as SettingsContextValue<'background'>),
-  actionPanel: createContext({} as SettingsContextValue<'actionPanel'>),
-  'screen.nowPlaying': createContext({} as SettingsContextValue<'screen.nowPlaying'>),
-  'screen.idle': createContext({} as SettingsContextValue<'screen.idle'>)
+const contexts: Record<CommonSettingsCategory, any> = {
+  [CommonSettingsCategory.Theme]: createContext({} as SettingsContextValue<CommonSettingsCategory.Theme>),
+  [CommonSettingsCategory.Performance]: createContext({} as SettingsContextValue<CommonSettingsCategory.Performance>),
+  [CommonSettingsCategory.Localization]: createContext({} as SettingsContextValue<CommonSettingsCategory.Localization>),
+  [CommonSettingsCategory.Background]: createContext({} as SettingsContextValue<CommonSettingsCategory.Background>),
+  [CommonSettingsCategory.ActionPanel]: createContext({} as SettingsContextValue<CommonSettingsCategory.ActionPanel>),
+  [CommonSettingsCategory.NowPlayingScreen]: createContext({} as SettingsContextValue<CommonSettingsCategory.NowPlayingScreen>),
+  [CommonSettingsCategory.IdleScreen]: createContext({} as SettingsContextValue<CommonSettingsCategory.IdleScreen>)
 };
 
 const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
-  return categories.reduce<React.JSX.Element | null>((prevProvider, category) => {
+  return Object.values(CommonSettingsCategory).reduce<React.JSX.Element | null>((prevProvider, category) => {
     const wrapped = (category === 'performance') ?
       <PerformanceContextProvider>{prevProvider || children}</PerformanceContextProvider>
       :
@@ -52,7 +42,7 @@ const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
   }, null) as React.JSX.Element;
 };
 
-const useRawSettings = <T extends SettingsCategory>(category: T): SettingsContextValue<T> => useContext(contexts[category]);
+const useSettings = <T extends CommonSettingsCategory>(category: T): SettingsContextValue<T> => useContext(contexts[category]);
 const usePerformanceContext = () => useContext(PerformanceContext);
 const useTheme = () => useContext(ThemeContext);
 const useLocale = () => useContext(LocaleContext);
@@ -60,7 +50,7 @@ const useTimezone = () => useContext(TimezoneContext);
 
 export {
   SettingsProvider,
-  useRawSettings,
+  useSettings,
   usePerformanceContext,
   useTheme,
   useLocale,

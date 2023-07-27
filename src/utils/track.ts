@@ -126,7 +126,7 @@ export class TrackTimer extends EventEmitter {
       return;
     }
 
-    this.#worker.postMessage({command: 'start', beginSeek, max});
+    this.#worker.postMessage({ command: 'start', beginSeek, max });
     return this;
   }
 
@@ -134,7 +134,7 @@ export class TrackTimer extends EventEmitter {
     if (!this.#worker) {
       return;
     }
-    this.#worker.postMessage({command: 'pause', pauseSeek, max});
+    this.#worker.postMessage({ command: 'pause', pauseSeek, max });
     return this;
   }
 
@@ -142,7 +142,7 @@ export class TrackTimer extends EventEmitter {
     if (!this.#worker) {
       return;
     }
-    this.#worker.postMessage({command: 'stop'});
+    this.#worker.postMessage({ command: 'stop' });
     return this;
   }
 

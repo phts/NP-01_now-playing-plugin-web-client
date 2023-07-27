@@ -38,10 +38,10 @@ function Toast(props: ToastProps) {
   return (
     <div className={styles.Layout}>
       <div className={iconClasses}>
-        { icon ? <span className="material-icons">{icon}</span> : null}
+        {icon ? <span className="material-icons">{icon}</span> : null}
       </div>
       <div className={styles.Layout__contents}>
-        { props.title ? <div className={styles.Title}>{props.title}</div> : null}
+        {props.title ? <div className={styles.Title}>{props.title}</div> : null}
         <div className={styles.Message}>{props.message}</div>
       </div>
       <div>

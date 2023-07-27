@@ -11,7 +11,7 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [ socket, setSocket ] = useState<SocketIOClient.Socket | null>(null);
 
   return (
-    <SocketContext.Provider value={{socket, setSocket}}>
+    <SocketContext.Provider value={{ socket, setSocket }}>
       {children}
     </SocketContext.Provider>
   );

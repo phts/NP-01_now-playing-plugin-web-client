@@ -89,9 +89,9 @@ const VolumeIndicator = React.forwardRef<HTMLDivElement, VolumeIndicatorProps>((
     <div
       ref={ref}
       className={mainClassName}
-      style={{'--volume-level': `${volume}px`} as React.CSSProperties}
+      style={{ '--volume-level': `${volume}px` } as React.CSSProperties}
       onClick={props.onClick}>
-      { dial }
+      {dial}
       <div className={classNames(
         getElementClassName('contents'),
         dial ? null : getElementClassName('contents--noDial')

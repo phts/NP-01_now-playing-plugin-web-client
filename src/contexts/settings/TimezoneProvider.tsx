@@ -1,6 +1,6 @@
 import React, { createContext } from 'react';
-import { useRawSettings } from '../SettingsProvider';
-import { LocalizationSettings } from '../../types/settings/LocalizationSettings';
+import { useSettings } from '../SettingsProvider';
+import { CommonSettingsCategory, LocalizationSettings } from 'now-playing-common';
 
 export type TimezoneContextValue = string;
 
@@ -19,7 +19,7 @@ const getSettingsTimezone = (settings: LocalizationSettings) => {
 };
 
 const TimezoneProvider = ({ children }: { children: React.ReactNode }) => {
-  const {settings} = useRawSettings('localization');
+  const { settings } = useSettings(CommonSettingsCategory.Localization);
   const timezone = getSettingsTimezone(settings);
 
   return (

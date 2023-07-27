@@ -1,6 +1,5 @@
-import { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { useSocket } from '../SocketProvider';
-import React from 'react';
 
 // Volumio state
 export interface PlayerState {
@@ -48,10 +47,10 @@ const EMPTY_STATE: PlayerState = {
 
 const PlayerStateContext = createContext(EMPTY_STATE);
 
-const PlayerStateProvider = ({ children }: { children: React.ReactNode}) => {
+const PlayerStateProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [ playerState, setPlayerState ] = useState(EMPTY_STATE);
-  const {socket} = useSocket();
+  const { socket } = useSocket();
 
   useEffect(() => {
     if (socket) {

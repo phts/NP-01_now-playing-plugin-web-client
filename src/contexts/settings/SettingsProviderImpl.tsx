@@ -1,31 +1,42 @@
 import deepEqual from 'deep-equal';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { requestPluginApiEndpoint } from '../../utils/api';
 import { getInitialSettings } from '../../utils/init';
 import { useAppContext } from '../AppContextProvider';
 import { useSocket } from '../SocketProvider';
 import { SettingsContext } from '../SettingsProvider';
-import { SettingsCategory, SettingsOf } from '../../types/settings/Settings';
+import { CommonSettingsCategory, CommonSettingsOf } from 'now-playing-common';
 
-export interface SettingsProviderImplProps<T extends SettingsCategory> {
+export interface SettingsProviderImplProps<T extends CommonSettingsCategory> {
   context: SettingsContext<T>;
   category: T;
   children: React.ReactNode;
 }
 
-const SettingsProviderImpl = <T extends SettingsCategory>({ context, category, children }: SettingsProviderImplProps<T>) => {
-  const {socket} = useSocket();
-  const {pluginInfo} = useAppContext();
+const SettingsProviderImpl = <T extends CommonSettingsCategory>({ context, category, children }: SettingsProviderImplProps<T>) => {
+  const { socket } = useSocket();
+  const { pluginInfo } = useAppContext();
   const [ settings, updateSettings ] = useState(getInitialSettings(category));
+  const currentSettingsRef = useRef(settings);
+  const apiPath = pluginInfo ? pluginInfo.apiPath : null;
+
+  const handlePushSettings = useCallback(<K extends CommonSettingsCategory>(newSettings: { category: K; data: CommonSettingsOf<K> }) => {
+    if (newSettings.category as unknown === category && !deepEqual(currentSettingsRef.current, newSettings.data)) {
+      currentSettingsRef.current = newSettings.data as unknown as CommonSettingsOf<T>;
+      updateSettings(newSettings.data as unknown as CommonSettingsOf<T>);
+    }
+  }, [ category ]);
+
+  const fetchAndUpdateSettings = useCallback(async (abortStatus: { aborted: boolean }) => {
+    if (apiPath) {
+      const result = await requestPluginApiEndpoint(apiPath, '/settings/getSettings', { category });
+      if (result.success && !abortStatus.aborted && !deepEqual(currentSettingsRef.current, result.data)) {
+        updateSettings(result.data as CommonSettingsOf<T>);
+      }
+    }
+  }, [ apiPath, category ]);
 
   useEffect(() => {
-    // TODO: Rename 'namespace' to 'category' after changing backend as well
-    const handlePushSettings = <K extends SettingsCategory>(newSettings: { namespace: K; data: SettingsOf<K> }) => {
-      if (newSettings.namespace as unknown === category && !deepEqual(settings, newSettings.data)) {
-        updateSettings(newSettings.data as unknown as SettingsOf<T>);
-      }
-    };
-
     if (socket) {
       socket.on('nowPlayingPushSettings', handlePushSettings);
 
@@ -33,33 +44,21 @@ const SettingsProviderImpl = <T extends SettingsCategory>({ context, category, c
         socket.off('nowPlayingPushSettings', handlePushSettings);
       };
     }
-  }, [ category, socket, updateSettings ]);
-
-  const apiPath = pluginInfo ? pluginInfo.apiPath : null;
+  }, [ socket, handlePushSettings ]);
 
   useEffect(() => {
-    let aborted = false;
-
-    const fetchAndUpdateSettings = async() => {
-      if (apiPath) {
-        const result = await requestPluginApiEndpoint(apiPath, '/settings/getSettings', {namespace: category}); // TODO: change backend 'namespace' to 'category'
-        if (result.success && !aborted && !deepEqual(settings, result.data)) {
-          updateSettings(result.data as SettingsOf<T>);
-        }
-      }
-    };
-
     if (apiPath) {
-      fetchAndUpdateSettings();
+      const abortStatus = { aborted: false };
+      fetchAndUpdateSettings(abortStatus);
 
       return () => {
-        aborted = true;
+        abortStatus.aborted = true;
       };
     }
-  }, [ category, apiPath, updateSettings ]);
+  }, [ apiPath, fetchAndUpdateSettings ]);
 
   return (
-    <context.Provider value={{settings, updateSettings}}>
+    <context.Provider value={{ settings, updateSettings }}>
       {children}
     </context.Provider>
   );

@@ -52,9 +52,9 @@ const Button = React.forwardRef<ButtonElement, ButtonProps>((props, ref) => {
       onKeyDown={props.onKeyDown}
       onMouseDown={props.onMouseDown}
       {...dataAttrs}>
-      { props.image ? <img className={getElementClassName('image')} src={props.image} alt=""/> : null }
-      { props.icon ? <span className={getElementClassName('icon')}>{ props.icon }</span> : null }
-      { props.text ? <span className={getElementClassName('text')}>{ props.text }</span> : null }
+      {props.image ? <img className={getElementClassName('image')} src={props.image} alt="" /> : null}
+      {props.icon ? <span className={getElementClassName('icon')}>{props.icon}</span> : null}
+      {props.text ? <span className={getElementClassName('text')}>{props.text}</span> : null}
     </button>
   );
 });

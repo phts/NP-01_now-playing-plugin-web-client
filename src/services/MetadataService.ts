@@ -1,32 +1,6 @@
 import EventEmitter from 'events';
 import { requestPluginApiEndpoint } from '../utils/api';
-
-export interface MetadataSongInfo {
-  title: string;
-  description: string | null;
-  image: string;
-  embed?: any;
-  embedContents?: {
-    linkElements: string[];
-    contentParts: string[];
-  };
-  artist?: MetadataArtistInfo;
-  album?: MetadataAlbumInfo;
-}
-
-export interface MetadataAlbumInfo {
-  title: string;
-  description: string;
-  releaseDate: string;
-  image: string;
-  artist?: MetadataArtistInfo;
-}
-
-export interface MetadataArtistInfo {
-  name: string;
-  description: string;
-  image: string;
-}
+import { Metadata } from 'now-playing-common';
 
 export interface MetadataServiceGetSongInfoParams {
   name?: string;
@@ -49,11 +23,7 @@ export interface MetadataServiceGetInfoResult {
     album?: string;
     artist?: string;
   };
-  info: {
-    song?: MetadataSongInfo;
-    album?: MetadataAlbumInfo;
-    artist?: MetadataArtistInfo;
-  };
+  info: Metadata;
 }
 
 export default class MetadataService extends EventEmitter {
@@ -73,18 +43,11 @@ export default class MetadataService extends EventEmitter {
     return this.#apiPath !== null;
   }
 
-  /**
-   * Params {
-   *  name: ...
-   *  artist: ...
-   *  album: ...
-   * }
-   */
   async getSongInfo(params: MetadataServiceGetSongInfoParams) {
     if (!this.#apiPath) {
       return;
     }
-    const payload = {...params, type: 'song'};
+    const payload = { ...params, type: 'song' };
     const data = await requestPluginApiEndpoint(this.#apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
       this.#pushFetched({
@@ -98,17 +61,11 @@ export default class MetadataService extends EventEmitter {
     }
   }
 
-  /**
-   * Params {
-   *  album: ...
-   *  artist: ...
-   * }
-   */
   async getAlbumInfo(params: MetadataServiceGetAlbumInfoParams) {
     if (!this.#apiPath) {
       return;
     }
-    const payload = {...params, type: 'album'};
+    const payload = { ...params, type: 'album' };
     const data = await requestPluginApiEndpoint(this.#apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
       this.#pushFetched({
@@ -121,16 +78,11 @@ export default class MetadataService extends EventEmitter {
     }
   }
 
-  /**
-   * Params {
-   *  artist: ...
-   * }
-   */
   async getArtistInfo(params: MetadataServiceGetArtistInfoParams) {
     if (!this.#apiPath) {
       return;
     }
-    const payload = {...params, type: 'artist'};
+    const payload = { ...params, type: 'artist' };
     const data = await requestPluginApiEndpoint(this.#apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
       this.#pushFetched({

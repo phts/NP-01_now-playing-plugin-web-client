@@ -1,8 +1,8 @@
 import React, { createContext, useEffect } from 'react';
-import defaultTheme from '../../themes/default';
-import glassTheme from '../../themes/glass';
-import { SettingsContextValue, useRawSettings } from '../SettingsProvider';
-import { DefaultThemeSettings } from '../../types/settings/ThemeSettings';
+import defaultTheme from '../../themes/default/index';
+import glassTheme from '../../themes/glass/index';
+import { SettingsContextValue, useSettings } from '../SettingsProvider';
+import { CommonSettingsCategory } from 'now-playing-common';
 
 export interface Theme {
   name: string;
@@ -11,19 +11,19 @@ export interface Theme {
 
 export interface ThemeContextValue {
   theme: Theme;
-  setTheme: SettingsContextValue<'theme'>['updateSettings'];
+  setTheme: SettingsContextValue<CommonSettingsCategory.Theme>['updateSettings'];
 }
 
 const ThemeContext = createContext({} as ThemeContextValue);
 
 const themes: Record<string, Theme> = {
-  'default': defaultTheme,
-  'glass': glassTheme
+  default: defaultTheme,
+  glass: glassTheme
 };
 
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const {settings: themeName, updateSettings} = useRawSettings('theme');
-  const theme = themes[themeName || DefaultThemeSettings];
+  const { settings: themeSettings, updateSettings } = useSettings(CommonSettingsCategory.Theme);
+  const theme = Reflect.has(themes, themeSettings.active) ? themes[themeSettings.active] : themes.default;
 
   useEffect(() => {
     document.body.classList.add(...theme.className.split(' '));
@@ -34,7 +34,7 @@ const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [ theme ]);
 
   return (
-    <ThemeContext.Provider value={{theme, setTheme: updateSettings}}>
+    <ThemeContext.Provider value={{ theme, setTheme: updateSettings }}>
       {children}
     </ThemeContext.Provider>
   );

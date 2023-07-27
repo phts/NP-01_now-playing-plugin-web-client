@@ -23,6 +23,7 @@ import { SettingsProvider } from './contexts/SettingsProvider';
 import { PlayerProvider } from './contexts/PlayerProvider';
 import { WeatherProvider } from './contexts/WeatherProvider';
 import I18nLoader from './i18n/I18nLoader';
+import { DefaultPerformanceSettings } from 'now-playing-common';
 
 function App() {
   useEffect(() => {
@@ -67,20 +68,22 @@ function App() {
                               screenId="NowPlaying"
                               defaultActive
                               mountOnEnter
-                              unmountOnExit />
+                              unmountOnExit={DefaultPerformanceSettings.unmountNowPlayingScreenOnExit} />
                             <BrowseScreen
                               screenId="Browse"
                               usesTrackBar
-                              mountOnEnter />
+                              mountOnEnter
+                              unmountOnExit={DefaultPerformanceSettings.unmountBrowseScreenOnExit} />
                             <QueueScreen
                               screenId="Queue"
                               float
                               usesTrackBar
-                              mountOnEnter />
+                              mountOnEnter
+                              unmountOnExit={DefaultPerformanceSettings.unmountQueueScreenOnExit} />
                             <VolumioScreen
                               screenId="Volumio"
                               mountOnEnter
-                              unmountOnExit />
+                              unmountOnExit={DefaultPerformanceSettings.unmountVolumioScreenOnExit} />
                             <CommonModals />
                           </ScreenContextProvider>
                         </WeatherProvider>

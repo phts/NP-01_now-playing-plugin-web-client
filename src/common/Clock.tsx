@@ -30,14 +30,14 @@ const DEFAULT_DATE_FORMAT = DateTime.DATE_SHORT;
 const DEFAULT_TIME_FORMAT = DateTime.TIME_SIMPLE;
 
 const getDateTime = (timeZone: string, locale: string) => {
-  return DateTime.local({zone: timeZone, locale});
+  return DateTime.local({ zone: timeZone, locale });
 };
 
 const Clock = React.forwardRef<HTMLDivElement, ClockProps>((props, ref) => {
-  const {showDate = true, showTime = true} = props;
+  const { showDate = true, showTime = true } = props;
   const formats = {
-    date: {...DEFAULT_DATE_FORMAT, ...props.dateFormat},
-    time: {...DEFAULT_TIME_FORMAT, ...props.timeFormat}
+    date: { ...DEFAULT_DATE_FORMAT, ...props.dateFormat },
+    time: { ...DEFAULT_TIME_FORMAT, ...props.timeFormat }
   };
   const timeZone = useTimezone();
   const locale = useLocale();

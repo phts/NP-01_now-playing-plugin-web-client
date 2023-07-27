@@ -13,7 +13,7 @@ export interface PlayerButtonGroupProps {
 }
 
 function PlayerButtonGroup(props: PlayerButtonGroupProps) {
-  const {socket} = useSocket();
+  const { socket } = useSocket();
   const playerState = props.playerState;
 
   // Button event handlers
@@ -141,7 +141,7 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
   };
 
   return (
-    <div className={ props.className || 'PlayerButtonGroup' }>
+    <div className={props.className || 'PlayerButtonGroup'}>
       {getButtons()}
     </div>
   );

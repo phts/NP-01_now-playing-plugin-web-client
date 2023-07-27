@@ -13,7 +13,7 @@ export interface VolumeSliderProps {
 }
 
 function VolumeSlider(props: VolumeSliderProps) {
-  const {socket} = useSocket();
+  const { socket } = useSocket();
   const playerState = usePlayerState();
   const changeVolumeTimer = useRef<NodeJS.Timeout | null>(null);
   const changeVolumeValue = useRef(playerState.volume);
@@ -116,7 +116,7 @@ function VolumeSlider(props: VolumeSliderProps) {
         toggled={playerState.mute}
         onClick={toggleMute} />
       <Range
-        direction={props.orientation === 'vertical' ? Direction.Up : Direction.Right }
+        direction={props.orientation === 'vertical' ? Direction.Up : Direction.Right}
         values={displayVolume ? [ displayVolume ] : [ 0 ]}
         max={100}
         onChange={(values) => onSliderValueChanged(values[0])}

@@ -80,7 +80,7 @@ function MetadataPanel(props: MetadataPanelProps) {
   const metadataService = useMetadataService();
   const showToast = useToasts();
   const scrollbarRefs = useRef<Partial<Record<MetadataPanelInfoType, Scrollbars | null>>>({});
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const store = useStore();
   const restoreState = useMemo(() => {
@@ -135,13 +135,13 @@ function MetadataPanel(props: MetadataPanelProps) {
   useEffect(() => {
     // On mount, set scrollPositions from restoreState
     if (restoreState && restoreState.scrollPositions) {
-      scrollPositionsRef.current = {...restoreState.scrollPositions};
+      scrollPositionsRef.current = { ...restoreState.scrollPositions };
     }
 
     return () => {
       // On unmount, save current scrollPositions to restoreState
       if (restoreState) {
-        restoreState.scrollPositions = {...scrollPositionsRef.current};
+        restoreState.scrollPositions = { ...scrollPositionsRef.current };
       }
     };
   }, [ restoreState ]);
@@ -222,7 +222,7 @@ function MetadataPanel(props: MetadataPanelProps) {
         });
         setState({
           status: 'error',
-          error: {message},
+          error: { message },
           forProps: { song, album, artist }
         });
       };
@@ -403,7 +403,7 @@ function MetadataPanel(props: MetadataPanelProps) {
 
             contents = <div
               className={getElementClassName('lyrics')}
-              dangerouslySetInnerHTML={{__html: wrapper.innerHTML}} />;
+              dangerouslySetInnerHTML={{ __html: wrapper.innerHTML }} />;
           }
           else {
             contents = t(`metadata.${forInfoType}Unavailable`);

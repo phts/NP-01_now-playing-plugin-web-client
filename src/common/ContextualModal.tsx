@@ -7,7 +7,7 @@ export interface ContextualModalProps extends ReactModal.Props {
 }
 
 function ContextualModal(props: ContextualModalProps) {
-  const {disableTransitions} = usePerformanceContext();
+  const { disableTransitions } = usePerformanceContext();
 
   const timeout = disableTransitions ? 0 : props.closeTimeoutMS;
 

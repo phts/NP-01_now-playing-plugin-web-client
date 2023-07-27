@@ -5,7 +5,7 @@ import './DisconnectedIndicator.scss';
 
 function DisconnectedIndicator() {
 
-  const {socket} = useSocket();
+  const { socket } = useSocket();
   const [ visible, setVisible ] = useState<boolean>(false);
 
   const onConnect = useCallback(() => {
@@ -42,7 +42,7 @@ function DisconnectedIndicator() {
 
   return (
     <ContextualModal
-      isOpen={ visible }
+      isOpen={visible}
       closeTimeoutMS={200}
       overlayClassName={modalOverlayClassNames}
       className={modalClassNames}>

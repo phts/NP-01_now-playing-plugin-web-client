@@ -17,9 +17,9 @@ export interface ServiceContextValue extends Record<string, any> {
 
 const ServiceContext = createContext({} as ServiceContextValue);
 
-const ServiceProvider = ({ children }: { children: React.ReactNode}) => {
-  const {socket} = useSocket();
-  const {pluginInfo} = useAppContext();
+const ServiceProvider = ({ children }: { children: React.ReactNode }) => {
+  const { socket } = useSocket();
+  const { pluginInfo } = useAppContext();
 
   const services = useMemo(() => ({
     playlistService: new PlaylistService(),

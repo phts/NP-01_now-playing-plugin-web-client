@@ -1,23 +1,5 @@
 import { PluginInfo } from '../contexts/AppContextProvider';
-import { DefaultActionPanelSettings } from '../types/settings/ActionPanelSettings';
-import { DefaultBackgroundSettings } from '../types/settings/BackgroundSettings';
-import { DefaultIdleScreenSettings } from '../types/settings/IdleScreenSettings';
-import { DefaultLocalizationSettings } from '../types/settings/LocalizationSettings';
-import { DefaultNowPlayerScreenSettings } from '../types/settings/NowPlayingScreenSettings';
-import { DefaultPerformanceSettings } from '../types/settings/PerformanceSettings';
-import { SettingsCategory, SettingsOf } from '../types/settings/Settings';
-import { DefaultThemeSettings } from '../types/settings/ThemeSettings';
-
-export const DEFAULT_PERFORMANCE_SETTINGS = {
-  transitionEffectsKiosk: false,
-  transitionEffectsOtherDevices: true,
-  unmountScreensOnExit: 'default'
-};
-
-export const DEFAULT_LOCALIZATION_SETTINGS = {
-  localeType: 'client',
-  timezoneType: 'client'
-};
+import { CommonSettingsCategory, CommonSettingsOf, DefaultActionPanelSettings, DefaultBackgroundSettings, DefaultIdleScreenSettings, DefaultLocalizationSettings, DefaultNowPlayingScreenSettings, DefaultPerformanceSettings, DefaultThemeSettings } from 'now-playing-common';
 
 export function getInitialData<T>(prop: string, defaultVal: T): T;
 export function getInitialData<T>(prop: string, defaultVal?: T): T | undefined;
@@ -46,22 +28,22 @@ export function getInitialPluginInfo() {
   return getInitialData<PluginInfo | null>('pluginInfo', null);
 }
 
-export function getInitialSettings<T extends SettingsCategory>(category: T): SettingsOf<T> {
+export function getInitialSettings<T extends CommonSettingsCategory>(category: T): CommonSettingsOf<T> {
   const settings = getInitialData<any>('settings', null);
   switch (category) {
-    case 'screen.nowPlaying':
-      return settings?.[category] || DefaultNowPlayerScreenSettings;
-    case 'screen.idle':
+    case CommonSettingsCategory.NowPlayingScreen:
+      return settings?.[category] || DefaultNowPlayingScreenSettings;
+    case CommonSettingsCategory.IdleScreen:
       return settings?.[category] || DefaultIdleScreenSettings;
-    case 'background':
+    case CommonSettingsCategory.Background:
       return settings?.[category] || DefaultBackgroundSettings;
-    case 'actionPanel':
+    case CommonSettingsCategory.ActionPanel:
       return settings?.[category] || DefaultActionPanelSettings;
-    case 'theme':
+    case CommonSettingsCategory.Theme:
       return settings?.[category] || DefaultThemeSettings;
-    case 'performance':
+    case CommonSettingsCategory.Performance:
       return settings?.[category] || DefaultPerformanceSettings;
-    case 'localization':
+    case CommonSettingsCategory.Localization:
       return settings?.[category] || DefaultLocalizationSettings;
     default:
       throw Error(`Unknown settings category: ${category}`);

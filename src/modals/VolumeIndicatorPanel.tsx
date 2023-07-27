@@ -21,7 +21,7 @@ function VolumeIndicatorPanel(props: VolumeIndicatorPanelProps) {
     beforeClose: 'VolumeIndicatorPanel--before-close'
   };
 
-  const {closePanel, ...modalProps} = props;
+  const { closePanel, ...modalProps } = props;
 
   return (
     <ContextualModal

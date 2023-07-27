@@ -12,12 +12,12 @@ interface ImageProps {
 }
 
 function Image(props: ImageProps) {
-  const {host} = useAppContext();
+  const { host } = useAppContext();
   const [ loadedSrc, setLoadedSrc ] = useState<string | null>(null);
   const currentTargetSrc = useRef<string | null>(null);
   const fallbackSrc = `${host}/albumart`;
   const targetSrc = props.src ? sanitizeImageUrl(props.src, host) : fallbackSrc;
-  const {onLoad, preload} = props;
+  const { onLoad, preload } = props;
   const [ directSrc, setDirectSrc ] = useState<string | null>(targetSrc);
 
   // Preload image
@@ -105,7 +105,7 @@ function Image(props: ImageProps) {
   }
 
   return (
-    <img { ...imgAttrs } alt="" />
+    <img {...imgAttrs} alt="" />
   );
 }
 

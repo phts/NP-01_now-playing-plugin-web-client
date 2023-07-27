@@ -4,24 +4,21 @@ import React from 'react';
 import styles from './DockedWeather.module.scss';
 import { useWeather } from '../../contexts/WeatherProvider';
 import classNames from 'classnames';
-import { useRawSettings } from '../../contexts/SettingsProvider';
-import { WeatherDataIconUrl } from '../../services/WeatherService';
-
-const DEFAULT_ICON_SETTINGS = {
-  style: 'filled',
-  animate: false
-};
+import { useSettings } from '../../contexts/SettingsProvider';
+import { CommonSettingsCategory, DefaultNowPlayingScreenSettings, WeatherDataIconUrl } from 'now-playing-common';
 
 function DockedWeather() {
-  const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
-  const settings = screenSettings.dockedWeather || {};
+  const { settings: screenSettings } = useSettings(CommonSettingsCategory.NowPlayingScreen);
+  const settings = screenSettings.dockedWeather;
+  const defaults = DefaultNowPlayingScreenSettings.dockedWeather;
   const weather = useWeather();
 
-  const iconSettings = (settings.iconSettings === 'custom') ? {
-    style: settings.iconStyle,
-    animate: settings.iconAnimate,
-    monoColor: settings.iconMonoColor
-  } : DEFAULT_ICON_SETTINGS;
+  const useIconSettings = settings.iconSettings === 'custom' ? settings : defaults;
+  const iconSettings = {
+    style: useIconSettings.iconStyle,
+    animate: useIconSettings.iconAnimate,
+    monoColor: useIconSettings.iconMonoColor
+  };
 
   const getIcon = (type: keyof WeatherDataIconUrl) => {
     if (weather.status !== 'fetched') {
@@ -83,8 +80,8 @@ function DockedWeather() {
         }
         {
           settings.showWindSpeed ?
-            <div key="windspeed" className={styles.DockedWeather__unit}>
-              {getIcon('windspeed')}
+            <div key="windSpeed" className={styles.DockedWeather__unit}>
+              {getIcon('windSpeed')}
               <span className={styles.DockedWeather__windSpeed}>{info.current.windSpeed.text}</span>
             </div>
             : null

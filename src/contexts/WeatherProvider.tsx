@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useWeatherService } from './ServiceProvider';
-import { WeatherData } from '../services/WeatherService';
+import { WeatherData } from 'now-playing-common';
 
 export type WeatherState = {
   status: 'fetched';
@@ -18,7 +18,7 @@ const WeatherContext = createContext({} as WeatherContextValue);
 
 const WeatherProvider = ({ children }: { children: React.ReactNode }) => {
   const weatherService = useWeatherService();
-  const [ weather, setWeatherState ] = useState<WeatherState>({status: 'unavailable'});
+  const [ weather, setWeatherState ] = useState<WeatherState>({ status: 'unavailable' });
 
   const fetchIfReady = useCallback(() => {
     if (weatherService && weatherService.isReady()) {
@@ -43,7 +43,7 @@ const WeatherProvider = ({ children }: { children: React.ReactNode }) => {
       const handleError = (message: string) => {
         setWeatherState({
           status: 'error',
-          error: {message}
+          error: { message }
         });
       };
 

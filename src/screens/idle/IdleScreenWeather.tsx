@@ -3,14 +3,13 @@
 import styles from './IdleScreenWeather.module.scss';
 import { useWeather } from '../../contexts/WeatherProvider';
 import classNames from 'classnames';
-import { useLocale, useRawSettings, useTimezone } from '../../contexts/SettingsProvider';
+import { useLocale, useSettings, useTimezone } from '../../contexts/SettingsProvider';
 import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import Scrollbars from 'rc-scrollbars';
 import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useStore } from '../../contexts/StoreProvider';
-import { WeatherData, WeatherDataCurrent, WeatherDataForecastDay, WeatherDataHourly, WeatherDataIconUrl } from '../../services/WeatherService';
-import { DefaultIdleScreenSettings, IdleScreenSettings } from '../../types/settings/IdleScreenSettings';
+import { WeatherData, WeatherDataCurrent, WeatherDataForecastDay, WeatherDataHourly, WeatherDataIconUrl, CommonSettingsCategory, CommonSettingsOf, DefaultIdleScreenSettings, IdleScreenSettings } from 'now-playing-common';
 
 type ViewType = 'day' | 'hour';
 
@@ -20,7 +19,7 @@ interface IdleScreenWeatherRestoreState {
 
 const RESTORE_STATE_KEY = 'IdleScreen.Weather.restoreState';
 
-const getBackgroundStyles = (settings: IdleScreenSettings): React.CSSProperties => {
+const getBackgroundStyles = (settings: CommonSettingsOf<IdleScreenSettings>): React.CSSProperties => {
   const weatherBackgroundType = settings.weatherBackground || 'default';
   switch (weatherBackgroundType) {
     case 'none':
@@ -43,34 +42,35 @@ const getBackgroundStyles = (settings: IdleScreenSettings): React.CSSProperties 
 };
 
 function IdleScreenWeather() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const store = useStore();
   const restoreState = store.get<IdleScreenWeatherRestoreState>(RESTORE_STATE_KEY, {}, true);
   const [ view, setView ] = useState<ViewType>(restoreState.view || 'day');
-  const {settings: screenSettings} = useRawSettings('screen.idle');
+  const { settings: screenSettings } = useSettings(CommonSettingsCategory.IdleScreen);
+  const defaults = DefaultIdleScreenSettings;
   const customFontSizes = screenSettings.fontSizes === 'custom';
   const customFontColors = screenSettings.fontColors === 'custom';
   const customIconSettings = screenSettings.weatherIconSettings === 'custom';
-  const weatherCurrentColor = customFontColors && screenSettings.weatherCurrentColor ? screenSettings.weatherCurrentColor : null;
+  const weatherCurrentColor = customFontColors ? screenSettings.weatherCurrentColor : null;
   const backgroundStyles = getBackgroundStyles(screenSettings);
   const currentWeatherStyles = {
-    '--period-base-font-size': customFontSizes && screenSettings.weatherCurrentBaseFontSize ? screenSettings.weatherCurrentBaseFontSize : null,
+    '--period-base-font-size': customFontSizes ? screenSettings.weatherCurrentBaseFontSize : null,
     '--period-title-color': weatherCurrentColor,
     '--temp-range-color': weatherCurrentColor,
     '--current-temp-color': weatherCurrentColor,
-    '--icon-size': customIconSettings && screenSettings.weatherCurrentIconSize ? screenSettings.weatherCurrentIconSize : null
+    '--icon-size': customIconSettings ? screenSettings.weatherCurrentIconSize : null
   } as React.CSSProperties;
   const forecastWeatherStyles = {
-    '--period-base-font-size': customFontSizes && screenSettings.weatherForecastBaseFontSize ? screenSettings.weatherForecastBaseFontSize : null,
-    '--period-title-color': customFontColors && screenSettings.weatherForecastColor ? screenSettings.weatherForecastColor : null,
-    '--temp-range-color': customFontColors && screenSettings.weatherForecastColor ? screenSettings.weatherForecastColor : null,
-    '--icon-size': customIconSettings && screenSettings.weatherForecastIconSize ? screenSettings.weatherForecastIconSize : null
+    '--period-base-font-size': customFontSizes ? screenSettings.weatherForecastBaseFontSize : null,
+    '--period-title-color': customFontColors ? screenSettings.weatherForecastColor : null,
+    '--temp-range-color': customFontColors ? screenSettings.weatherForecastColor : null,
+    '--icon-size': customIconSettings ? screenSettings.weatherForecastIconSize : null
   } as React.CSSProperties;
   const iconSettings = {
-    style: customIconSettings && screenSettings.weatherIconStyle ? screenSettings.weatherIconStyle : 'filled',
-    currentIconAnimate: customIconSettings && screenSettings.weatherCurrentIconAnimate !== undefined ? screenSettings.weatherCurrentIconAnimate : false,
-    currentMonoColor: customIconSettings && screenSettings.weatherCurrentIconMonoColor ? screenSettings.weatherCurrentIconMonoColor : null,
-    forecastMonoColor: customIconSettings && screenSettings.weatherForecastIconMonoColor ? screenSettings.weatherForecastIconMonoColor : null
+    style: customIconSettings ? screenSettings.weatherIconStyle : 'filled',
+    currentIconAnimate: customIconSettings ? screenSettings.weatherCurrentIconAnimate : defaults.weatherCurrentIconAnimate,
+    currentMonoColor: customIconSettings ? screenSettings.weatherCurrentIconMonoColor : null,
+    forecastMonoColor: customIconSettings ? screenSettings.weatherForecastIconMonoColor : null
   };
   const weather = useWeather();
   const timeZone = useTimezone();
@@ -82,8 +82,7 @@ function IdleScreenWeather() {
 
   const TIME_FORMAT = {
     ...DateTime.TIME_SIMPLE,
-    hour12: !!((screenSettings.timeFormat === undefined ||
-      screenSettings.timeFormat === 'default' || !screenSettings.hour24))
+    hour12: screenSettings.timeFormat === 'default' ? !defaults.hour24 : !screenSettings.hour24
   };
 
   const DATE_FORMAT = {
@@ -97,12 +96,12 @@ function IdleScreenWeather() {
 
   const getDayName = (millis: number) => {
     return DateTime
-      .fromMillis(millis, {zone: timeZone, locale})
+      .fromMillis(millis, { zone: timeZone, locale })
       .toLocaleString(DAY_FORMAT);
   };
 
   const getTimeOrDateString = (millis: number) => {
-    const dt = DateTime.fromMillis(millis, {zone: timeZone, locale});
+    const dt = DateTime.fromMillis(millis, { zone: timeZone, locale });
     const isMidnight = dt.hour === 0 && dt.minute === 0;
     const format = isMidnight ? DATE_FORMAT : TIME_FORMAT;
     return dt.toLocaleString(format);

@@ -116,8 +116,8 @@ function TrackInfoText(props: TrackInfoTextProps) {
         if (marqueeTitle) {
           return (
             <div ref={marqueeTitleWrapperEl} className={getElementClassName('marqueeTitleWrapper')}>
-              { marqueeTitleRunning && !marqueeTitleRefreshing ?
-                <Marquee delay={2} pauseOnHover={true} speed={marqueeTitleSpeed}>{_titleEl}</Marquee> : _titleEl }
+              {marqueeTitleRunning && !marqueeTitleRefreshing ?
+                <Marquee delay={2} pauseOnHover={true} speed={marqueeTitleSpeed}>{_titleEl}</Marquee> : _titleEl}
             </div>
           );
         }

@@ -4,11 +4,11 @@ import deepEqual from 'deep-equal';
 import { DateTime } from 'luxon';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppContext } from '../../contexts/AppContextProvider';
-import { useRawSettings, useTimezone } from '../../contexts/SettingsProvider';
+import { useSettings, useTimezone } from '../../contexts/SettingsProvider';
 import { requestPluginApiEndpoint } from '../../utils/api';
 import { preloadImage } from '../../utils/image';
 import styles from './IdleScreenBackground.module.scss';
-import { IdleScreenSettings } from '../../types/settings/IdleScreenSettings';
+import { CommonSettingsCategory, CommonSettingsOf, IdleScreenSettings } from 'now-playing-common';
 
 interface BackgroundInfo {
   type?: 'volumio' | 'unsplash';
@@ -52,10 +52,10 @@ const getUnsplashUrl = async (apiPath: string | null, keywords: string, matchScr
 
   return null;
 
-/*  Const qs = keywords ? encodeURIComponent(keywords) : '';
-  const screenSizePart = matchScreenSize ? `${window.innerWidth}x${window.innerHeight}/` : '';
-  const url = `https://source.unsplash.com/random/${screenSizePart}${qs ? '?' + qs : ''}`;
-  return url + (qs ? '&' : '?') + `sig=${Date.now()}`;*/
+  /*  Const qs = keywords ? encodeURIComponent(keywords) : '';
+    const screenSizePart = matchScreenSize ? `${window.innerWidth}x${window.innerHeight}/` : '';
+    const url = `https://source.unsplash.com/random/${screenSizePart}${qs ? '?' + qs : ''}`;
+    return url + (qs ? '&' : '?') + `sig=${Date.now()}`;*/
 };
 
 const hourToKeywords = (hour: number) => {
@@ -78,54 +78,53 @@ const hourToKeywords = (hour: number) => {
 
 };
 
-const getBackgroundSource = (screenSettings: IdleScreenSettings, host: string): BackgroundSource => {
-  const backgroundType = screenSettings.backgroundType || 'unsplash';
-  switch (backgroundType) {
-    case 'volumioBackground':
-      return {
-        type: 'volumio',
-        url: `${host}/backgrounds/${screenSettings.volumioBackgroundImage}`
-      };
-    case 'color':
-      return {
-        type: 'color'
-      };
-    default:
-      return {
-        type: 'unsplash',
-        unsplashKeywords: screenSettings.unsplashKeywords || '',
-        unsplashKeywordsAppendDayPeriod: screenSettings.unsplashKeywordsAppendDayPeriod || false,
-        unsplashMatchScreenSize: screenSettings.unsplashMatchScreenSize !== undefined ? screenSettings.unsplashMatchScreenSize : true,
-        unsplashRefreshInterval: screenSettings.unsplashRefreshInterval !== undefined ? screenSettings.unsplashRefreshInterval : 10
-      };
+const getBackgroundSource = (screenSettings: CommonSettingsOf<IdleScreenSettings>, host: string): BackgroundSource => {
+  const backgroundType = screenSettings.backgroundType;
+  if (backgroundType === 'volumioBackground' && screenSettings.volumioBackgroundImage) {
+    return {
+      type: 'volumio',
+      url: `${host}/backgrounds/${screenSettings.volumioBackgroundImage}`
+    };
   }
+  else if (backgroundType === 'color') {
+    return {
+      type: 'color'
+    };
+  }
+
+  return {
+    type: 'unsplash',
+    unsplashKeywords: screenSettings.unsplashKeywords,
+    unsplashKeywordsAppendDayPeriod: screenSettings.unsplashKeywordsAppendDayPeriod,
+    unsplashMatchScreenSize: screenSettings.unsplashMatchScreenSize,
+    unsplashRefreshInterval: screenSettings.unsplashRefreshInterval
+  };
+
 };
 
 const getBackgroundStyles = (screenSettings: IdleScreenSettings): React.CSSProperties => {
   const styles = {};
-  const backgroundType = screenSettings.backgroundType || 'unsplash';
-  switch (backgroundType) {
+  switch (screenSettings.backgroundType) {
     case 'volumioBackground':
       Object.assign(styles, {
-        '--background-fit': screenSettings.volumioBackgroundFit || null,
-        '--background-position': screenSettings.volumioBackgroundPosition || null,
-        '--background-blur': screenSettings.volumioBackgroundBlur || null,
-        '--background-scale': screenSettings.volumioBackgroundScale || null
+        '--background-fit': screenSettings.volumioBackgroundFit,
+        '--background-position': screenSettings.volumioBackgroundPosition,
+        '--background-blur': screenSettings.volumioBackgroundBlur,
+        '--background-scale': screenSettings.volumioBackgroundScale
       });
       break;
     case 'color':
       Object.assign(styles, {
-        '--background-color': screenSettings.backgroundColor || null
+        '--background-color': screenSettings.backgroundColor
       });
       break;
     default: // Unsplash
       Object.assign(styles, {
-        '--background-blur': screenSettings.unsplashBackgroundBlur || null
+        '--background-blur': screenSettings.unsplashBackgroundBlur
       });
   }
 
-  const backgroundOverlayType = screenSettings.backgroundOverlay || 'default';
-  switch (backgroundOverlayType) {
+  switch (screenSettings.backgroundOverlay) {
     case 'none':
       Object.assign(styles, {
         '--background-overlay-display': 'none'
@@ -133,28 +132,28 @@ const getBackgroundStyles = (screenSettings: IdleScreenSettings): React.CSSPrope
       break;
     case 'customColor':
       Object.assign(styles, {
-        '--background-overlay-color': screenSettings.backgroundOverlayColor || null,
-        '--background-overlay-opacity': screenSettings.backgroundOverlayColorOpacity || null
+        '--background-overlay-color': screenSettings.backgroundOverlayColor,
+        '--background-overlay-opacity': screenSettings.backgroundOverlayColorOpacity
       });
       break;
     case 'customGradient':
       Object.assign(styles, {
-        '--background-overlay-gradient': screenSettings.backgroundOverlayGradient || null,
-        '--background-overlay-opacity': screenSettings.backgroundOverlayGradientOpacity || null
+        '--background-overlay-gradient': screenSettings.backgroundOverlayGradient,
+        '--background-overlay-opacity': screenSettings.backgroundOverlayGradientOpacity
       });
       break;
     default:
-      // Do nothing
+    // Do nothing
   }
 
   return styles;
 };
 
-function IdleScreenBackgroundProvider({children}: { children: React.ReactNode }) {
-  const {settings: screenSettings} = useRawSettings('screen.idle');
+function IdleScreenBackgroundProvider({ children }: { children: React.ReactNode }) {
+  const { settings: screenSettings } = useSettings(CommonSettingsCategory.IdleScreen);
   const timeZone = useTimezone();
-  const {host, pluginInfo} = useAppContext();
-  const backgroundDepRef = useRef({screenSettings, host});
+  const { host, pluginInfo } = useAppContext();
+  const backgroundDepRef = useRef({ screenSettings, host });
   const [ backgroundSource, setBackgroundSource ] = useState(getBackgroundSource(screenSettings, host));
   const [ backgroundStyles, applyBackgroundStyles ] = useState(getBackgroundStyles(screenSettings));
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -175,7 +174,7 @@ function IdleScreenBackgroundProvider({children}: { children: React.ReactNode })
         keywords.push(backgroundSource.unsplashKeywords);
       }
       if (!backgroundSource.unsplashKeywords?.trim() || backgroundSource.unsplashKeywordsAppendDayPeriod) {
-        const dateTime = DateTime.local({zone: timeZone, locale: 'en'});
+        const dateTime = DateTime.local({ zone: timeZone, locale: 'en' });
         keywords.push(hourToKeywords(dateTime.hour));
       }
       return {

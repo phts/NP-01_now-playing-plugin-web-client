@@ -14,7 +14,7 @@ export interface SeekbarProps extends StylesBundleProps {
 
 function Seekbar(props: SeekbarProps) {
   const playerState = props.playerState;
-  const {currentSeekPosition, seekTo} = usePlayerSeek();
+  const { currentSeekPosition, seekTo } = usePlayerSeek();
   const [ displaySeek, setDisplaySeek ] = useState(currentSeekPosition);
   const isSeekingRef = useRef(false);
 
@@ -95,9 +95,9 @@ function Seekbar(props: SeekbarProps) {
         onChange={onSliderValueChanged}
         onAfterChange={endSeek}
       />
-      { showText ?
-        <><span className={getElementClassName('seek')}>{ seekText }</span><span className={getElementClassName('duration')}>{ durationText }</span></>
-        : null }
+      {showText ?
+        <><span className={getElementClassName('seek')}>{seekText}</span><span className={getElementClassName('duration')}>{durationText}</span></>
+        : null}
     </div>
   );
 }

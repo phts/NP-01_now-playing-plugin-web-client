@@ -5,18 +5,19 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ContextualModal from '../../common/ContextualModal';
 import VolumeIndicator from '../../common/VolumeIndicator';
 import VolumeSlider from '../../common/VolumeSlider';
-import { useRawSettings } from '../../contexts/SettingsProvider';
+import { useSettings } from '../../contexts/SettingsProvider';
 import styles from './DockedVolumeIndicator.module.scss';
+import { CommonSettingsCategory } from 'now-playing-common';
 
 function DockedVolumeIndicator() {
-  const {settings: screenSettings} = useRawSettings('screen.nowPlaying');
-  const settings = screenSettings.dockedVolumeIndicator || {};
-  const placement = settings.placement || 'bottom-right';
-  const showVolumeBarOnClick = settings.showVolumeBarOnClick || false;
-  const volumeBarPosition = settings.volumeBarPosition || 'center';
-  const volumeBarOrientation = settings.volumeBarOrientation || 'horizontal';
+  const { settings: screenSettings } = useSettings(CommonSettingsCategory.NowPlayingScreen);
+  const settings = screenSettings.dockedVolumeIndicator;
+  const placement = settings.placement;
+  const showVolumeBarOnClick = settings.showVolumeBarOnClick;
+  const volumeBarPosition = settings.volumeBarPosition;
+  const volumeBarOrientation = settings.volumeBarOrientation;
   const [ volumeBarVisible, showVolumeBar ] = useState(false);
-  const [ windowSize, setWindowSize ] = useState({width: window.innerWidth, height: window.innerHeight});
+  const [ windowSize, setWindowSize ] = useState({ width: window.innerWidth, height: window.innerHeight });
   const indicatorWrapperRef = useRef<HTMLDivElement | null>(null);
   const indicatorRef = useRef<HTMLDivElement | null>(null);
   const volumeBarRef = useRef<HTMLDivElement | null>(null);
@@ -28,7 +29,7 @@ function DockedVolumeIndicator() {
   useEffect(() => {
     const handleWindowResized = () => {
       if (showVolumeBarOnClick) {
-        setWindowSize({width: window.innerWidth, height: window.innerHeight});
+        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
       }
     };
 
@@ -44,7 +45,7 @@ function DockedVolumeIndicator() {
       return '0';
     }
     const indicatorRect = indicatorRef.current.getBoundingClientRect();
-    const inset: any = {top: 0, right: 0, bottom: 0, left: 0};
+    const inset: any = { top: 0, right: 0, bottom: 0, left: 0 };
     // Top, bottom
     switch (placement) {
       case 'top-left':
@@ -130,7 +131,7 @@ function DockedVolumeIndicator() {
           case 'left':
           case 'right':
             let calcTop = Math.max(indicatorRect.top +
-                ((indicatorRect.height - volumeBarRect.height) / 2), 0);
+              ((indicatorRect.height - volumeBarRect.height) / 2), 0);
             const overflowY = calcTop + volumeBarRect.height - windowSize.height;
             if (overflowY > 0) {
               calcTop -= overflowY;
@@ -144,7 +145,7 @@ function DockedVolumeIndicator() {
           case 'bottom':
           default: // Bottom-right
             let calcLeft = Math.max(indicatorRect.left +
-                ((indicatorRect.width - volumeBarRect.width) / 2), 0);
+              ((indicatorRect.width - volumeBarRect.width) / 2), 0);
             const overflowX = calcLeft + volumeBarRect.width - windowSize.width;
             if (overflowX > 0) {
               calcLeft -= overflowX;
@@ -161,7 +162,7 @@ function DockedVolumeIndicator() {
     if (!showVolumeBarOnClick) {
       return null;
     }
-    const translate: any = {x: 0, y: 0};
+    const translate: any = { x: 0, y: 0 };
     // 'center' position
     switch (placement) {
       case 'top-left':
@@ -244,7 +245,7 @@ function DockedVolumeIndicator() {
   const onVolumeBarModalOpened = () => {
     if (volumeBarRef.current) {
       // Force a refresh so that volume bar position can be recalculated
-      setWindowSize({...windowSize});
+      setWindowSize({ ...windowSize });
     }
   };
 

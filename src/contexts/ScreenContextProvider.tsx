@@ -5,8 +5,8 @@ import ContextualCSSTransition from '../common/ContextualCSSTransition';
 import TrackBar from '../common/TrackBar';
 import ScreenWrapper from '../screens/ScreenWrapper';
 import './ScreenContext.scss';
-import { useRawSettings } from './SettingsProvider';
-import { PerformanceSettings } from '../types/settings/PerformanceSettings';
+import { useSettings } from './SettingsProvider';
+import { CommonSettingsCategory, PerformanceSettings } from 'now-playing-common';
 
 export interface ScreenProps {
   screenId: string;
@@ -25,7 +25,8 @@ export interface ScreenContextValue {
     exitTransition?: string;
     activeClassName?: string;
     inactiveClassName?: string;
-    screenProps?: any }) => void;
+    screenProps?: any
+  }) => void;
   exitActiveScreen: (params?: { exitTransition: string; }) => void;
 }
 
@@ -63,19 +64,19 @@ const getInitialScreenStates = (children: React.ReactNode): ScreenStates => {
   return initialScreenStates;
 };
 
-const ScreenContextProvider = ({ children }: { children: React.ReactNode}) => {
+const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
 
   const lastOrderedScreenIds = useRef<string[] | null>(null);
-  const {settings: performanceSettings} = useRawSettings('performance');
+  const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
 
   const screenStatesReducer: Reducer<ScreenStates, ScreenStatesAction> = (states: ScreenStates, data = {}): ScreenStates => {
     for (const screenId of Object.keys(data)) {
       if (!states[screenId]) {
         states[screenId] = {};
       }
-      states[screenId] = {...states[screenId], ...data[screenId]};
+      states[screenId] = { ...states[screenId], ...data[screenId] };
     }
-    return {...states};
+    return { ...states };
   };
 
   const [ screenStates, updateScreenStates ] = useReducer(screenStatesReducer, children, getInitialScreenStates);
@@ -258,7 +259,7 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode}) => {
             {cloneElement(
               child, {
                 className: childClassNames,
-                style: {'zIndex': screenZIndexes[screenId]},
+                style: { 'zIndex': screenZIndexes[screenId] },
                 ...(state.screenProps)
               })}
           </ContextualCSSTransition>
@@ -274,7 +275,7 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode}) => {
               onEntered={onScreenSwitched}>
               <div
                 className={classNames('Viewport', childClassNames)}
-                style={{'zIndex': screenZIndexes[screenId]}}>
+                style={{ 'zIndex': screenZIndexes[screenId] }}>
                 {component}
               </div>
             </ContextualCSSTransition>
@@ -308,7 +309,7 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode}) => {
   const trackBarState = getTrackBarState();
 
   return (
-    <ScreenContext.Provider value={{activeScreenId: currentActiveScreenId, switchScreen, exitActiveScreen}}>
+    <ScreenContext.Provider value={{ activeScreenId: currentActiveScreenId, switchScreen, exitActiveScreen }}>
       <ScreenWrapper>
         <Background
           activeScreenId={currentActiveScreenId}

@@ -12,19 +12,20 @@ import styles from './ActionPanel.module.scss';
 import { SHUTDOWN_DIALOG, VOLUME_INDICATOR } from './CommonModals';
 import volumioIcon from '../assets/volumio-icon.png';
 import ContextualModal, { ContextualModalProps } from '../common/ContextualModal';
-import { usePerformanceContext, useRawSettings } from '../contexts/SettingsProvider';
+import { usePerformanceContext, useSettings } from '../contexts/SettingsProvider';
+import { CommonSettingsCategory } from 'now-playing-common';
 
 export interface ActionPanelProps extends ContextualModalProps {
   closePanel: () => void;
 }
 
 function ActionPanel(props: ActionPanelProps) {
-  const {settings} = useRawSettings('actionPanel');
-  const {disableModal, enableModal, openModal} = useModals();
-  const {disableTransitions} = usePerformanceContext();
-  const {switchScreen} = useScreens();
+  const { settings } = useSettings(CommonSettingsCategory.ActionPanel);
+  const { disableModal, enableModal, openModal } = useModals();
+  const { disableTransitions } = usePerformanceContext();
+  const { switchScreen } = useScreens();
   const overlayEl = useRef<HTMLDivElement | null>(null);
-  const {closePanel} = props;
+  const { closePanel } = props;
 
   const modalOverlayClassNames = {
     base: styles.Overlay,
@@ -90,8 +91,6 @@ function ActionPanel(props: ActionPanelProps) {
     bundle: styles
   };
 
-  const showVolumeSlider = settings.showVolumeSlider !== undefined ? settings.showVolumeSlider : true;
-
   return (
     <ContextualModal
       closeTimeoutMS={200}
@@ -100,9 +99,9 @@ function ActionPanel(props: ActionPanelProps) {
       overlayRef={(node) => (overlayEl.current = node)}
       onAfterOpen={onModalOpened}
       {...props}>
-      {showVolumeSlider ? <VolumeSlider /> : null}
+      {settings.showVolumeSlider ? <VolumeSlider /> : null}
       <div className={styles.Layout__row}>
-        <ScreenSwitcher onSwitch={closePanel}/>
+        <ScreenSwitcher onSwitch={closePanel} />
         <div className={styles.Layout__extraButtonsWrapper}>
           <Button
             styles={extraButtonStyles}

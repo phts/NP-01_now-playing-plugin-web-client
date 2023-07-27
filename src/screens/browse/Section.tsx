@@ -22,7 +22,7 @@ export interface BrowseScreenSectionProps {
 }
 
 function Section(props: BrowseScreenSectionProps) {
-  const {host} = useAppContext();
+  const { host } = useAppContext();
 
   const listView = useMemo(() => {
     let availableListViews = props.list.availableListViews;
@@ -92,7 +92,7 @@ function Section(props: BrowseScreenSectionProps) {
 
   const handleMenuItemClicked: BrowseScreenItemsProps['onMenuItemClick'] = (e) => {
     e.syntheticEvent.stopPropagation();
-    const {itemIndex, action} = e.value;
+    const { itemIndex, action } = e.value;
     if (props.list.items) {
       props.callItemAction(props.list.items[itemIndex], props.list, itemIndex, action);
     }
@@ -109,7 +109,7 @@ function Section(props: BrowseScreenSectionProps) {
     const titleEl = $(`<div>${s}</div>`);
 
     // Process images
-    titleEl.find('img').each( function() {
+    titleEl.find('img').each(function () {
       // eslint-disable-next-line no-invalid-this
       const img = $(this);
       const src = img.attr('src');
@@ -128,7 +128,7 @@ function Section(props: BrowseScreenSectionProps) {
     });
 
     // Process divs
-    titleEl.find('div').each( function() {
+    titleEl.find('div').each(function () {
       // eslint-disable-next-line no-invalid-this
       const div = $(this);
       // Remove negative bottom margins and relative top positions
@@ -160,7 +160,7 @@ function Section(props: BrowseScreenSectionProps) {
     <section className={sectionClassNames}>
       <div
         className={titleClassNames}
-        dangerouslySetInnerHTML={{ __html: formatRichTitle(title)}} />
+        dangerouslySetInnerHTML={{ __html: formatRichTitle(title) }} />
       <div className={itemsClassNames}>
         <Items
           styles={styles}

@@ -26,8 +26,8 @@ export interface PopupMenuProps extends StylesBundleProps {
 }
 
 function PopupMenu(props: PopupMenuProps) {
-  const {disableTransitions} = usePerformanceContext();
-  const {menuItems, onMenuItemClick, onMenuOverlay} = props;
+  const { disableTransitions } = usePerformanceContext();
+  const { menuItems, onMenuItemClick, onMenuOverlay } = props;
   const menuButtonRef = useRef<ButtonElement>(null);
   const menuOverlayRef = useRef<HTMLDivElement>(null);
   const [ menuProps, toggleMenu ] = useMenuState({ transition: !disableTransitions });
@@ -104,7 +104,7 @@ function PopupMenu(props: PopupMenuProps) {
 
     const menuOverlayEl = menuOverlayRef.current;
     if (menuOverlay && menuOverlayEl) {
-      menuOverlayEl.addEventListener('touchstart', handler, {passive: false});
+      menuOverlayEl.addEventListener('touchstart', handler, { passive: false });
 
       return () => {
         menuOverlayEl.removeEventListener('touchstart', handler);

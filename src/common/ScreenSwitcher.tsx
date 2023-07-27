@@ -10,7 +10,7 @@ export interface ScreenSwitcherProps {
 }
 
 function ScreenSwitcher(props: ScreenSwitcherProps) {
-  const {activeScreenId, switchScreen} = useScreens();
+  const { activeScreenId, switchScreen } = useScreens();
 
   const onSwitch = props.onSwitch;
   const handleSwitchClicked = useCallback((e: SyntheticEvent) => {
