@@ -50,7 +50,8 @@ const VolumeIndicator = React.forwardRef<HTMLDivElement, VolumeIndicatorProps>((
     }
 
     return (
-      <span className={getElementClassName('text')}>{`${volume || 0}%`}</span>
+      <><span className={getElementClassName('text')}>{`${volume || 0}`}</span><span
+        className={getElementClassName('percentSymbol')}>%</span></>
     );
 
   }, [ playerState.mute, volume, getElementClassName ]);

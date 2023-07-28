@@ -13,6 +13,7 @@
   --dial-stroke-muted-color: var(--volume-indicator-dial-stroke-muted-color);
   --font-color: var(--volume-indicator-text-color);
   --font-size: var(--volume-indicator-text-font-size);
+  --font-size-percent-symbol: var(--volume-indicator-text-font-size-percent-symbol);
   --icon-size: var(--volume-indicator-icon-size);
   --icon-color: var(--font-color);
   --muted-icon-size: var(--volume-indicator-muted-icon-size);
@@ -76,6 +77,11 @@
   &__text {
     color: var(--font-color);
     font-size: var(--font-size);
+  }
+
+  &__percentSymbol {
+    color: var(--font-color);
+    font-size: var(--font-size-percent-symbol);
   }
 
   &__icon {

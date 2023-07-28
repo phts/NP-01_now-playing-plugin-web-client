@@ -192,6 +192,7 @@ function DockedVolumeIndicator() {
   if (settings.fontSettings === 'custom') {
     Object.assign(dockedStyles, {
       '--docked-font-size': settings.fontSize,
+      '--docked-font-size-percent-symbol': settings.fontSizePercentSymbol,
       '--docked-font-color': settings.fontColor
     });
   }
