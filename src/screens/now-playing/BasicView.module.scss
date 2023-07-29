@@ -24,6 +24,10 @@
     box-sizing: border-box;
   }
 
+  &--center {
+    margin: auto !important;
+  }
+
   @media all and (orientation: portrait) {
     margin-right: 0px;
     margin-top: 0.5em;

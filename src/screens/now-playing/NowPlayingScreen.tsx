@@ -22,7 +22,7 @@ import DockedActionPanelTrigger from './DockedActionPanelTrigger';
 import { useTranslation } from 'react-i18next';
 import { ClickEvent } from '@szhsin/react-menu';
 import { TrackInfoTextProps } from '../../common/TrackInfoText';
-import { CommonSettingsCategory } from 'now-playing-common';
+import { CommonSettingsCategory, DockComponentPlacement } from 'now-playing-common';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
@@ -108,16 +108,6 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--widget-highlight-color'] = screenSettings.widgetHighlightColor;
     }
 
-    if (screenSettings.widgetVisibility === 'custom') {
-      if (!screenSettings.playbackButtonsVisibility) {
-        _css['--playback-buttons-visibility'] = 'none';
-        _css['--seekbar-margin'] = 'auto 0px 0px 0px';
-      }
-      if (!screenSettings.seekbarVisibility) {
-        _css['--seekbar-visibility'] = 'none';
-      }
-    }
-
     if (screenSettings.playbackButtonSizeType === 'custom') {
       _css['--playback-buttons-size'] = screenSettings.playbackButtonSize;
     }
@@ -125,10 +115,6 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     if (screenSettings.widgetMargins === 'custom') {
       _css['--playback-buttons-margin'] = screenSettings.playbackButtonsMargin;
       _css['--seekbar-margin'] = screenSettings.seekbarMargin;
-    }
-
-    if (screenSettings.albumartVisibility !== undefined && !screenSettings.albumartVisibility) {
-      _css['--albumart-visibility'] = 'none';
     }
 
     if (screenSettings.albumartSize === 'custom') {
@@ -151,7 +137,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     return _css;
   }, [ screenSettings ]);
 
-  const getDockChildren = (position: string) => { // TODO: restrict position type
+  const getDockChildren = (position: DockComponentPlacement) => {
     const children: { order: number; component: React.JSX.Element; }[] = [];
 
     const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator;
@@ -198,6 +184,18 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
 
     return orderedChildren;
   };
+
+  const trackInfoVisibility = screenSettings.trackInfoVisibility === 'custom' ? {
+    title: screenSettings.titleVisibility,
+    artist: screenSettings.artistVisibility,
+    album: screenSettings.albumVisibility,
+    mediaInfo: screenSettings.mediaInfoVisibility
+  } : undefined;
+
+  const widgetsVisibility = screenSettings.widgetVisibility === 'custom' ? {
+    playbackButtons: screenSettings.playbackButtonsVisibility,
+    seekbar: screenSettings.seekbarVisibility
+  } : undefined;
 
   const trackInfoOrder = useMemo(() => {
     const defaultTrackInfoOrder = [
@@ -383,7 +381,13 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       <Dock position="bottomRight">{getDockChildren('bottom-right')}</Dock>
       <div className={styles.Layout__view}>
         {view === 'basic' ?
-          <BasicView playerState={playerState} trackInfoOrder={trackInfoOrder} marqueeTitle={marqueeTitle} />
+          <BasicView
+            playerState={playerState}
+            trackInfoVisibility={trackInfoVisibility}
+            widgetsVisibility={widgetsVisibility}
+            albumartVisibility={screenSettings.albumartVisibility}
+            trackInfoOrder={trackInfoOrder}
+            marqueeTitle={marqueeTitle} />
           : view === 'info' ?
             <InfoView playerState={playerState} />
             : null}
