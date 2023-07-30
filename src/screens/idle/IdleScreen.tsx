@@ -28,9 +28,14 @@ function IdleScreen(props: IdleScreenProps) {
   };
   const customFontSizes = screenSettings.fontSizes === 'custom';
   const customFontColors = screenSettings.fontColors === 'custom';
+  const customWeatherAreaHeight = screenSettings.weatherAreaHeightType === 'custom';
 
   const [ mainAlignment, setMainAlignment ] = useState(screenSettings.mainAlignment === 'cycle' ? 'flex-start' : screenSettings.mainAlignment);
   const mainAlignmentCycleTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const layoutStyles = {
+    '--secondary-height': customWeatherAreaHeight ? screenSettings.weatherAreaHeight : null
+  } as React.CSSProperties;
 
   const mainStyles = {
     '--main-alignment': mainAlignment || null
@@ -107,7 +112,7 @@ function IdleScreen(props: IdleScreenProps) {
   }, [ screenSettings, startMainAlignmentCycleTimer ]);
 
   return createPortal(
-    <div className={styles.Layout} onClick={props.onClick}>
+    <div className={styles.Layout} style={layoutStyles} onClick={props.onClick}>
       {backgroundComponent}
       <div className={mainClassNames} style={mainStyles}>
         <Clock
