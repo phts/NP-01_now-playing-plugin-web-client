@@ -11,8 +11,8 @@ import styles from './IdleScreenBackground.module.scss';
 import { CommonSettingsCategory, CommonSettingsOf, IdleScreenSettings } from 'now-playing-common';
 
 interface BackgroundInfo {
-  type?: 'volumio' | 'unsplash';
-  src: string;
+  type?: 'volumio' | 'unsplash' | 'myBackground';
+  src: string | null;
   nextRefresh: number;
   preloaded?: boolean;
 }
@@ -20,6 +20,11 @@ interface BackgroundInfo {
 type BackgroundSource = {
   type: 'volumio';
   url: string;
+} | {
+  type: 'myBackground';
+  url: string | null;
+  isRandom: boolean;
+  myBackgroundRefreshInterval: number;
 } | {
   type: 'color';
 } | {
@@ -34,7 +39,7 @@ export type IdleScreenBackgroundContextValue = React.JSX.Element;
 
 const IdleScreenBackgroundContext = createContext(<div></div> as IdleScreenBackgroundContextValue);
 
-const getUnsplashUrl = async (apiPath: string | null, keywords: string, matchScreenSize: boolean) => {
+const getUnsplashUrl = async (apiPath: string | null, keywords: string, matchScreenSize: boolean): Promise<string | null> => {
   if (!apiPath) {
     return null;
   }
@@ -78,7 +83,7 @@ const hourToKeywords = (hour: number) => {
 
 };
 
-const getBackgroundSource = (screenSettings: CommonSettingsOf<IdleScreenSettings>, host: string): BackgroundSource => {
+const getBackgroundSource = (screenSettings: CommonSettingsOf<IdleScreenSettings>, host: string, appUrl: string | null): BackgroundSource => {
   const backgroundType = screenSettings.backgroundType;
   if (backgroundType === 'volumioBackground' && screenSettings.volumioBackgroundImage) {
     return {
@@ -89,6 +94,22 @@ const getBackgroundSource = (screenSettings: CommonSettingsOf<IdleScreenSettings
   else if (backgroundType === 'color') {
     return {
       type: 'color'
+    };
+  }
+  else if (backgroundType === 'myBackground') {
+    let myBackgroundUrl: string | null = null;
+    if (appUrl) {
+      myBackgroundUrl = `${appUrl}/mybg`;
+
+      if (screenSettings.myBackgroundImageType === 'fixed' && screenSettings.myBackgroundImage) {
+        myBackgroundUrl += `?file=${encodeURIComponent(screenSettings.myBackgroundImage)}`;
+      }
+    }
+    return {
+      type: 'myBackground',
+      url: myBackgroundUrl,
+      isRandom: screenSettings.myBackgroundImageType === 'random',
+      myBackgroundRefreshInterval: screenSettings.myBackgroundImageType === 'random' ? screenSettings.myBackgroundRandomRefreshInterval : 0
     };
   }
 
@@ -111,6 +132,14 @@ const getBackgroundStyles = (screenSettings: IdleScreenSettings): React.CSSPrope
         '--background-position': screenSettings.volumioBackgroundPosition,
         '--background-blur': screenSettings.volumioBackgroundBlur,
         '--background-scale': screenSettings.volumioBackgroundScale
+      });
+      break;
+    case 'myBackground':
+      Object.assign(styles, {
+        '--background-fit': screenSettings.myBackgroundFit,
+        '--background-position': screenSettings.myBackgroundPosition,
+        '--background-blur': screenSettings.myBackgroundBlur,
+        '--background-scale': screenSettings.myBackgroundScale
       });
       break;
     case 'color':
@@ -153,20 +182,37 @@ function IdleScreenBackgroundProvider({ children }: { children: React.ReactNode 
   const { settings: screenSettings } = useSettings(CommonSettingsCategory.IdleScreen);
   const timeZone = useTimezone();
   const { host, pluginInfo } = useAppContext();
-  const backgroundDepRef = useRef({ screenSettings, host });
-  const [ backgroundSource, setBackgroundSource ] = useState(getBackgroundSource(screenSettings, host));
+  const { apiPath = null, appUrl = null } = pluginInfo || {};
+  const backgroundDepRef = useRef({ screenSettings, host, appUrl });
+  const [ backgroundSource, setBackgroundSource ] = useState(getBackgroundSource(screenSettings, host, appUrl));
   const [ backgroundStyles, applyBackgroundStyles ] = useState(getBackgroundStyles(screenSettings));
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [ background, setBackground ] = useState<BackgroundInfo | null>(null);
+  const getBackgroundAbortControllerRef = useRef<AbortController | null>(null);
 
-  const apiPath = pluginInfo ? pluginInfo.apiPath : null;
-
-  const getBackground = useCallback(async (): Promise<BackgroundInfo | null> => {
+  const getBackground = useCallback(async (abortController: AbortController): Promise<BackgroundInfo | null> => {
+    if (getBackgroundAbortControllerRef.current) {
+      getBackgroundAbortControllerRef.current.abort();
+      getBackgroundAbortControllerRef.current = null;
+    }
+    getBackgroundAbortControllerRef.current = abortController;
+    let result: BackgroundInfo | null = null;
     if (backgroundSource.type === 'volumio') {
-      return {
+      result = {
+        type: 'volumio',
         src: backgroundSource.url,
         nextRefresh: 0
       };
+    }
+    else if (backgroundSource.type === 'myBackground') {
+      result = {
+        type: 'myBackground',
+        src: backgroundSource.url,
+        nextRefresh: backgroundSource.myBackgroundRefreshInterval
+      };
+      if (backgroundSource.isRandom) {
+        result.src += `?ts=${Date.now()}`;
+      }
     }
     else if (backgroundSource.type === 'unsplash') {
       const keywords: string[] = [];
@@ -177,17 +223,31 @@ function IdleScreenBackgroundProvider({ children }: { children: React.ReactNode 
         const dateTime = DateTime.local({ zone: timeZone, locale: 'en' });
         keywords.push(hourToKeywords(dateTime.hour));
       }
-      return {
+      result = {
         type: 'unsplash',
         src: await getUnsplashUrl(apiPath, keywords.join(' '), backgroundSource.unsplashMatchScreenSize),
         nextRefresh: backgroundSource.unsplashRefreshInterval || 0
       };
     }
-    return null;
+    if (abortController.signal.aborted) {
+      const abortError = new Error();
+      abortError.name = 'AbortError';
+      throw abortError;
+    }
+    return result;
   }, [ apiPath, backgroundSource, timeZone ]);
 
   const refresh = useCallback(async () => {
-    setBackground(await getBackground());
+    try {
+      const bg = await getBackground(new AbortController());
+      setBackground(bg);
+    }
+    catch (error: any) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
+      throw error;
+    }
   }, [ setBackground, getBackground ]);
 
   const clearRefreshTimer = useCallback(() => {
@@ -204,12 +264,14 @@ function IdleScreenBackgroundProvider({ children }: { children: React.ReactNode 
   // Retrieve and apply IdleScreen background settings
   useEffect(() => {
     if (host !== backgroundDepRef.current.host ||
+      appUrl !== backgroundDepRef.current.appUrl ||
       !deepEqual(screenSettings, backgroundDepRef.current.screenSettings)) {
-      backgroundDepRef.current = { screenSettings, host };
-      setBackgroundSource(getBackgroundSource(screenSettings, host));
+      backgroundDepRef.current = { screenSettings, host, appUrl };
+      const newBackgroundSource = getBackgroundSource(screenSettings, host, appUrl);
+      setBackgroundSource(newBackgroundSource);
       applyBackgroundStyles(getBackgroundStyles(screenSettings));
     }
-  }, [ screenSettings, host ]);
+  }, [ screenSettings, host, appUrl ]);
 
   // Refresh when the dependencies of refresh() callback change
   useEffect(() => {
@@ -223,7 +285,7 @@ function IdleScreenBackgroundProvider({ children }: { children: React.ReactNode 
       const preloader = preloadImage(background.src);
       background.preloaded = true;
       clearRefreshTimer();
-      if (background.type === 'unsplash' && background.nextRefresh) {
+      if ((background.type === 'unsplash' || background.type === 'myBackground') && background.nextRefresh) {
         startRefreshTimer(background.nextRefresh);
       }
       return () => {
