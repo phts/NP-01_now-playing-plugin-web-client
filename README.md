@@ -2,6 +2,13 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.5.0:
+- Fix regression: MetaDataPanel not showing description correctly
+- Add support for 'Docked Volume Indicator -> % Symbol Size' setting
+- Add support for Track Info Visibility settings
+- Add support for 'IdleScreen -> My Background' settings
+- Add support for 'IdleScreen -> Window Area Height' setting
+
 0.4.0:
 - Migrate to TypeScript
 - Change settings handling

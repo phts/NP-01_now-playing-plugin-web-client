@@ -4,6 +4,7 @@
   @extend .VolumeIndicator;
 
   --font-size: var(--docked-font-size, 1em);
+  --font-size-percent-symbol: var(--docked-font-size-percent-symbol, var(--font-size));
   --icon-size: var(--docked-icon-size, 1.2em);
   --muted-icon-size: var(--docked-muted-icon-size, 1.1em);
   --font-color: var(--docked-font-color, #cccccc);

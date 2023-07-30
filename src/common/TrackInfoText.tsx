@@ -10,10 +10,23 @@ import { StylesBundleProps } from './StylesBundle';
 export interface TrackInfoTextProps extends StylesBundleProps {
   playerState: PlayerState;
   concatArtistAlbum?: boolean;
+  trackInfoVisibility?: {
+    title: boolean;
+    artist: boolean;
+    album: boolean;
+    mediaInfo: boolean;
+  };
   trackInfoOrder?: Array<'title' | 'artist' | 'album' | 'mediaInfo'>;
   marqueeTitle?: boolean;
   onClick?: HTMLProps<HTMLDivElement>['onClick'];
 }
+
+const DEFAULT_TRACK_INFO_VISIBILITY = {
+  title: true,
+  artist: true,
+  album: true,
+  mediaInfo: true
+};
 
 const DEFAULT_TRACK_INFO_ORDER = [
   'title', 'artist', 'album', 'mediaInfo'
@@ -28,6 +41,7 @@ function TrackInfoText(props: TrackInfoTextProps) {
   const formatResolution = getFormatResolution(playerState);
   const formatIcon = getFormatIcon(playerState.trackType, host);
   const concatArtistAlbum = props.concatArtistAlbum !== undefined && props.concatArtistAlbum;
+  const visibility = props.trackInfoVisibility || DEFAULT_TRACK_INFO_VISIBILITY;
   const trackInfoOrder = props.trackInfoOrder || DEFAULT_TRACK_INFO_ORDER;
 
   const baseClassName = props.styles ? props.styles.baseClassName : null;
@@ -112,6 +126,9 @@ function TrackInfoText(props: TrackInfoTextProps) {
   const trackInfoContents = trackInfoOrder.map((key) => {
     switch (key) {
       case 'title':
+        if (!visibility.title) {
+          return null;
+        }
         const _titleEl = <span ref={titleEl} key={key} className={getElementClassName('title')}>{title}</span>;
         if (marqueeTitle) {
           return (
@@ -124,20 +141,31 @@ function TrackInfoText(props: TrackInfoTextProps) {
         return _titleEl;
 
       case 'artist':
-        if (concatArtistAlbum) {
-          let artistAlbum = artist;
-          if (album) {
+        if (concatArtistAlbum && (visibility.artist || visibility.album)) {
+          let artistAlbum = visibility.artist ? artist : '';
+          if (album && visibility.album) {
             artistAlbum += artistAlbum ? ' - ' : '';
             artistAlbum += album;
           }
           return <span key="artistAlbum" className={getElementClassName('artistAlbum')}>{artistAlbum}</span>;
         }
 
+        if (!visibility.artist) {
+          return null;
+        }
+
         return <span key={key} className={getElementClassName('artist')}>{artist}</span>;
 
       case 'album':
+        if (!visibility.album) {
+          return null;
+        }
         return concatArtistAlbum ? null : <span key={key} className={getElementClassName('album')}>{album}</span>;
+
       case 'mediaInfo':
+        if (!visibility.mediaInfo) {
+          return null;
+        }
         return (
           <div key={key} className={getElementClassName('format')}>
             {formatIcon ? <img src={formatIcon} className={getElementClassName('formatIcon')} alt="" /> : null}
