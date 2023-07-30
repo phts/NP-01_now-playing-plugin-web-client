@@ -1,6 +1,6 @@
 {
   "name": "now-playing-reactjs-client",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "devDependencies": {
@@ -38,7 +38,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.3.0",
     "md5": "^2.3.0",
-    "now-playing-common": "file:../now-playing-common/tests/now-playing-common-0.1.0.tgz",
+    "now-playing-common": "github:patrickkfkan/volumio-now-playing-common#v0.2.0",
     "rc-scrollbars": "^1.1.6",
     "rc-slider": "^10.2.1",
     "react": "^18.2.0",
