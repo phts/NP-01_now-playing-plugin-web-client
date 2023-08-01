@@ -2,6 +2,10 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.5.1:
+－Add support for 'Background -> My Background' settings
+- Minor bug fixes
+
 0.5.0:
 - Fix regression: MetaDataPanel not showing description correctly
 - Add support for 'Docked Volume Indicator -> % Symbol Size' setting
