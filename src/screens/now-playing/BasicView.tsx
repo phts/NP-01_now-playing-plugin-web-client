@@ -97,7 +97,7 @@ function BasicView(props: BasicViewProps) {
               }}
               playerState={playerState} />
             : null}
-          {!emptyTrackInfoText && widgetsVisibility.playbackButtons ?
+          {!emptyTrackInfoText && widgetsVisibility.seekbar ?
             <Seekbar
               styles={{
                 baseClassName: 'Seekbar',
