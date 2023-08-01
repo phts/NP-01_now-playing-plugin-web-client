@@ -7,7 +7,7 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 - Add support for 'Docked Volume Indicator -> % Symbol Size' setting
 - Add support for Track Info Visibility settings
 - Add support for 'IdleScreen -> My Background' settings
-- Add support for 'IdleScreen -> Window Area Height' setting
+- Add support for 'IdleScreen -> Weather Area Height' setting
 
 0.4.0:
 - Migrate to TypeScript
