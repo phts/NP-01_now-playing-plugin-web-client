@@ -45,6 +45,7 @@
   "action": {
     "play": "Play",
     "addToQueue": "Add to Queue",
+    "addPlaylistToQueue": "Add Playlist to Queue",
     "clearAndPlay": "Clear and Play",
     "addToPlaylist": "Add to Playlist",
     "removeFromPlaylist": "Remove from Playlist",

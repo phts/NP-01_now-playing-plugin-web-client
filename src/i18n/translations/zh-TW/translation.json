@@ -45,6 +45,7 @@
   "action": {
     "play": "播放",
     "addToQueue": "加入貯列中",
+    "addPlaylistToQueue": "把播放列表加入貯列中",
     "clearAndPlay": "清除與播放",
     "addToPlaylist": "加到播放列表",
     "removeFromPlaylist": "從播放列表中刪除",
