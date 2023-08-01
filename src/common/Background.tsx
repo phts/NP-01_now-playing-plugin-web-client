@@ -134,9 +134,12 @@ function Background(props: BackgroundProps) {
     }
     else if (backgroundType === 'myBackground') {
       if (appUrl) {
-        src = `${appUrl}/mybg?ts=${Date.now()}`;
+        src = `${appUrl}/mybg`;
         if (backgroundSettings.myBackgroundImageType === 'fixed' && backgroundSettings.myBackgroundImage) {
           src += `?file=${encodeURIComponent(backgroundSettings.myBackgroundImage)}`;
+        }
+        else {
+          src += `?ts=${Date.now()}`;
         }
       }
     }
