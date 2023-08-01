@@ -113,13 +113,7 @@ function Background(props: BackgroundProps) {
   // Background type: albumart - Refresh background when playerState.albumart changes
   useEffect(() => {
     if (backgroundType === 'default' || backgroundType === 'albumart') {
-      let src: string;
-      if (playerState.status === 'stop') {
-        src = fallbackSrc;
-      }
-      else {
-        src = playerState.albumart ? sanitizeImageUrl(playerState.albumart, host) : fallbackSrc;
-      }
+      const src = playerState.albumart ? sanitizeImageUrl(playerState.albumart, host) : fallbackSrc;
       setTargetSrc(src);
     }
   }, [ backgroundType, playerState.status, playerState.albumart, host, fallbackSrc ]);
