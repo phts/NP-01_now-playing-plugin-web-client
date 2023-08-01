@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useReducer, Reducer } from 'react';
+import React, { useCallback, useEffect, useRef, useReducer, Reducer, useState } from 'react';
 import './Background.scss';
 import './animations.scss';
 import { sanitizeImageUrl } from '../utils/track';
@@ -50,12 +50,17 @@ const initialTransitionState: BackgroundTransitionState = {
 };
 
 function Background(props: BackgroundProps) {
-  const { host } = useAppContext();
+  const { host, pluginInfo } = useAppContext();
+  const { appUrl = null } = pluginInfo || {};
   const playerState = usePlayerState();
   const { settings: backgroundSettings } = useSettings(CommonSettingsCategory.Background);
   const fallbackSrc = `${host}/albumart`;
   const pendingTargetSrc = useRef<string | null>(null);
   const { disableTransitions } = usePerformanceContext();
+  const [ targetSrc, setTargetSrc ] = useState<string | null>(null);
+  const [ refreshTrigger, setRefreshTrigger ] = useState(Date.now());
+  const currentPlayerStateRef = useRef(playerState);
+  const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const transitionStateReducer: Reducer<BackgroundTransitionState, BackgroundTransitionAction> = (state, transitionProps = {}) => {
     return { ...state, ...transitionProps };
@@ -64,24 +69,115 @@ function Background(props: BackgroundProps) {
   const [ transitionState, updateTransitionState ] = useReducer(transitionStateReducer, initialTransitionState);
 
   const isWebkit = navigator.userAgent.indexOf('AppleWebKit') >= 0;
-  const isTransitionable = (backgroundSettings.backgroundType !== 'volumioBackground' ||
-    backgroundSettings.volumioBackgroundImage === '') && backgroundSettings.backgroundType !== 'color';
+  const backgroundType = backgroundSettings.backgroundType;
 
-  // Handle change in playerState albumart
+  const isTransitionable = backgroundType === 'default' || backgroundType === 'albumart' ||
+    (backgroundType === 'myBackground' && backgroundSettings.myBackgroundImageType === 'random');
+
+  const refreshOnTrackChange = backgroundType === 'myBackground' &&
+    backgroundSettings.myBackgroundImageType === 'random' &&
+    backgroundSettings.myBackgroundRandomRefreshOnTrackChange;
+  const refreshInterval = backgroundType === 'myBackground' &&
+    backgroundSettings.myBackgroundImageType === 'random' ? backgroundSettings.myBackgroundRandomRefreshInterval : 0;
+
+  const clearRefreshTimer = useCallback(() => {
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+      refreshTimerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
-    if (transitionState.phase === undefined && !playerState.albumart) {
+    return () => {
+      clearRefreshTimer();
+    };
+  }, [ clearRefreshTimer ]);
+
+  // `transitionState` returns to 'idle' phase after transitioning to target image.
+  // Start refresh timer if necessary.
+  useEffect(() => {
+    clearRefreshTimer();
+    if (transitionState.phase !== 'idle') {
       return;
     }
-    const targetSrc = playerState.albumart ? sanitizeImageUrl(playerState.albumart, host) : fallbackSrc;
+    if (refreshInterval > 0) {
+      refreshTimerRef.current = setTimeout(() => {
+        setRefreshTrigger(Date.now());
+      }, refreshInterval * 60 * 1000);
+    }
+    return () => {
+      clearRefreshTimer();
+    };
+  }, [ clearRefreshTimer, transitionState, refreshInterval ]);
 
-    // Return if albumart is the same as current or previous transitioned image
-    // And also same as pending src
+  // Background type: albumart - Refresh background when playerState.albumart changes
+  useEffect(() => {
+    if (backgroundType === 'default' || backgroundType === 'albumart') {
+      let src: string;
+      if (playerState.status === 'stop') {
+        src = fallbackSrc;
+      }
+      else {
+        src = playerState.albumart ? sanitizeImageUrl(playerState.albumart, host) : fallbackSrc;
+      }
+      setTargetSrc(src);
+    }
+  }, [ backgroundType, playerState.status, playerState.albumart, host, fallbackSrc ]);
+
+  // Other background types - Refresh background when settings change or refresh forced (through `refreshTrigger`)
+  useEffect(() => {
+    let src: string | null | undefined;
+    if (backgroundType === 'volumioBackground') {
+      const volumioBackground = backgroundSettings.volumioBackgroundImage;
+      src = volumioBackground ?
+        sanitizeImageUrl(`/backgrounds/${backgroundSettings.volumioBackgroundImage}`, host) : fallbackSrc;
+    }
+    else if (backgroundType === 'myBackground') {
+      if (appUrl) {
+        src = `${appUrl}/mybg?ts=${Date.now()}`;
+        if (backgroundSettings.myBackgroundImageType === 'fixed' && backgroundSettings.myBackgroundImage) {
+          src += `?file=${encodeURIComponent(backgroundSettings.myBackgroundImage)}`;
+        }
+      }
+    }
+    else if (backgroundType === 'color') {
+      src = null;
+    }
+    if (src !== undefined) {
+      setTargetSrc(src);
+    }
+  }, [ refreshTrigger, backgroundType, host,
+    backgroundSettings.volumioBackgroundImage, backgroundSettings.myBackgroundImageType,
+    backgroundSettings.myBackgroundImage ]);
+
+  // Background type: myBackground - Refresh background when playerState URI / title / album... changes (subject to myBackground settings)
+  useEffect(() => {
+    const oldState = currentPlayerStateRef.current;
+    const trackChanged =
+      playerState.uri !== oldState.uri ||
+      playerState.title !== oldState.title ||
+      playerState.artist !== oldState.artist ||
+      playerState.album !== oldState.album;
+
+    if (trackChanged && refreshOnTrackChange) {
+      currentPlayerStateRef.current = { ...playerState };
+      setRefreshTrigger(Date.now());
+    }
+  }, [ playerState.uri, playerState.title, playerState.artist, playerState.album, refreshOnTrackChange ]);
+
+  // Update transition state when targetSrc changes
+  useEffect(() => {
+    if (!targetSrc && transitionState.phase !== undefined && transitionState.phase !== 'idle') {
+      updateTransitionState({...initialTransitionState});
+      return;
+    }
+
     if ((transitionState.targetSrc === targetSrc ||
       transitionState.lastTargetSrc === targetSrc) &&
       pendingTargetSrc.current === targetSrc) {
       return;
     }
-    // If background is still undergoing a transition, we set the new albumart as pending
+    // If background is still undergoing a transition, we set targetSrc as pending
     if (transitionState.phase !== undefined && transitionState.phase !== 'idle') {
       pendingTargetSrc.current = targetSrc;
     }
@@ -93,7 +189,7 @@ function Background(props: BackgroundProps) {
         phase: 'preload'
       });
     }
-  }, [ playerState.albumart, host, fallbackSrc, transitionState, updateTransitionState ]);
+  }, [ targetSrc, transitionState, updateTransitionState ]);
 
   const processPendingOrReset = useCallback(() => {
     if (pendingTargetSrc.current === null ||
@@ -201,7 +297,7 @@ function Background(props: BackgroundProps) {
 
   // Custom styles
   const css: any = {};
-  if (backgroundSettings.backgroundType === 'albumart') {
+  if (backgroundType === 'albumart') {
     const albumartBackgroundFit = backgroundSettings.albumartBackgroundFit;
     const backgroundSize = albumartBackgroundFit === 'fill' ? '100% 100%' : albumartBackgroundFit;
     const backgroundPosition = backgroundSettings.albumartBackgroundPosition;
@@ -212,19 +308,30 @@ function Background(props: BackgroundProps) {
     css['--background-blur'] = backgroundBlur;
     css['--background-scale'] = backgroundScale;
   }
-  else if (backgroundSettings.backgroundType === 'volumioBackground' && backgroundSettings.volumioBackgroundImage !== '') {
+  else if (backgroundType === 'volumioBackground') {
     const volumioBackgroundFit = backgroundSettings.volumioBackgroundFit;
     const backgroundSize = volumioBackgroundFit === 'fill' ? '100% 100%' : volumioBackgroundFit;
     const backgroundPosition = backgroundSettings.volumioBackgroundPosition;
     const backgroundBlur = backgroundSettings.volumioBackgroundBlur || '0px';
     const backgroundScale = backgroundSettings.volumioBackgroundScale || '1';
-    css['--background-image'] = `url("${host}/backgrounds/${backgroundSettings.volumioBackgroundImage}")`;
+    //Css['--background-image'] = `url("${host}/backgrounds/${backgroundSettings.volumioBackgroundImage}")`;
     css['--background-size'] = backgroundSize;
     css['--background-position'] = backgroundPosition;
     css['--background-blur'] = backgroundBlur;
     css['--background-scale'] = backgroundScale;
   }
-  else if (backgroundSettings.backgroundType === 'color') {
+  else if (backgroundType === 'myBackground') {
+    const myBackgroundFit = backgroundSettings.myBackgroundFit;
+    const backgroundSize = myBackgroundFit === 'fill' ? '100% 100%' : myBackgroundFit;
+    const backgroundPosition = backgroundSettings.myBackgroundPosition;
+    const backgroundBlur = backgroundSettings.myBackgroundBlur || '0px';
+    const backgroundScale = backgroundSettings.myBackgroundScale || '1';
+    css['--background-size'] = backgroundSize;
+    css['--background-position'] = backgroundPosition;
+    css['--background-blur'] = backgroundBlur;
+    css['--background-scale'] = backgroundScale;
+  }
+  else if (backgroundType === 'color') {
     css['--background-image'] = 'none';
     css['--background-color'] = backgroundSettings.backgroundColor;
   }
@@ -241,9 +348,10 @@ function Background(props: BackgroundProps) {
   else if (backgroundSettings.backgroundOverlay === 'none') {
     css['--background-overlay-display'] = 'none';
   }
-  if (isTransitionable) {
-    css['--default-background-image'] = transitionState.lastLoadedSrc ? `url("${transitionState.lastLoadedSrc}")` : 'none';
-  }
+
+  //If (isTransitionable) {
+  css['--default-background-image'] = transitionState.lastLoadedSrc ? `url("${transitionState.lastLoadedSrc}")` : 'none';
+  //}
 
   if (props.enteringScreenId === 'Browse') {
     css['--active-screen-background-filter'] = 'var(--browse-screen-background-filter-entering)';

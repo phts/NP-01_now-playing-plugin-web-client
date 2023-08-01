@@ -7,7 +7,7 @@ export interface TrackInfo {
   samplerate?: string;
 }
 
-export function sanitizeImageUrl(url: string, host: string) {
+export function sanitizeImageUrl(url: string | null, host: string) {
   if (!url) {
     return `${host}/albumart`;
   }
