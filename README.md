@@ -2,6 +2,11 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.5.2:
+- Add support for 'Startup Options'
+- Fix My Background URLs in Background component
+- Revert change in v0.5.1 where Volumio logo bg is always displayed when player statua is 'stop'
+
 0.5.1:
 －Add support for 'Background -> My Background' settings
 - Minor bug fixes
