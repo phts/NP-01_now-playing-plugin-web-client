@@ -66,7 +66,6 @@ function App() {
                           <ScreenContextProvider>
                             <NowPlayingScreen
                               screenId="NowPlaying"
-                              defaultActive
                               mountOnEnter
                               unmountOnExit={DefaultPerformanceSettings.unmountNowPlayingScreenOnExit} />
                             <BrowseScreen

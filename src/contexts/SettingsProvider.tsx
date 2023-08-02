@@ -14,6 +14,7 @@ export interface SettingsContextValue<T extends CommonSettingsCategory> {
 export type SettingsContext<T extends CommonSettingsCategory> = React.Context<SettingsContextValue<T>>;
 
 const contexts: Record<CommonSettingsCategory, any> = {
+  [CommonSettingsCategory.Startup]: createContext({} as SettingsContextValue<CommonSettingsCategory.Startup>),
   [CommonSettingsCategory.Theme]: createContext({} as SettingsContextValue<CommonSettingsCategory.Theme>),
   [CommonSettingsCategory.Performance]: createContext({} as SettingsContextValue<CommonSettingsCategory.Performance>),
   [CommonSettingsCategory.Localization]: createContext({} as SettingsContextValue<CommonSettingsCategory.Localization>),

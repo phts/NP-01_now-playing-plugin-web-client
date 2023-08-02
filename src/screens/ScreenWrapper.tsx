@@ -14,6 +14,8 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => {
   const playerState = usePlayerState();
   const { isModalOpened } = useModals();
   const { disableTransitions } = usePerformanceContext();
+  const { settings: startupOptions } = useSettings(CommonSettingsCategory.Startup);
+  const [ ignoreStartupOptions, setIgnoreStartupOptions ] = useState(false);
   const idleScreenWaitTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [ idleScreenActive, setIdleScreenActive ] = useState(false);
   const { settings: idleScreenSettings } = useSettings(CommonSettingsCategory.IdleScreen);
@@ -65,16 +67,30 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => {
   const switchToIdleScreen = idleScreenEnabled && (playerState.status === 'stop' || playerState.status === 'pause');
   useEffect(() => {
     if (switchToIdleScreen && !idleScreenActive) {
-      startIdleScreenWaitTimer();
+      if (!ignoreStartupOptions && startupOptions.activateIdleScreen) {
+        enterIdleScreen();
+      }
+      else {
+        startIdleScreenWaitTimer();
 
-      return () => {
-        clearIdleScreenWaitTimer();
-      };
+        return () => {
+          clearIdleScreenWaitTimer();
+        };
+      }
     }
     else if (!switchToIdleScreen && idleScreenActive) {
       exitIdleScreen();
     }
-  }, [ switchToIdleScreen, idleScreenActive, startIdleScreenWaitTimer, clearIdleScreenWaitTimer, exitIdleScreen ]);
+    if (!ignoreStartupOptions) {
+      // Ignore startupOptions in future renders
+      setIgnoreStartupOptions(true);
+    }
+  }, [ ignoreStartupOptions, startupOptions.activateIdleScreen, enterIdleScreen,
+    switchToIdleScreen, idleScreenActive, startIdleScreenWaitTimer, clearIdleScreenWaitTimer, exitIdleScreen ]);
+
+  useEffect(() => {
+    setIgnoreStartupOptions(false);
+  }, [ startupOptions ]);
 
   /** End Idle View callbacks and effects **/
 

@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { ClickEvent } from '@szhsin/react-menu';
 import { TrackInfoTextProps } from '../../common/TrackInfoText';
 import { CommonSettingsCategory, DockComponentPlacement } from 'now-playing-common';
+import { StartupOptions } from 'now-playing-common/dist/config/StartupOptions';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
@@ -33,7 +34,18 @@ export interface NowPlayingScreenProps extends ScreenProps {
 
 interface NowPlayingScreenRestoreState {
   view?: NowPlayingScreenProps['view'];
+  previouslyMounted?: boolean;
 }
+
+const getStartupView = (startupOptions: StartupOptions) => {
+  if (startupOptions.activeScreen === 'nowPlaying.basicView') {
+    return 'basic';
+  }
+  else if (startupOptions.activeScreen === 'nowPlaying.infoView') {
+    return 'info';
+  }
+  return undefined;
+};
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
@@ -41,12 +53,38 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
   const playerState = usePlayerState();
   const { openModal, disableModal, enableModal } = useModals();
   const { settings: screenSettings } = useSettings(CommonSettingsCategory.NowPlayingScreen);
+  const { settings: startupOptions } = useSettings(CommonSettingsCategory.Startup);
   const screenEl = useRef<HTMLDivElement | null>(null);
   const { activeScreenId, switchScreen } = useScreens();
   const store = useStore();
   const restoreState = store.get<NowPlayingScreenRestoreState>(RESTORE_STATE_KEY, {}, true);
-  const [ view, setView ] = useState(restoreState.view || props.view || 'basic');
+  const startupView = !restoreState.previouslyMounted ? getStartupView(startupOptions) : undefined;
+  const [ view, setView ] = useState(startupView || restoreState.view || props.view || 'basic');
   const { t } = useTranslation();
+
+  useEffect(() => {
+    return () => {
+      restoreState.previouslyMounted = true;
+    };
+  }, []);
+
+  /**
+   * Comment from ScreenContextProvider:
+   * Handle change in startupOptions. Note that the plugin does not broadcast changes in startupOptions
+   * because they are applied only once when app starts and subsequent changes should not affect current state.
+   * The situation where startupOptions can change is when apiPath changes causing SettingsProviderImpl to refetch
+   * settings from API endpoint.
+   */
+  useEffect(() => {
+    // Return if screen mounted before - use restoreState.view
+    if (restoreState.previouslyMounted) {
+      return;
+    }
+    const startupView = getStartupView(startupOptions);
+    if (startupView) {
+      setView(startupView);
+    }
+  }, [ startupOptions, restoreState ]);
 
   // Update restoreState on view changed
   useEffect(() => {

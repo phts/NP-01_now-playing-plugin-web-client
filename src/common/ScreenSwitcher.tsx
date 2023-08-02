@@ -1,7 +1,7 @@
 /// <reference types="../declaration.d.ts" />
 
 import React, { SyntheticEvent, useCallback } from 'react';
-import { useScreens } from '../contexts/ScreenContextProvider';
+import { ScreenId, useScreens } from '../contexts/ScreenContextProvider';
 import Button, { ButtonProps } from './Button';
 import styles from './ScreenSwitcher.module.scss';
 
@@ -16,7 +16,7 @@ function ScreenSwitcher(props: ScreenSwitcherProps) {
   const handleSwitchClicked = useCallback((e: SyntheticEvent) => {
     const el = e.currentTarget as HTMLElement;
     if (el.dataset.screen) {
-      const screenId = el.dataset.screen;
+      const screenId = el.dataset.screen as ScreenId;
       switchScreen({
         screenId
       });

@@ -1,16 +1,25 @@
 import classNames from 'classnames';
-import React, { Children, Reducer, cloneElement, createContext, isValidElement, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
+import React, { Children, Reducer, cloneElement, createContext, isValidElement, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import Background from '../common/Background';
 import ContextualCSSTransition from '../common/ContextualCSSTransition';
 import TrackBar from '../common/TrackBar';
 import ScreenWrapper from '../screens/ScreenWrapper';
 import './ScreenContext.scss';
 import { useSettings } from './SettingsProvider';
-import { CommonSettingsCategory, PerformanceSettings } from 'now-playing-common';
+import { CommonSettingsCategory, CommonSettingsOf, PerformanceSettings } from 'now-playing-common';
+import { StartupOptions } from 'now-playing-common/dist/config/StartupOptions';
+
+export const SCREEN_IDS = [
+  'NowPlaying',
+  'Browse',
+  'Queue',
+  'Volumio'
+] as const;
+
+export type ScreenId = typeof SCREEN_IDS[number];
 
 export interface ScreenProps {
-  screenId: string;
-  defaultActive?: boolean;
+  screenId: ScreenId;
   usesTrackBar?: boolean;
   mountOnEnter?: boolean;
   unmountOnExit?: boolean;
@@ -18,9 +27,9 @@ export interface ScreenProps {
 }
 
 export interface ScreenContextValue {
-  activeScreenId: string | null;
+  activeScreenId: ScreenId | null;
   switchScreen: (params: {
-    screenId: string;
+    screenId: ScreenId;
     enterTransition?: string;
     exitTransition?: string;
     activeClassName?: string;
@@ -32,26 +41,45 @@ export interface ScreenContextValue {
 
 export type ScreenStatus = 'active' | 'entering' | 'exiting' | 'inactive';
 
-export interface ScreenStates {
-  [screenId: string]: Record<string, any> & {
-    status?: ScreenStatus;
-    exitTransition?: string;
-    inactiveClassName?: string;
-    underFloat?: boolean;
-    exitingFromFloat?: boolean;
-  };
-}
+export type ScreenState = Record<string, any> & {
+  status?: ScreenStatus;
+  exitTransition?: string;
+  inactiveClassName?: string;
+  underFloat?: boolean;
+  exitingFromFloat?: boolean;
+  usesTrackBar?: boolean;
+  activeClassName?: string;
+  float?: boolean;
+  mountOnEnter?: boolean;
+  unmountOnExit?: boolean;
+};
+
+export type ScreenStates = Partial<Record<ScreenId, ScreenState>>;
 
 type ScreenStatesAction = ScreenStates;
 
 const ScreenContext = createContext({} as ScreenContextValue);
 
-const getInitialScreenStates = (children: React.ReactNode): ScreenStates => {
+const ACTIVE_SCREEN_TO_ID: Record<CommonSettingsOf<StartupOptions>['activeScreen'], ScreenId> = {
+  'nowPlaying.basicView': 'NowPlaying',
+  'nowPlaying.infoView': 'NowPlaying',
+  browse: 'Browse',
+  volumio: 'Volumio'
+};
+
+const validateScreenId = (value: any): value is ScreenId => {
+  return typeof value === 'string' && SCREEN_IDS.includes(value as any);
+};
+
+const getInitialScreenStates = (data: {children: React.ReactNode, startupOptions: CommonSettingsOf<StartupOptions>}): ScreenStates => {
+  const { children, startupOptions } = data;
   const initialScreenStates: ScreenStates = {};
+  const startupScreenId = ACTIVE_SCREEN_TO_ID[startupOptions.activeScreen];
   Children.forEach(children, (child) => {
-    if (isValidElement(child) && child.props.screenId) {
-      initialScreenStates[child.props.screenId] = {
-        status: child.props.defaultActive ? 'active' : 'inactive',
+    const screenId = isValidElement(child) ? child.props.screenId : null;
+    if (isValidElement<any>(child) && validateScreenId(screenId)) {
+      initialScreenStates[screenId] = {
+        status: (screenId === startupScreenId) ? 'active' : 'inactive',
         usesTrackBar: child.props.usesTrackBar || false,
         activeClassName: 'Screen--active',
         inactiveClassName: 'Screen--inactive',
@@ -66,25 +94,39 @@ const getInitialScreenStates = (children: React.ReactNode): ScreenStates => {
 
 const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
 
-  const lastOrderedScreenIds = useRef<string[] | null>(null);
+  const lastOrderedScreenIds = useRef<ScreenId[] | null>(null);
   const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
+  const { settings: startupOptions } = useSettings(CommonSettingsCategory.Startup);
 
-  const screenStatesReducer: Reducer<ScreenStates, ScreenStatesAction> = (states: ScreenStates, data = {}): ScreenStates => {
+  const screenStatesReducer: Reducer<ScreenStates, ScreenStatesAction> = (states, data): ScreenStates => {
     for (const screenId of Object.keys(data)) {
-      if (!states[screenId]) {
-        states[screenId] = {};
+      if (validateScreenId(screenId)) {
+        if (!states[screenId as ScreenId]) {
+          states[screenId] = {};
+        }
+        states[screenId] = { ...states[screenId], ...data[screenId] };
       }
-      states[screenId] = { ...states[screenId], ...data[screenId] };
     }
     return { ...states };
   };
 
-  const [ screenStates, updateScreenStates ] = useReducer(screenStatesReducer, children, getInitialScreenStates);
+  const [ screenStates, updateScreenStates ] = useReducer(screenStatesReducer, {children, startupOptions}, getInitialScreenStates);
+
+  /**
+   * Handle change in startupOptions. Note that the plugin does not broadcast changes in startupOptions
+   * because they are applied only once when app starts and subsequent changes should not affect current state.
+   * The situation where startupOptions can change is when apiPath changes causing SettingsProviderImpl to refetch
+   * settings from API endpoint.
+   */
+  useEffect(() => {
+    const reducedStates = getInitialScreenStates({children, startupOptions});
+    updateScreenStates(reducedStates);
+  }, [ startupOptions ]);
 
   const getScreenIdByStatus = useCallback((status: ScreenStatus) => {
     for (const [ screenId, state ] of Object.entries(screenStates)) {
       if (state.status === status) {
-        return screenId;
+        return screenId as ScreenId;
       }
     }
     return null;
@@ -95,8 +137,10 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
   const currentExitingScreenId = getScreenIdByStatus('exiting');
 
   const orderedScreenIds = useMemo(() => {
-    const ordered: string[] = [];
-    if (currentEnteringScreenId && screenStates[currentEnteringScreenId].enteringFromUnderFloat && currentExitingScreenId && screenStates[currentExitingScreenId].exitingFromFloat) {
+    const ordered: ScreenId[] = [];
+    if (currentEnteringScreenId &&
+      screenStates[currentEnteringScreenId]?.enteringFromUnderFloat &&
+      currentExitingScreenId && screenStates[currentExitingScreenId]?.exitingFromFloat) {
       ordered.push(currentExitingScreenId);
       ordered.push(currentEnteringScreenId);
     }
@@ -111,9 +155,9 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
         ordered.push(currentExitingScreenId);
       }
     }
-    const screenIds = lastOrderedScreenIds.current ? lastOrderedScreenIds.current : Object.keys(screenStates);
+    const screenIds = lastOrderedScreenIds.current ? lastOrderedScreenIds.current : Object.keys(screenStates) as ScreenId[];
     for (const screenId of screenIds) {
-      if (screenStates[screenId].status === 'inactive') {
+      if (screenStates[screenId]?.status === 'inactive') {
         ordered.push(screenId);
       }
     }
@@ -134,15 +178,15 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     const targetState = screenStates[params.screenId];
-    const targetFloat = targetState.float;
+    const targetFloat = targetState?.float;
     const states: ScreenStates = {
       [`${params.screenId}`]: {
         status: 'entering',
         enterTransition: params.enterTransition ||
-          (targetState.underFloat ? 'underFloatExit' : 'fadeIn'),
+          (targetState?.underFloat ? 'underFloatExit' : 'fadeIn'),
         activeClassName: params.activeClassName || 'Screen--active',
         underFloat: false,
-        enteringFromUnderFloat: targetState.underFloat,
+        enteringFromUnderFloat: targetState?.underFloat,
         screenProps: params.screenProps
       }
     };
@@ -155,7 +199,7 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
         inactiveClassName: params.inactiveClassName ||
           (targetFloat ? 'Screen--underFloat' : 'Screen--inactive'),
         underFloat: targetFloat,
-        exitingFromFloat: currentActiveState.float
+        exitingFromFloat: currentActiveState?.float
       };
     }
     updateScreenStates(states);
@@ -187,7 +231,7 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [ currentEnteringScreenId, currentExitingScreenId, updateScreenStates ]);
 
-  const getTransitionParams = (state: ScreenStates[string]) => {
+  const getTransitionParams = (state: ScreenState) => {
     const params: { in?: boolean; class?: string; } = {};
     if (state.status === 'active' || state.status === 'entering') {
       params.in = true;
@@ -203,7 +247,7 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
     return params;
   };
 
-  const getChildClassNames = (child: React.JSX.Element, state: ScreenStates[string]) => {
+  const getChildClassNames = (child: React.JSX.Element, state: ScreenState) => {
     if (state.status === 'inactive') {
       return classNames(child.props.className, state.inactiveClassName);
     }
@@ -220,31 +264,34 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
     }, {});
   }, [ orderedScreenIds ]);
 
-  const shouldUnmountOnExit = useCallback((screenId: string) => {
-    if (currentEnteringScreenId && screenStates[currentEnteringScreenId].float &&
+  const shouldUnmountOnExit = useCallback((screenId: ScreenId) => {
+    if (currentEnteringScreenId && screenStates[currentEnteringScreenId]?.float &&
       currentExitingScreenId === screenId) {
       return false;
     }
-    else if (currentActiveScreenId && screenStates[currentActiveScreenId].float &&
-      screenStates[screenId].status === 'inactive') {
+    else if (currentActiveScreenId && screenStates[currentActiveScreenId]?.float &&
+      screenStates[screenId]?.status === 'inactive') {
       return false;
     }
 
     if (performanceSettings.unmountScreensOnExit === 'custom') {
       const perfKey = `unmount${screenId}ScreenOnExit` as keyof PerformanceSettings;
       if (performanceSettings[perfKey] !== undefined) {
-        return performanceSettings[perfKey];
+        return performanceSettings[perfKey] as boolean;
       }
     }
-    return screenStates[screenId].unmountOnExit;
+    return !!screenStates[screenId]?.unmountOnExit;
 
   }, [ currentEnteringScreenId, currentActiveScreenId, currentExitingScreenId, screenStates, performanceSettings ]);
 
   const getChildren = () => {
     return Children.map(children, (child) => {
-      if (isValidElement(child) && child.props.screenId) {
-        const screenId = child.props.screenId;
+      const screenId = isValidElement(child) ? child.props.screenId : null;
+      if (isValidElement(child) && validateScreenId(screenId)) {
         const state = screenStates[screenId];
+        if (!state) {
+          return null;
+        }
         const transitionParams = getTransitionParams(state);
         const childClassNames = getChildClassNames(child, state);
         const unmountOnExit = shouldUnmountOnExit(screenId);
@@ -292,13 +339,13 @@ const ScreenContextProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const getTrackBarState = useCallback(() => {
-    if (currentActiveScreenId && screenStates[currentActiveScreenId].usesTrackBar) {
+    if (currentActiveScreenId && screenStates[currentActiveScreenId]?.usesTrackBar) {
       return 'active';
     }
-    else if (currentEnteringScreenId && screenStates[currentEnteringScreenId].usesTrackBar) {
+    else if (currentEnteringScreenId && screenStates[currentEnteringScreenId]?.usesTrackBar) {
       return 'entering';
     }
-    else if (currentExitingScreenId && screenStates[currentExitingScreenId].usesTrackBar) {
+    else if (currentExitingScreenId && screenStates[currentExitingScreenId]?.usesTrackBar) {
       return 'exiting';
     }
 
