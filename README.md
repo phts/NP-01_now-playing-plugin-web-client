@@ -6,6 +6,7 @@ Changes:
 
 - Move player buttons to bottom (for 800x480 screen)
 - Move track info text to right
+- Hide buttons on initial screen
 
 <details>
 <summary>README from original repo</summary>
