@@ -70,7 +70,7 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
       case 'repeat':
         buttonProps = {
           key: 'repeat',
-          icon: playerState.repeatSingle ? 'repeat_one' : 'repeat',
+          icon: playerState.duration ? (playerState.repeatSingle ? 'repeat_one' : 'repeat') : '',
           styles: getButtonStyles('repeat'),
           toggleable: true,
           toggled: playerState.repeat,
@@ -114,7 +114,7 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
       case 'random':
         buttonProps = {
           key: 'random',
-          icon: 'shuffle',
+          icon: playerState.duration ? 'shuffle' : '',
           styles: getButtonStyles('random'),
           toggleable: true,
           toggled: playerState.random,
