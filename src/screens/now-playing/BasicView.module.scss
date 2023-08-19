@@ -131,7 +131,7 @@
   @extend .Button;
 
   font-size: var(--playback-buttons-size);
-  width: 1.5em;
+  width: 1em;
   height: 1.5em;
 
   &__icon {
@@ -204,6 +204,21 @@
     &--random {
       display: inline-block;
     }
+  }
+
+  &--previous,
+  &--next {
+    display: none;
+  }
+  &--play {
+    margin-right: auto;
+    order: -1;
+  }
+  &--play::before {
+    border: 0 none;
+  }
+  &--play &__icon {
+    font-size: 2em;
   }
 }
 
