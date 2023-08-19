@@ -5,6 +5,7 @@ This is a modification of original [volumio-now-playing-reactjs-client] (part of
 Changes:
 
 - Move player buttons to bottom (for 800x480 screen)
+- Move track info text to right
 
 <details>
 <summary>README from original repo</summary>
