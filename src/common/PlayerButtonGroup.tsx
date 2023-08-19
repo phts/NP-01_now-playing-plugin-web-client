@@ -86,10 +86,20 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
         };
         break;
       case 'play':
+        const playStyles = getButtonStyles('play');
+        const extraClassNames = playStyles && playStyles.extraClassNames ? playStyles.extraClassNames : [];
+        const statusStyles = getButtonStyles(`${playerState.status === 'play' ? 'play' : 'stop'}-status`);
+        const statusExtraClassNames = statusStyles && statusStyles.extraClassNames ? statusStyles.extraClassNames : [];
         buttonProps = {
           key: 'play',
-          icon: playerState.status === 'play' ? 'play_arrow' : '',
-          styles: getButtonStyles('play'),
+          icon: 'play_arrow',
+          styles: {
+            ...playStyles,
+            extraClassNames: [
+              ...extraClassNames,
+              ...statusExtraClassNames
+            ]
+          },
           onClick: onPlayClicked
         };
         break;

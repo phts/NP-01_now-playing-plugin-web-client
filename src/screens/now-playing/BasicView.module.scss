@@ -220,6 +220,9 @@
   &--play &__icon {
     font-size: 3em;
   }
+  &--stop-status {
+    color: #555;
+  }
 }
 
 @import "../../common/Seekbar";
