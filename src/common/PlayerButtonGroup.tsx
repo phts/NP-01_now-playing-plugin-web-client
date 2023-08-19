@@ -88,8 +88,7 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
       case 'play':
         buttonProps = {
           key: 'play',
-          icon: playerState.status === 'play' ?
-            (playerState.duration ? 'play_arrow' : 'stop') : 'pause',
+          icon: playerState.status === 'play' ? 'play_arrow' : '',
           styles: getButtonStyles('play'),
           onClick: onPlayClicked
         };

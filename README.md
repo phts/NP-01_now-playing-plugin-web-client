@@ -8,6 +8,7 @@ Changes:
 - Move track info text to right
 - Hide buttons on initial screen
 - Redesign/reorder player buttons
+- [...and more](https://github.com/phts/NP-01_now-playing-plugin-web-client/commits/master)
 
 <details>
 <summary>README from original repo</summary>
