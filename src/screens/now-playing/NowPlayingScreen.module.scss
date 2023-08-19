@@ -39,7 +39,7 @@
   --default-albumart-border: none;
   --default-albumart-border-radius: 0px;
   --default-track-info-width: auto;
-  --default-track-info-height: auto;
+  --default-track-info-height: 410px;
   --default-track-info-min-width: auto;
   --default-track-info-min-height: auto;
   --default-track-info-max-width: auto;
@@ -128,7 +128,7 @@
 
   @media all and (orientation: portrait) {
     @media (max-width: 279px) {
-      --default-playback-buttons-size: 20px;       
+      --default-playback-buttons-size: 20px;
     }
     @media (min-width: 320px) {
       --default-playback-buttons-size: 1.2em;
@@ -142,7 +142,7 @@
     @media (max-height: 320px) {
       --default-media-info-margin: 0.2em 0px 0px 0px;
     }
-  
+
     @media (min-width: 580px) and (min-height: 320px) {
       --default-max-title-lines: 2;
     }
@@ -156,7 +156,7 @@
     --default-playback-buttons-margin: 1em 0px 1.5em 0px;
   }
 
-  @media all and (orientation: portrait) {   
+  @media all and (orientation: portrait) {
     --default-playback-buttons-margin: 1em 0px 2em 0px;
   }
 
