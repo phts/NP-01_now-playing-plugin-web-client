@@ -1,14 +1,20 @@
 .Seekbar {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: var(--seekbar-height);
+
   &__slider {
-    position: relative;
-    width: calc(100% - var(--seekbar-thumb-size));
+    margin-bottom: 0;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 3px;
-    
+    position: relative;
+    width: 100%;
+
     @mixin track-ext($position) {
       content: '';
-      width: calc(var(--seekbar-thumb-size) / 2); 
+      width: calc(var(--seekbar-thumb-size) / 2);
       height: 100%;
       position: absolute;
       top: 0;
@@ -17,8 +23,7 @@
         background: var(--seekbar-track-played-color);
         border-top-left-radius: var(--seekbar-track-border-radius);
         border-bottom-left-radius: var(--seekbar-track-border-radius);
-      }
-      @else if $position == end {
+      } @else if $position == end {
         right: calc(var(--seekbar-thumb-size) / -2);
         background: var(--seekbar-track-remaining-color);
         border-top-right-radius: var(--seekbar-track-border-radius);
@@ -29,16 +34,18 @@
 
     :global {
       .rc-slider-rail {
-        position: relative;
-        height: var(--seekbar-height);
+        background-color: var(--background-color);
         background: var(--seekbar-track-remaining-color);
+        height: var(--seekbar-height);
+        margin-left: 0;
+        position: relative;
+        width: 100%;
 
         &:before {
-          @include track-ext(start);
+          display: none;
         }
-    
         &:after {
-          @include track-ext(end);
+          display: none;
         }
       }
 
@@ -54,13 +61,7 @@
       }
 
       .rc-slider-handle {
-        position: absolute;
-        top: calc(calc(var(--seekbar-height) - var(--seekbar-thumb-size)) / 2);
-        background: var(--seekbar-thumb-color);
-        width: var(--seekbar-thumb-size);
-        height: var(--seekbar-thumb-size);
-        border-radius: 50%;
-        outline: none;
+        display: none;
       }
     }
 
@@ -70,18 +71,24 @@
   }
 
   &__seek {
+    color: var(--seekbar-text-color);
     display: inline-block;
-    width: 50%;
     font-family: var(--seekbar-text-font-family);
     font-size: var(--seekbar-text-font-size);
-    font-weight: 100;
-    color: var(--seekbar-text-color);
-    margin-top: 0.5em;
+    font-weight: bold;
+    margin-left: 8px;
+    margin-top: 4px;
+    position: absolute;
+    top: 0;
+    width: 50%;
   }
-  
+
   &__duration {
     @extend .Seekbar__seek;
+    margin-left: 0;
+    margin-right: 8px;
     text-align: right;
+    right: 0;
   }
 
   &--disabled {

@@ -9,7 +9,7 @@
   --common-foreground-color-dark: #666;
   --common-accent-color: #24a4f3;
   --common-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  
+
   // Scrollbar
   --scrollbar-handle-color: #45454580 !important;
   --scrollbar-handle-active-color: #454545cc !important;
@@ -43,15 +43,15 @@
   --screen-switcher-active-color: var(--common-accent-color);
 
   // Seekbar
-  --seekbar-height: 5px;
+  --seekbar-height: 30px;
   --seekbar-thumb-color: var(--common-accent-color);
   --seekbar-thumb-size: 1.2em;
   --seekbar-track-played-color: var(--common-accent-color);
   --seekbar-track-remaining-color: var(--common-foreground-color);
   --seekbar-track-border-radius: 2.5px;
   --seekbar-text-font-family: var(--common-secondary-font-family);
-  --seekbar-text-font-size: 0.8em;
-  --seekbar-text-color: var(--common-foreground-color);
+  --seekbar-text-font-size: 18px;
+  --seekbar-text-color: #fff;
 
   // Toast
   --toast-background: var(--common-background-color);
