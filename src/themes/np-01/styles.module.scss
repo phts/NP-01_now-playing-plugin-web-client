@@ -1,0 +1,238 @@
+.DefaultTheme {
+  // Common variables
+  --common-primary-font-family: 'Roboto', sans-serif;
+  --common-secondary-font-family: 'Noto Sans Display', sans-serif;
+  --common-background-color: #202020;
+  --common-background-color-light: #303030;
+  --common-foreground-color: #ccc;
+  --common-foreground-color-light: #fff;
+  --common-foreground-color-dark: #666;
+  --common-accent-color: #24a4f3;
+  --common-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  
+  // Scrollbar
+  --scrollbar-handle-color: #45454580 !important;
+  --scrollbar-handle-active-color: #454545cc !important;
+  --scrollbar-handle-hover-color: #454545cc !important;
+
+  // App
+  --app-font-family: var(--common-primary-font-family);
+  --app-background: #000;
+
+  // Buttons
+  --button-background: none;
+  --button-border: none;
+  --button-color: var(--common-foreground-color);
+  --button-font-family: var(--common-secondary-font-family);
+  --button-font-size: 1.5em;
+  --button-hover-color: var(--common-accent-color);
+  --button-active-color: var(--common-accent-color);
+  --button-toggled-background: inherit;
+  --button-toggled-border: inherit;
+  --button-toggled-color: var(--common-accent-color);
+  --button-border-radius: 0;
+
+  // ScreenSwitcher
+  --screen-switcher-switch-width: 3em;
+  --screen-switcher-switch-height: 2em;
+  --screen-switcher-label-background: var(--common-background-color-light);
+  --screen-switcher-label-color: var(--common-foreground-color);
+  --screen-switcher-border-radius: 1.5em;
+  --screen-switcher-border: 1px solid #2a2a2a;
+  --screen-switcher-background: var(--common-background-color);
+  --screen-switcher-active-color: var(--common-accent-color);
+
+  // Seekbar
+  --seekbar-height: 5px;
+  --seekbar-thumb-color: var(--common-accent-color);
+  --seekbar-thumb-size: 1.2em;
+  --seekbar-track-played-color: var(--common-accent-color);
+  --seekbar-track-remaining-color: var(--common-foreground-color);
+  --seekbar-track-border-radius: 2.5px;
+  --seekbar-text-font-family: var(--common-secondary-font-family);
+  --seekbar-text-font-size: 0.8em;
+  --seekbar-text-color: var(--common-foreground-color);
+
+  // Toast
+  --toast-background: var(--common-background-color);
+  //--toast-backdrop-filter
+  --toast-border-radius: 0.5em;
+  --toast-shadow-color: #00000080;
+  --toast-icon-success-color: #007e33;
+  --toast-icon-info-color: #0099cc;
+  --toast-icon-warning-color: #ff8800;
+  --toast-icon-error-color: #cc0000;
+  --toast-title-font-family: var(--base-font-family);
+  --toast-title-color: var(--common-foreground-color);
+  --toast-message-font-family: var(--common-secondary-font-family);
+  --toast-message-color: #b3b3b3;
+  --toast-button-color: var(--common-foreground-color);
+  --toast-button-hover-color: var(--common-foreground-color-light);
+
+  // TrackBar
+  --trackbar-height: 4.5em;
+  --trackbar-padding: 0.4em;
+  --trackbar-background: var(--common-background-color);
+  --trackbar-border-top: 1px solid var(--common-foreground-color-dark);
+  --trackbar-image-border-radius: 0.2em;
+  --trackbar-title-font-family: var(--base-font-family);
+  --trackbar-title-font-size: 1em;
+  --trackbar-title-color: var(--common-foreground-color-light);
+  --trackbar-artist-album-font-family: var(--common-secondary-font-family);
+  --trackbar-artist-album-font-size: 0.9em;
+  --trackbar-artist-album-color: var(--common-foreground-color);
+  --trackbar-format-line-height: 0.8em;
+  --trackbar-format-resolution-font-family: var(--common-secondary-font-family);
+  --trackbar-format-resolution-font-size: 0.7em;
+  --trackbar-format-resolution-color: var(--common-foreground-color);
+  --trackbar-seekbar-height: 4px;
+  --trackbar-seekbar-thumb-size: 1em;
+  --trackbar-player-button-width: 2em;
+  --trackbar-player-button-height: 2em;
+  --trackbar-player-button-font-size: 1.5em;
+  --trackbar-player-button-color: var(--common-foreground-color);
+  --trackbar-player-button-toggled-color: var(--common-accent-color);
+  --trackbar-player-button-hover-color: var(--common-accent-color);
+  --trackbar-volumebar-background: var(--common-background-color);
+  --trackbar-volumebar-border: 1px solid #454545;
+  // --trackbar-volumebar-backdrop-filter
+
+  // TrackInfoText
+  --track-info-text-color: var(--common-foreground-color);
+
+  // VolumeIndicator
+  --volume-indicator-size: 11em;
+  --volume-indicator-background: rgba(0, 0, 0, 0.8);
+  --volume-indicator-border-radius: 50%;
+  --volume-indicator-backdrop-background: rgba(0, 0, 0, 0.6);
+  --volume-indicator-backdrop-filter: blur(10px);
+  --volume-indicator-dial-stroke-base-color: var(--common-foreground-color);
+  --volume-indicator-dial-stroke-highlight-color: var(--common-accent-color);
+  --volume-indicator-dial-stroke-muted-color: #aaa;
+  --volume-indicator-text-color: var(--common-foreground-color);
+  --volume-indicator-text-font-size: 1.5em;
+  --volume-indicator-text-font-size-percent-symbol: 1.5em;
+  --volume-indicator-icon-size: 2em;
+  --volume-indicator-muted-icon-size: 2.5em;
+
+  // VolumeSlider
+  --volume-slider-background: var(--common-background-color);
+  --volume-slider-border: 1px solid #2a2a2a;
+  --volume-slider-border-radius: 1.5em;
+  --volume-slider-track-base-color: var(--common-foreground-color);
+  --volume-slider-track-highlight-color: var(--common-accent-color);
+  --volume-slider-track-muted-color: #aaa;
+  --volume-slider-disabled-icon-color: var(--common-foreground-color-light);
+  --volume-slider-button-font-size: 1.3em;
+  --volume-slider-vertical-track-width: 1.5em;
+  --volume-slider-horizontal-track-height: 1.5em;
+
+  // ActionPanel
+  --action-panel-background: none;
+  --action-panel-border: none;
+  --action-panel-border-radius: 0;
+  --action-panel-extra-button-size: 2.5em;
+  --action-panel-extra-button-background: var(--common-background-color);
+  --action-panel-extra-button-border-radius: 50%;
+  --action-panel-extra-button-border: 50%;
+  --action-panel-extra-button-image-size: 1.3em;
+
+  // DisconnectedIndicator
+  --disconnected-indicator-overlay-background: rgba(0, 0, 0, 0.7);
+  --disconnected-indicator-icon-color: var(--common-foreground-color);
+  --disconnected-indicator-icon-opacity: 0.9;
+  --disconnected-indicator-icon-font-size: 3em;
+
+  // Toolbar (shared between screens)
+  --toolbar-border-bottom: 1px solid #454545;
+  --toolbar-button-size: 2em;
+  --toolbar-title-font-family: var(--common-primary-font-family);
+  --toolbar-title-font-size: 1em;
+  --toolbar-title-color: var(--common-foreground-color);
+  --toolbar-secondary-title-font-family: var(--common-secondary-font-family);
+  --toolbar-secondary-title-font-size: 0.9em;
+  --toolbar-secondary-title-color: var(--common-foreground-color-dark);
+  --toolbar-button-size: 2em;
+  --toolbar-button-color: var(--common-foreground-color);
+  --toolbar-button-toggled-color: var(--common-accent-color);
+  --toolbar-button-hover-color: var(--common-accent-color);
+
+  // Browse Screen
+  --browse-screen-background: var(--common-background-color);
+  --browse-screen-fake-loader-color: var(--common-accent-color);
+  --browse-screen-section-title-font-family: var(--common-secondary-font-family);
+  --browse-screen-section-title-font-size: 1.2em;
+  --browse-screen-grid-item-color: var(--common-foreground-color);
+  --browse-screen-grid-item-albumart-background: #2e2e2e;
+  --browse-screen-grid-item-artist-font-family: var(--common-secondary-font-family);
+  --browse-screen-grid-item-artist-font-size: 0.9em;
+  --browse-screen-grid-item-artist-color: #7a848e;
+  --browse-screen-grid-item-play-button-background: rgba(0, 0, 0, 0.5);
+  --browse-screen-grid-item-play-button-hover-color: var(--common-accent-color);
+  --browse-screen-list-border-radius: 0.5em;
+  --browse-screen-list-item-background: #282828;
+  --browse-screen-list-item-color: var(--common-foreground-color);
+  --browse-screen-list-item-font-family: var(--common-secondary-font-family);
+  --browse-screen-list-item-hover-background: var(--common-background-color-light);
+  --browse-screen-list-item-hover-filter: brightness(1.2);
+  --browse-screen-list-item-divider: 1px solid #454545;
+  --browse-screen-list-item-albumart-width: 2.5em;
+  --browse-screen-list-item-albumart-height: 2.5em;
+  --browse-screen-list-item-track-number-color: #7a848e;
+  --browse-screen-list-item-play-button-color: var(--common-foreground-color);
+  --browse-screen-list-item-play-button-hover-color: var(--common-accent-color);
+  --browse-screen-header-background: none;
+  --browse-screen-header-background-image-display: inherit;
+  --browse-screen-header-background-image-filter: blur(30px) brightness(0.5);
+  --browse-screen-header-background-image-transform: scale(1.5);
+  --browse-screen-header-image-border-radius: 0.5em;
+  --browse-screen-header-info-color: var(--common-foreground-color);
+  --browse-screen-header-play-button-background: #2828284d;
+  --browse-screen-header-play-button-hover-background: #aaaaaa4d;
+  --browse-screen-header-play-button-border: 1px solid #ffffff33;
+
+  // Queue Screen
+  --queue-screen-background: var(--common-background-color);
+  --queue-screen-item-color: var(--common-foreground-color);
+  --queue-screen-item-divider: 1px solid #454545;
+  --queue-screen-item-background: var(--common-background-color);
+  --queue-screen-item-hover-background: var(--common-background-color-light);
+  --queue-screen-item-hover-filter: brightness(1.2);
+  --queue-screen-item-button-color: var(--common-foreground-color);
+  --queue-screen-item-image-width: 2.5em;
+  --queue-screen-item-image-height: 2.5em;
+  --queue-screen-item-image-border-radius: 0.2em;
+
+  // Volumio Screen
+  --volumio-screen-header-background: var(--common-background-color);
+  --volumio-screen-header-border-bottom: 1px solid #54c688;
+  --volumio-screen-link-color: var(--common-foreground-color);
+  --volumio-screen-link-hover-color: #54c688;
+
+  // ScreenContext
+  --screen-underFloat-filter: brightness(0.5);
+  --screen-underFloatExit-enter-filter: brightness(0.5);
+  --screen-underFloatExit-enter-active-filter: brightness(1);
+  --screen-underFloatExit-exit-filter: brightness(1);
+  --screen-underFloatExit-exit-active-filter: brightness(0.5);
+
+  // Background
+  //--browse-screen-background-filter-entering
+  --browse-screen-background-filter: none;
+  //--queue-screen-background-filter-entering
+  //--queue-screen-background-filter
+
+  // Menus
+  --menu-background: #202020;
+  //--menu-backdrop-filter
+  --menu-item-color: var(--common-foreground-color);
+  --menu-item-hover-color: var(--common-accent-color);
+
+  // --Dialogs
+  --dialog-background: #202020;
+  //--dialog-backdrop-filter
+  --dialog-border: 1px solid #333;
+  --dialog-border-radius: 0.5em;
+  --dialog-overlay-background: rgba(0, 0, 0, 0.5);
+  --dialog-box-shadow: 0 2px 9px 3px rgba(0, 0, 0, 0.25);
+}
