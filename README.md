@@ -10,6 +10,10 @@ Changes:
 - Redesign/reorder player buttons
 - [...and more](https://github.com/phts/NP-01_now-playing-plugin-web-client/commits/master)
 
+## Deploy
+
+1. Go to [NP-01_now-playing-plugin] and run `scripts/deploy.sh`
+
 <details>
 <summary>README from original repo</summary>
 
