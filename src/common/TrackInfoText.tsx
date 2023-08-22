@@ -32,12 +32,21 @@ const DEFAULT_TRACK_INFO_ORDER = [
   'title', 'artist', 'album', 'mediaInfo'
 ];
 
+function getPosition(playerState: PlayerState) {
+  if (typeof playerState.position === 'undefined') {
+    return '';
+  }
+  if ([ 'webradio', 'Podcast' ].includes(playerState.trackType as string)) {
+    return '';
+  }
+  return `${String(playerState.position + 1).padStart(2, '0')}. `;
+}
+
 function TrackInfoText(props: TrackInfoTextProps) {
   const { host } = useAppContext();
   const playerState = props.playerState;
   const title = playerState.title || '';
-  const pos = (playerState.trackType !== 'webradio' && typeof playerState.position !== 'undefined')
-    ? `${String(playerState.position + 1).padStart(2, '0')}. ` : '';
+  const pos = getPosition(playerState);
   const artist = playerState.artist || '';
   const album = playerState.album || '';
   const year = playerState.year ? ` (${playerState.year})` : '';
