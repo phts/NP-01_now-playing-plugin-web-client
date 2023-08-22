@@ -16,4 +16,4 @@ Noticeable changes:
 [volumio-now-playing-reactjs-client]: https://github.com/patrickkfkan/volumio-now-playing-reactjs-client
 [NP-01_now-playing-plugin]: https://github.com/phts/NP-01_now-playing-plugin
 [phts np-01]: https://tsaryk.com/NP-01
-[commits]: https://github.com/phts/NP-01_now-playing-plugin/commits/master
+[commits]: https://github.com/phts/NP-01_now-playing-plugin-web-client/commits/master
