@@ -46,11 +46,11 @@ export function getFormatResolution(track: TrackInfo) {
   if (track.bitrate) {
     resolutionProps.push(track.bitrate);
   }
-  if (track.bitdepth) {
-    resolutionProps.push(track.bitdepth);
-  }
   if (track.samplerate) {
     resolutionProps.push(track.samplerate);
+  }
+  if (track.bitdepth) {
+    resolutionProps.push(track.bitdepth);
   }
   return resolutionProps.join(', ');
 
