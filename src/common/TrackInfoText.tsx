@@ -36,8 +36,8 @@ function TrackInfoText(props: TrackInfoTextProps) {
   const { host } = useAppContext();
   const playerState = props.playerState;
   const title = playerState.title || '';
-  const pos =
-    typeof playerState.position !== 'undefined' ? `${String(playerState.position + 1).padStart(2, '0')}. ` : '';
+  const pos = (playerState.trackType !== 'webradio' && typeof playerState.position !== 'undefined')
+    ? `${String(playerState.position + 1).padStart(2, '0')}. ` : '';
   const artist = playerState.artist || '';
   const album = playerState.album || '';
   const formatResolution = getFormatResolution(playerState);
