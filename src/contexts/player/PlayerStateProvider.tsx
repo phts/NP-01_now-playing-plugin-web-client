@@ -9,6 +9,7 @@ export interface PlayerState {
   artist?: string;
   album?: string;
   year?: string;
+  tracknumber?: string;
   albumart?: string;
   uri: '';
   trackType?: string;

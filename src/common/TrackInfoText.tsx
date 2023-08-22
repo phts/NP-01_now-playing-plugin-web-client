@@ -41,6 +41,7 @@ function TrackInfoText(props: TrackInfoTextProps) {
   const artist = playerState.artist || '';
   const album = playerState.album || '';
   const year = playerState.year ? ` (${playerState.year})` : '';
+  const tracknumber = playerState.tracknumber;
   const formatResolution = getFormatResolution(playerState);
   const formatIcon = getFormatIcon(playerState.trackType, host);
   const concatArtistAlbum = props.concatArtistAlbum !== undefined && props.concatArtistAlbum;
@@ -132,7 +133,7 @@ function TrackInfoText(props: TrackInfoTextProps) {
         if (!visibility.title) {
           return null;
         }
-        const _titleEl = <span ref={titleEl} key={key} className={getElementClassName('title')}>{pos + title}</span>;
+        const _titleEl = <span ref={titleEl} key={key} className={getElementClassName('title')}>{tracknumber ? title : pos + title}</span>;
         if (marqueeTitle) {
           return (
             <div ref={marqueeTitleWrapperEl} className={getElementClassName('marqueeTitleWrapper')}>
