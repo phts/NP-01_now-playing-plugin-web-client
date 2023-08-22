@@ -36,6 +36,8 @@ function TrackInfoText(props: TrackInfoTextProps) {
   const { host } = useAppContext();
   const playerState = props.playerState;
   const title = playerState.title || '';
+  const pos =
+    typeof playerState.position !== 'undefined' ? `${String(playerState.position + 1).padStart(2, '0')}. ` : '';
   const artist = playerState.artist || '';
   const album = playerState.album || '';
   const formatResolution = getFormatResolution(playerState);
@@ -129,7 +131,7 @@ function TrackInfoText(props: TrackInfoTextProps) {
         if (!visibility.title) {
           return null;
         }
-        const _titleEl = <span ref={titleEl} key={key} className={getElementClassName('title')}>{title}</span>;
+        const _titleEl = <span ref={titleEl} key={key} className={getElementClassName('title')}>{pos + title}</span>;
         if (marqueeTitle) {
           return (
             <div ref={marqueeTitleWrapperEl} className={getElementClassName('marqueeTitleWrapper')}>
