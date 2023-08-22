@@ -43,13 +43,16 @@ export function getFormatResolution(track: TrackInfo) {
   }
 
   const resolutionProps: string[] = [];
+  if (track.bitrate) {
+    resolutionProps.push(track.bitrate);
+  }
   if (track.bitdepth) {
     resolutionProps.push(track.bitdepth);
   }
   if (track.samplerate) {
     resolutionProps.push(track.samplerate);
   }
-  return resolutionProps.join(' ');
+  return resolutionProps.join(', ');
 
 }
 
