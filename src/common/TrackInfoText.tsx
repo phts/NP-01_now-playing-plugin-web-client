@@ -33,13 +33,13 @@ const DEFAULT_TRACK_INFO_ORDER = [
 ];
 
 function TrackInfoText(props: TrackInfoTextProps) {
-  const { host } = useAppContext();
+  const { pluginInfo } = useAppContext();
   const playerState = props.playerState;
   const title = playerState.title || '';
   const artist = playerState.artist || '';
   const album = playerState.album || '';
   const formatResolution = getFormatResolution(playerState);
-  const formatIcon = getFormatIcon(playerState.trackType, host);
+  const formatIcon = pluginInfo ? getFormatIcon(playerState.trackType, pluginInfo.appUrl) : null;
   const concatArtistAlbum = props.concatArtistAlbum !== undefined && props.concatArtistAlbum;
   const visibility = props.trackInfoVisibility || DEFAULT_TRACK_INFO_VISIBILITY;
   const trackInfoOrder = props.trackInfoOrder || DEFAULT_TRACK_INFO_ORDER;

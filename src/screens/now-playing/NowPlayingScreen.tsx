@@ -24,10 +24,11 @@ import { ClickEvent } from '@szhsin/react-menu';
 import { TrackInfoTextProps } from '../../common/TrackInfoText';
 import { CommonSettingsCategory, DockComponentPlacement } from 'now-playing-common';
 import { StartupOptions } from 'now-playing-common/dist/config/StartupOptions';
+import VUMeterView from './VUMeterView';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
-  view?: 'basic' | 'info';
+  view?: 'basic' | 'info' | 'vuMeter';
   style?: React.CSSProperties;
   className?: string;
 }
@@ -321,8 +322,20 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     e.syntheticEvent.stopPropagation();
     const { action } = e.value;
     switch (action) {
-      case 'toggleView':
-        setView(view === 'basic' ? 'info' : 'basic');
+      case 'setBasicView':
+        if (view !== 'basic') {
+          setView('basic');
+        }
+        break;
+      case 'setInfoView':
+        if (view !== 'info') {
+          setView('info');
+        }
+        break;
+      case 'setVUMeterView':
+        if (view !== 'vuMeter') {
+          setView('vuMeter');
+        }
         break;
       case 'gotoArtist':
       case 'gotoAlbum':
@@ -350,12 +363,33 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     const menuItems: PopupMenuItem[] = [
       {
         type: 'item',
-        key: 'toggleView',
+        key: 'setBasicView',
         value: {
-          action: 'toggleView'
+          action: 'setBasicView'
         },
-        icon: view === 'basic' ? 'newspaper' : 'art_track',
-        title: view === 'basic' ? t('screen.nowPlaying.infoView') : t('screen.nowPlaying.basicView')
+        icon: 'art_track',
+        title: t('screen.nowPlaying.basicView'),
+        selected: view === 'basic'
+      },
+      {
+        type: 'item',
+        key: 'setInfoView',
+        value: {
+          action: 'setInfoView'
+        },
+        icon: 'newspaper',
+        title: t('screen.nowPlaying.infoView'),
+        selected: view === 'info'
+      },
+      {
+        type: 'item',
+        key: 'setVUMeterView',
+        value: {
+          action: 'setVUMeterView'
+        },
+        icon: 'speed',
+        title: t('screen.nowPlaying.vuMeterView'),
+        selected: view === 'vuMeter'
       },
       {
         type: 'divider',
@@ -396,6 +430,16 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     );
   };
 
+  const { vuMeter: vuMeterSettings } = screenSettings;
+  const vuMeterViewComponent = useMemo(() => {
+    if (view !== 'vuMeter') {
+      return null;
+    }
+    return <VUMeterView {...vuMeterSettings} />;
+
+  }, [ view, vuMeterSettings.templateType, vuMeterSettings.template, vuMeterSettings.meterType,
+    vuMeterSettings.meter, vuMeterSettings.randomRefreshInterval, vuMeterSettings.randomRefreshOnTrackChange ]);
+
   const layoutClasses = classNames([
     styles.Layout,
     props.className
@@ -428,7 +472,9 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
             marqueeTitle={marqueeTitle} />
           : view === 'info' ?
             <InfoView playerState={playerState} />
-            : null}
+            : view === 'vuMeter' ?
+              vuMeterViewComponent
+              : null}
       </div>
     </div>
   );

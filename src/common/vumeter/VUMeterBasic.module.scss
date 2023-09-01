@@ -1,0 +1,25 @@
+.Layout {
+  --top: 0;
+  --left: 0;
+  --width: 100%;
+  --height: 100%;
+  --background: none;
+
+  width: var(--width);
+  height: var(--height);
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  background: var(--background);
+
+  &__foreground {
+    --foreground: none;
+
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: var(--foreground);
+  }
+}

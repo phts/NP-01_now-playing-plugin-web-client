@@ -5,6 +5,7 @@ import { sanitizeImageUrl } from '../utils/track';
 
 interface ImageProps {
   src: HTMLProps<HTMLImageElement>['src'] | null;
+  style?: HTMLProps<HTMLImageElement>['style'];
   className?: HTMLProps<HTMLImageElement>['className'];
   onClick?: HTMLProps<HTMLImageElement>['onClick'];
   onLoad?: (src: string | null) => void;
@@ -92,12 +93,22 @@ function Image(props: ImageProps) {
 
   if (preload) {
     imgAttrs.src = loadedSrc || '';
-    imgAttrs.style = !loadedSrc ? { visibility: 'hidden' } : undefined;
+    imgAttrs.style = {
+      ...props.style
+    };
+    if (!loadedSrc) {
+      imgAttrs.style.visibility = 'hidden';
+    }
   }
   else {
     imgAttrs.src = directSrc || '';
     imgAttrs.onError = onDirectImageError;
-    imgAttrs.style = !directSrc ? { visibility: 'hidden' } : undefined;
+    imgAttrs.style = {
+      ...props.style
+    };
+    if (!directSrc) {
+      imgAttrs.style.visibility = 'hidden';
+    }
     if (currentTargetSrc.current === null) {
       currentTargetSrc.current = targetSrc;
     }

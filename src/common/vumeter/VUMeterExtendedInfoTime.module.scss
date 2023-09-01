@@ -1,0 +1,14 @@
+.Layout {
+  --top: 0;
+  --left: 0;
+  --font-family: inherit;
+  --font-size: inherit;
+  --color: inherit;
+
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  color: var(--color);
+}
