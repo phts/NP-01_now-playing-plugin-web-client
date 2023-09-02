@@ -1,0 +1,9 @@
+.Layout {
+  --top: 0;
+  --left: 0;
+
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  overflow: hidden;
+}
