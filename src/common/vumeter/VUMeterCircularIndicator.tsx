@@ -29,8 +29,8 @@ function VUMeterCircularIndicator(props: VUMeterCircularIndicatorProps) {
     const image = new Image();
     image.src = img;
     image.onload = () => {
-      const top = origin.y - (image.height * 0.5) - distance;
-      const left = origin.x - (image.width * 0.5);
+      const top = origin.y - (image.height / 2) - distance;
+      const left = origin.x - (image.width / 2);
       setOffset({top, left});
     };
     image.onerror = () => {

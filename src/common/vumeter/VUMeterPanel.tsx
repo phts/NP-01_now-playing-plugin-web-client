@@ -138,7 +138,7 @@ function VUMeterPanel(props: VUMeterPanelProps) {
   console.log('render vumeterpanel');
 
   return (
-    props.impl === undefined || props.impl === 'pixi' ? 
+    props.impl === undefined || props.impl === 'pixi' ?
       <VUMeterPixiPanel meter={loadedMeter} size={props.size} offset={props.offset} />
       :
       <VUMeterCSSPanel meter={loadedMeter} size={props.size} offset={props.offset} />

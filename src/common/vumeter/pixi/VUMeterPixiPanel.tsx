@@ -3,9 +3,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './VUMeterPixiPanel.module.scss';
 import * as PIXI from 'pixi.js';
-import { Sprite, Stage } from '@pixi/react';
+import { Container, Sprite } from '@pixi/react';
 import { VUMeter, VUMeterExtended } from 'now-playing-common';
 import deepEqual from 'deep-equal';
+import VUMeterPixiBasic from './VUMeterPixiBasic';
+import VUMeterPixiStage from './VUMeterPixiContextBridge';
 
 export type VUMeterPixiPanelProps = {
   meter: VUMeter;
@@ -23,7 +25,7 @@ const isExtendedMeter = (meter: VUMeter): meter is VUMeterExtended => {
   return Reflect.has(meter, 'extend') && !!Reflect.get(meter, 'extend');
 };
 
-interface LoadedAssets {
+export interface VUMeterPixiLoadedAssets {
   images: {
     screenBackground?: PIXI.Texture;
     background: PIXI.Texture;
@@ -35,33 +37,32 @@ interface LoadedAssets {
 function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   const { meter, offset, size: fitSize } = props;
   const meterRef = useRef<VUMeter | null>(null);
-  const [ loadedAssets, setLoadedAssets ] = useState<LoadedAssets | null>(null);
+  const [ loadedAssets, setLoadedAssets ] = useState<VUMeterPixiLoadedAssets | null>(null);
 
   useEffect(() => {
-    const unloadAssets = () => {
-      return PIXI.Assets.unloadBundle('images');
+    return () => {
+      // Destroy old assets
+      if (loadedAssets) {
+        Object.keys(loadedAssets.images).forEach((key) => (loadedAssets.images[key] as PIXI.Texture).destroy());
+      }
     };
+  }, [ loadedAssets ]);
+
+  useEffect(() => {
     const loadAssets = async() => {
       if (!deepEqual(meter, meterRef.current)) {
         meterRef.current = meter;
-        await unloadAssets();
 
-        const imageBundle: Record<string, string> = {};
-        if (meter.images.screenBackground) {
-          imageBundle.screenBackground = meter.images.screenBackground;
-        }
-        if (meter.images.foreground) {
-          imageBundle.foreground = meter.images.foreground;
-        }
-        imageBundle.background = meter.images.background;
-        imageBundle.indicator = meter.images.indicator;
-
-        PIXI.Assets.addBundle('images', imageBundle);
-        const assets = await PIXI.Assets.loadBundle('images');
-        const { screenBackground, background, foreground, indicator } = assets;
-        console.log('assets: ', assets);
+        const loadImagePromises = [
+          PIXI.Texture.fromURL(meter.images.background),
+          PIXI.Texture.fromURL(meter.images.indicator),
+          meter.images.screenBackground ? PIXI.Texture.fromURL(meter.images.screenBackground) : Promise.resolve(null),
+          meter.images.foreground ? PIXI.Texture.fromURL(meter.images.foreground) : Promise.resolve(null)
+        ];
+        const [ background, indicator, screenBackground, foreground ] = await Promise.all(loadImagePromises);
         if (background && indicator) {
-          const loadedImageAssets: LoadedAssets['images'] = {
+          PIXI.Ticker.shared.maxFPS = 1 / meter.uiRefreshPeriod;
+          const loadedImageAssets: VUMeterPixiLoadedAssets['images'] = {
             background,
             indicator
           };
@@ -85,12 +86,16 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   }, [ meter ]);
 
   if (!loadedAssets) {
-    return;
+    return null;
   }
 
   let scale = 1;
   let offsetDelta = {top: 0, left: 0};
   const background = loadedAssets.images.screenBackground || loadedAssets.images.background;
+  const stageSize = {
+    width: background.width,
+    height: background.height
+  };
   if (fitSize && fitSize.height > 0 && fitSize.width > 0) {
     scale = Math.min(
       fitSize.width / background.width,
@@ -98,11 +103,11 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
     );
 
     if (scale !== 1) {
-      const scaledWidth = background.width * scale;
-      const scaledHeight = background.height * scale;
+      stageSize.width = background.width * scale;
+      stageSize.height = background.height * scale;
       offsetDelta = {
-        top: (fitSize.height - scaledHeight) / 2,
-        left: (fitSize.width - scaledWidth) / 2
+        top: (fitSize.height - stageSize.height) / 2,
+        left: (fitSize.width - stageSize.width) / 2
       };
     }
   }
@@ -115,14 +120,28 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   } as React.CSSProperties;
 
   return (
-    <Stage
+    <VUMeterPixiStage
       className={styles.Layout}
+      width={stageSize.width}
+      height={stageSize.height}
       style={stageStyles}
-      width={fitSize?.width || background.width}
-      height={fitSize?.height || background.height}
+      interactive={'auto'}
     >
-      <Sprite texture={background} scale={{x: scale, y: scale}}/>
-    </Stage>
+      <Container
+        position={{x: 0, y: 0}}
+        scale={scale}>
+        {
+          loadedAssets.images.screenBackground ?
+            <Sprite
+              texture={loadedAssets.images.screenBackground}
+              position={{x: 0, y: 0}}
+            />
+            :
+            null
+        }
+        <VUMeterPixiBasic config={meter} assets={loadedAssets} />
+      </Container>
+    </VUMeterPixiStage>
   );
 }
 

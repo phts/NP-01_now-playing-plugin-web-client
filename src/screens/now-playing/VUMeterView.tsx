@@ -60,6 +60,7 @@ function VUMeterView(props: VUMeterViewProps) {
       <VUMeterPanel
         config={vuMeterPanelConfig}
         size={meterPanelSize}
+        impl='pixi'
       />
     </div>
   );
