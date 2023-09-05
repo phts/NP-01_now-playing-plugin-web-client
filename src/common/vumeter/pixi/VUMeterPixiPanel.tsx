@@ -1,13 +1,17 @@
 /// <reference types="../../../declaration.d.ts" />
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './VUMeterPixiPanel.module.scss';
 import * as PIXI from 'pixi.js';
 import { Container, Sprite } from '@pixi/react';
-import { VUMeter, VUMeterExtended } from 'now-playing-common';
+import { VUMeter } from 'now-playing-common';
 import deepEqual from 'deep-equal';
 import VUMeterPixiBasic from './VUMeterPixiBasic';
 import VUMeterPixiStage from './VUMeterPixiContextBridge';
+import VUMeterPixiExtendedInfo from './VUMeterPixiExtendedInfo';
+import VUMeterErrorPanel from '../VUMeterErrorPanel';
+import { isExtendedMeter } from '../../../utils/vumeter';
+import VUMeterPixiFPS from './VUMeterPixiFPS';
 
 export type VUMeterPixiPanelProps = {
   meter: VUMeter;
@@ -19,31 +23,37 @@ export type VUMeterPixiPanelProps = {
     width: number;
     height: number;
   };
+  showFPS?: boolean;
 }
 
-const isExtendedMeter = (meter: VUMeter): meter is VUMeterExtended => {
-  return Reflect.has(meter, 'extend') && !!Reflect.get(meter, 'extend');
-};
-
-export interface VUMeterPixiLoadedAssets {
+export type VUMeterPixiLoadedAssets = {
+  error: false;
   images: {
     screenBackground?: PIXI.Texture;
     background: PIXI.Texture;
     foreground?: PIXI.Texture;
     indicator: PIXI.Texture;
-  }
+  };
+} | {
+  error: true,
+  message: string
 }
 
+type VUMeterPixiImageAssets = (VUMeterPixiLoadedAssets & { error: false })['images'];
+
 function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
-  const { meter, offset, size: fitSize } = props;
+  const { meter, offset, size: fitSize, showFPS } = props;
   const meterRef = useRef<VUMeter | null>(null);
   const [ loadedAssets, setLoadedAssets ] = useState<VUMeterPixiLoadedAssets | null>(null);
 
   useEffect(() => {
     return () => {
       // Destroy old assets
-      if (loadedAssets) {
-        Object.keys(loadedAssets.images).forEach((key) => (loadedAssets.images[key] as PIXI.Texture).destroy());
+      if (loadedAssets && !loadedAssets.error) {
+        Object.keys(loadedAssets.images).forEach((key) => {
+          const texture = loadedAssets.images[key] as PIXI.Texture;
+          texture.destroy(true);
+        });
       }
     };
   }, [ loadedAssets ]);
@@ -53,16 +63,33 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
       if (!deepEqual(meter, meterRef.current)) {
         meterRef.current = meter;
 
+        setLoadedAssets(null);
+
         const loadImagePromises = [
           PIXI.Texture.fromURL(meter.images.background),
           PIXI.Texture.fromURL(meter.images.indicator),
           meter.images.screenBackground ? PIXI.Texture.fromURL(meter.images.screenBackground) : Promise.resolve(null),
           meter.images.foreground ? PIXI.Texture.fromURL(meter.images.foreground) : Promise.resolve(null)
         ];
-        const [ background, indicator, screenBackground, foreground ] = await Promise.all(loadImagePromises);
+        let loadImageResult: Array<PIXI.Texture | null>;
+        try {
+          loadImageResult = await Promise.all(loadImagePromises);
+        }
+        catch (error) {
+          const errMessageParts = [ 'Failed to load VU meter asset' ];
+          if (error?.target?.src) {
+            errMessageParts.push(error.target.src);
+          }
+          setLoadedAssets({
+            error: true,
+            message: errMessageParts.join(' from: ')
+          });
+          return;
+        }
+        const [ background, indicator, screenBackground, foreground ] = loadImageResult;
         if (background && indicator) {
           PIXI.Ticker.shared.maxFPS = 1 / meter.uiRefreshPeriod;
-          const loadedImageAssets: VUMeterPixiLoadedAssets['images'] = {
+          const loadedImageAssets: VUMeterPixiImageAssets = {
             background,
             indicator
           };
@@ -73,6 +100,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
             loadedImageAssets.foreground = foreground;
           }
           setLoadedAssets({
+            error: false,
             images: loadedImageAssets
           });
         }
@@ -85,8 +113,21 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
     loadAssets();
   }, [ meter ]);
 
+  const extendedInfoComponent = useMemo(() => {
+    if (meter && isExtendedMeter(meter)) {
+      return <VUMeterPixiExtendedInfo config={meter} />;
+    }
+    return null;
+  }, [ meter ]);
+
   if (!loadedAssets) {
     return null;
+  }
+
+  if (loadedAssets.error) {
+    return (
+      <VUMeterErrorPanel message={loadedAssets.message} />
+    );
   }
 
   let scale = 1;
@@ -102,17 +143,13 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
       fitSize.height / background.height
     );
 
-    if (scale !== 1) {
-      stageSize.width = background.width * scale;
-      stageSize.height = background.height * scale;
-      offsetDelta = {
-        top: (fitSize.height - stageSize.height) / 2,
-        left: (fitSize.width - stageSize.width) / 2
-      };
-    }
+    stageSize.width = background.width * scale;
+    stageSize.height = background.height * scale;
+    offsetDelta = {
+      top: (fitSize.height - stageSize.height) / 2,
+      left: (fitSize.width - stageSize.width) / 2
+    };
   }
-
-  console.log('render VUMeterPixiPanel');
 
   const stageStyles = {
     '--top': `${(offset ? offset.top : 0) + offsetDelta.top}px`,
@@ -125,7 +162,10 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
       width={stageSize.width}
       height={stageSize.height}
       style={stageStyles}
-      interactive={'auto'}
+      options={{
+        antialias: true,
+        resolution: window.devicePixelRatio
+      }}
     >
       <Container
         position={{x: 0, y: 0}}
@@ -140,7 +180,17 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
             null
         }
         <VUMeterPixiBasic config={meter} assets={loadedAssets} />
+        {extendedInfoComponent}
       </Container>
+      {
+        showFPS ?
+          <VUMeterPixiFPS
+            position={{x: stageSize.width - 18, y: stageSize.height - 18}}
+            anchor={{x: 1, y: 1}}
+          />
+          :
+          null
+      }
     </VUMeterPixiStage>
   );
 }

@@ -5,6 +5,7 @@ import { random } from 'lodash';
 import { usePlayerState } from '../../contexts/PlayerProvider';
 import VUMeterCSSPanel from './css/VUMeterCSSPanel';
 import VUMeterPixiPanel from './pixi/VUMeterPixiPanel';
+import VUMeterErrorPanel from './VUMeterErrorPanel';
 
 export type VUMeterPanelMeterProps = {
   meterType: 'random';
@@ -35,11 +36,19 @@ export interface VUMeterPanelProps {
   impl?: 'css' | 'pixi';
 }
 
+type LoadedMeter = {
+  error: false;
+  meter: VUMeter;
+} | {
+  error: true;
+  message: string;
+}
+
 function VUMeterPanel(props: VUMeterPanelProps) {
   const { pluginInfo } = useAppContext();
   const playerState = usePlayerState();
   const { config } = props;
-  const [ loadedMeter, setLoadedMeter ] = useState<VUMeter | null>(null);
+  const [ loadedMeter, setLoadedMeter ] = useState<LoadedMeter | null>(null);
   const appUrl = pluginInfo?.appUrl || null;
   const [ refreshTrigger, setRefreshTrigger ] = useState(Date.now());
   const currentPlayerStateRef = useRef(playerState);
@@ -103,23 +112,46 @@ function VUMeterPanel(props: VUMeterPanelProps) {
       try {
         const res = await fetch(url);
         const configRes = (await res.json()) as VUMeterConfig;
-        if (!configRes.meters || configRes.meters.length === 0) {
-          setLoadedMeter(null);
+        if (configRes.error) {
+          setLoadedMeter({
+            error: true,
+            message: configRes.error
+          });
           return;
         }
         const meters = configRes.meters;
+        if (!meters || meters.length === 0) {
+          const errMessage = template ? `No VU meters defined in '${template}` : 'No VU meters found';
+          setLoadedMeter({
+            error: true,
+            message: errMessage
+          });
+          return;
+        }
         let targetMeter: VUMeter | null = null;
         if (template && meter) {
           targetMeter = meters.find((m) => m.name === meter) || null;
+          if (!targetMeter) {
+            setLoadedMeter({
+              error: true,
+              message: `Meter '${meter}' not found in '${template}'`
+            });
+            return;
+          }
         }
-        if (!targetMeter) {
-          targetMeter = meters[random(0, meters.length - 1)] || null;
+        else {
+          targetMeter = meters[random(0, meters.length - 1)];
         }
-        setLoadedMeter(targetMeter);
+        setLoadedMeter({
+          error: false,
+          meter: targetMeter
+        });
       }
       catch (error) {
-        // TODO: pass error to VUMeterPanel
-        setLoadedMeter(null);
+        setLoadedMeter({
+          error: true,
+          message: `Failed to load VU meter template from: ${url}`
+        });
       }
     };
 
@@ -135,13 +167,26 @@ function VUMeterPanel(props: VUMeterPanelProps) {
     return null;
   }
 
-  console.log('render vumeterpanel');
+  if (loadedMeter.error) {
+    return (
+      <VUMeterErrorPanel message={loadedMeter.message} />
+    );
+  }
 
   return (
     props.impl === undefined || props.impl === 'pixi' ?
-      <VUMeterPixiPanel meter={loadedMeter} size={props.size} offset={props.offset} />
+      <VUMeterPixiPanel
+        meter={loadedMeter.meter}
+        size={props.size}
+        offset={props.offset}
+        showFPS
+      />
       :
-      <VUMeterCSSPanel meter={loadedMeter} size={props.size} offset={props.offset} />
+      <VUMeterCSSPanel
+        meter={loadedMeter.meter}
+        size={props.size}
+        offset={props.offset}
+      />
   );
 }
 

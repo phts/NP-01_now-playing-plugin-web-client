@@ -1,56 +1,31 @@
-/// <reference types="../../declaration.d.ts" />
+/// <reference types="../../../declaration.d.ts" />
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import styles from './VUMeterBasic.module.scss';
+import styles from './VUMeterCSSBasic.module.scss';
 import { VUMeter, VUMeterData } from 'now-playing-common';
-import VUMeterCircularIndicator from './VUMeterCircularIndicator';
-import { useSocket } from '../../contexts/SocketProvider';
+import VUMeterCSSCircularIndicator from './VUMeterCSSCircularIndicator';
+import { useSocket } from '../../../contexts/SocketProvider';
 import deepEqual from 'deep-equal';
-import VUMeterLinearDefaultIndicator from './VUMeterLinearDefaultIndicator';
-import VUMeterLinearIndicatorCommonProps from './VUMeterLinearIndicatorCommonProps';
-import VUMeterLinearSingleIndicator from './VUMeterLinearSingleIndicator';
+import VUMeterCSSLinearDefaultIndicator from './VUMeterCSSLinearDefaultIndicator';
+import VUMeterCSSLinearIndicatorCommonProps from './VUMeterCSSLinearIndicatorCommonProps';
+import VUMeterCSSLinearSingleIndicator from './VUMeterCSSLinearSingleIndicator';
+import { VUMeterCSSLoadedAssets } from './VUMeterCSSPanel';
 
-export interface VUMeterBasicProps {
-  config: VUMeter | null;
-}
-
-interface MeterSize {
-  width: number;
-  height: number;
+export interface VUMeterCSSBasicProps {
+  config: VUMeter;
+  assets: VUMeterCSSLoadedAssets & { error: false }
 }
 
 const EMPTY_METER_DATA = {left: 0, right: 0, mono: 0};
 
-function VUMeterBasic(props: VUMeterBasicProps) {
+function VUMeterCSSBasic(props: VUMeterCSSBasicProps) {
   const [ meterData, setMeterData ] = useState<VUMeterData>(EMPTY_METER_DATA);
-  const { config } = props;
+  const { config, assets } = props;
+  const { background, foreground, indicator } = assets.images;
   const { socket } = useSocket();
-  const [ size, setSize ] = useState<MeterSize | null>(null);
   const latestMeterDataRef = useRef<VUMeterData>(meterData);
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastRefreshMeterData = useRef<VUMeterData>(EMPTY_METER_DATA);
-
-  useEffect(() => {
-    if (!config) {
-      return;
-    }
-    const image = new Image();
-    image.src = config.images.background;
-    image.onload = () => {
-      setSize({
-        width: image.width,
-        height: image.height
-      });
-    };
-    image.onerror = () => {
-      console.log(`Failed to load image from ${config.images.background}`);
-      setSize(null);
-    };
-
-    return () => {
-      setSize(null);
-    };
-  }, [ config ]);
 
   const clearRefreshTimer = useCallback(() => {
     if (refreshTimerRef.current) {
@@ -96,13 +71,13 @@ function VUMeterBasic(props: VUMeterBasicProps) {
   const getIndicator = useCallback((config: VUMeter, _meterData: VUMeterData) => {
     if (config.type === 'circular') {
       const circularBaseStyles = {
-        img: config.images.indicator,
+        img: indicator,
         stepsPerDegree: config.stepsPerDegree,
         distance: config.distance
       };
       if (config.channels === 1) {
         return (
-          <VUMeterCircularIndicator
+          <VUMeterCSSCircularIndicator
             {...circularBaseStyles}
             origin={config.monoOrigin}
             startAngle={config.angle.start}
@@ -113,13 +88,13 @@ function VUMeterBasic(props: VUMeterBasicProps) {
 
       return (
         <>
-          <VUMeterCircularIndicator
+          <VUMeterCSSCircularIndicator
             {...circularBaseStyles}
             origin={config.leftOrigin}
             startAngle={config.angle.leftStart}
             stopAngle={config.angle.leftStop}
             value={_meterData.left} />
-          <VUMeterCircularIndicator
+          <VUMeterCSSCircularIndicator
             {...circularBaseStyles}
             origin={config.rightOrigin}
             startAngle={config.angle.rightStart}
@@ -143,8 +118,8 @@ function VUMeterBasic(props: VUMeterBasicProps) {
             return alignment === 'left' ? 'right' : 'left';
         }
       };
-      const linearLeftProps: VUMeterLinearIndicatorCommonProps = {
-        img: config.images.indicator,
+      const linearLeftProps: VUMeterCSSLinearIndicatorCommonProps = {
+        img: indicator,
         top: config.left.y,
         left: config.left.x,
         position: config.position,
@@ -153,8 +128,8 @@ function VUMeterBasic(props: VUMeterBasicProps) {
         flipX: config.flipLeft.x,
         value: _meterData.left
       };
-      const linearRightProps: VUMeterLinearIndicatorCommonProps = {
-        img: config.images.indicator,
+      const linearRightProps: VUMeterCSSLinearIndicatorCommonProps = {
+        img: indicator,
         top: config.right.y,
         left: config.right.x,
         position: config.position,
@@ -166,43 +141,39 @@ function VUMeterBasic(props: VUMeterBasicProps) {
       if (config.indicatorType === 'single') {
         return (
           <>
-            <VUMeterLinearSingleIndicator {...linearLeftProps} />
-            <VUMeterLinearSingleIndicator {...linearRightProps} />
+            <VUMeterCSSLinearSingleIndicator {...linearLeftProps} />
+            <VUMeterCSSLinearSingleIndicator {...linearRightProps} />
           </>
         );
       }
       return (
         <>
-          <VUMeterLinearDefaultIndicator {...linearLeftProps} />
-          <VUMeterLinearDefaultIndicator {...linearRightProps} />
+          <VUMeterCSSLinearDefaultIndicator {...linearLeftProps} />
+          <VUMeterCSSLinearDefaultIndicator {...linearRightProps} />
         </>
       );
     }
   }, []);
 
-  if (!size || !config) {
-    return null;
-  }
-
   const panelStyles = {
     '--top': `${config.meter.y}px`,
     '--left': `${config.meter.x}px`,
-    '--width': `${size.width}px`,
-    '--height': `${size.height}px`,
-    '--background': `url("${config.images.background}")`
+    '--width': `${background.width}px`,
+    '--height': `${background.height}px`,
+    '--background': `url("${background.src}")`
   } as React.CSSProperties;
 
   return (
     <div className={styles.Layout} style={panelStyles}>
       {getIndicator(config, meterData)}
 
-      {config.images.foreground ?
+      {foreground ?
         <div
           className={styles['Layout__foreground']}
-          style={{'--foreground': `url("${config.images.foreground}")`} as React.CSSProperties}></div>
+          style={{'--foreground': `url("${foreground.src}")`} as React.CSSProperties}></div>
         : null}
     </div>
   );
 }
 
-export default VUMeterBasic;
+export default VUMeterCSSBasic;

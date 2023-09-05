@@ -1,10 +1,11 @@
-/// <reference types="../../declaration.d.ts" />
+/// <reference types="../../../declaration.d.ts" />
 
 import React, { useEffect, useState } from 'react';
-import styles from './VUMeterCircularIndicator.module.scss';
+import styles from './VUMeterCSSCircularIndicator.module.scss';
+import { getCircularMeterIndicatorAngle } from '../../../utils/vumeter';
 
-export interface VUMeterCircularIndicatorProps {
-  img: string;
+export interface VUMeterCSSCircularIndicatorProps {
+  img: HTMLImageElement;
   stepsPerDegree: number;
   startAngle: number;
   stopAngle: number;
@@ -21,22 +22,14 @@ interface IndicatorOffset {
   left: number;
 }
 
-function VUMeterCircularIndicator(props: VUMeterCircularIndicatorProps) {
+function VUMeterCSSCircularIndicator(props: VUMeterCSSCircularIndicatorProps) {
   const { img, startAngle, stopAngle, distance, origin, value } = props;
   const [ offset, setOffset ] = useState<IndicatorOffset | null>(null);
 
   useEffect(() => {
-    const image = new Image();
-    image.src = img;
-    image.onload = () => {
-      const top = origin.y - (image.height / 2) - distance;
-      const left = origin.x - (image.width / 2);
-      setOffset({top, left});
-    };
-    image.onerror = () => {
-      console.log(`Failed to load image from ${img}`);
-      setOffset(null);
-    };
+    const top = origin.y - (img.height / 2) - distance;
+    const left = origin.x - (img.width / 2);
+    setOffset({top, left});
 
     return () => {
       setOffset(null);
@@ -47,11 +40,11 @@ function VUMeterCircularIndicator(props: VUMeterCircularIndicatorProps) {
     return null;
   }
 
-  const rotate = (((stopAngle - startAngle) / 100 * value) + startAngle) * -1;
+  const rotate = getCircularMeterIndicatorAngle(startAngle, stopAngle, value);
 
   return (
     <img
-      src={props.img}
+      src={img.src}
       className={styles.Layout}
       style={{
         '--top': `${offset.top}px`,
@@ -62,4 +55,4 @@ function VUMeterCircularIndicator(props: VUMeterCircularIndicatorProps) {
   );
 }
 
-export default VUMeterCircularIndicator;
+export default VUMeterCSSCircularIndicator;

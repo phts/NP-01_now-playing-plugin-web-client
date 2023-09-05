@@ -1,31 +1,24 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import VUMeterPixiLinearIndicatorCommonProps from './VUMeterPixiLinearIndicatorCommonProps';
-import { Container, Graphics, Sprite, useTick } from '@pixi/react';
+import { Sprite, useTick } from '@pixi/react';
 import { getLinearMeterIndicatorLength } from '../../../utils/vumeter';
 import { usePlayerState } from '../../../contexts/PlayerProvider';
 
-export type VUMeterPixiLinearDefaultIndicatorProps = VUMeterPixiLinearIndicatorCommonProps;
+export type VUMeterPixiLinearSingleIndicatorProps = VUMeterPixiLinearIndicatorCommonProps;
 
 interface IndicatorSpriteProps {
   position: {
     x: number;
     y: number;
   };
-  maskProps: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
   flipX: boolean;
 }
 
-function VUMeterPixiLinearDefaultIndicator(props: VUMeterPixiLinearDefaultIndicatorProps) {
+function VUMeterPixiLinearSingleIndicator(props: VUMeterPixiLinearSingleIndicatorProps) {
   const { img, top, left, position, stepWidth, direction, flipX, getValue } = props;
   const playerState = usePlayerState();
   const [ indicatorSpriteProps, setIndicatorSpriteProps ] = useState<IndicatorSpriteProps | null>(null);
   const lastValueRef = useRef(NaN);
-  const maskRef = useRef(null);
 
   const updateIndicator = useCallback(() => {
     const value = getValue();
@@ -33,38 +26,33 @@ function VUMeterPixiLinearDefaultIndicator(props: VUMeterPixiLinearDefaultIndica
       return;
     }
     lastValueRef.current = value;
-    const { current: indicatorLength, max: fullLength } = getLinearMeterIndicatorLength(position, stepWidth, value);
-    let mask: {
-      x: number,
-      y: number,
-      width: number,
-      height: number
-    };
-    const offset = { x: left, y: top };
+
+    const { current: distance } = getLinearMeterIndicatorLength(position, stepWidth, value);
+
+    let offset: { x: number; y: number; };
     switch (direction) {
       case 'left':
+        offset = {
+          x: left - distance,
+          y: top
+        };
+        break;
       case 'right':
-        mask = {
-          x: 0,
-          y: 0,
-          width: indicatorLength,
-          height: img.height
+        offset = {
+          x: left + distance,
+          y: top
         };
         break;
       case 'up':
-        mask = {
-          x: 0,
-          y: fullLength - indicatorLength,
-          width: img.width,
-          height: indicatorLength
+        offset = {
+          x: left,
+          y: top - distance
         };
         break;
       case 'down':
-        mask = {
-          x: 0,
-          y: 0,
-          width: img.width,
-          height: indicatorLength
+        offset = {
+          x: left,
+          y: top + distance
         };
         break;
     }
@@ -74,7 +62,6 @@ function VUMeterPixiLinearDefaultIndicator(props: VUMeterPixiLinearDefaultIndica
     }
 
     setIndicatorSpriteProps({
-      maskProps: mask,
       position: offset,
       flipX
     });
@@ -87,31 +74,16 @@ function VUMeterPixiLinearDefaultIndicator(props: VUMeterPixiLinearDefaultIndica
     if (!indicatorSpriteProps) {
       return null;
     }
-    const maskProps = indicatorSpriteProps.maskProps;
     return (
-      <Container
+      <Sprite
+        texture={img}
         position={indicatorSpriteProps.position}
-        scale={{x: indicatorSpriteProps.flipX ? -1 : 1, y: 1}}
-        mask={maskRef.current}
-        visible={!!maskRef.current}
-      >
-        <Sprite
-          texture={img}
-        />
-        <Graphics
-          draw={(g) => {
-            g.clear()
-              .beginFill(0xffffff)
-              .drawRect(maskProps.x, maskProps.y, maskProps.width, maskProps.height)
-              .endFill();
-          }}
-          ref={maskRef}
-        />
-      </Container>
+        scale={{ x: indicatorSpriteProps.flipX ? -1 : 1, y: 1 }}
+      />
     );
   }, [ img, indicatorSpriteProps ]);
 
   return indicatorSprite;
 }
 
-export default VUMeterPixiLinearDefaultIndicator;
+export default VUMeterPixiLinearSingleIndicator;

@@ -1,19 +1,38 @@
 import React from 'react';
-import { SocketContext, SocketProvider } from '../../../contexts/SocketProvider';
-import { PlayerStateProvider } from '../../../contexts/player/PlayerStateProvider';
+import { AppContext } from '../../../contexts/AppContextProvider';
+import { SocketContext } from '../../../contexts/SocketProvider';
+import { PlayerStateContext } from '../../../contexts/player/PlayerStateProvider';
 import { Stage } from '@pixi/react';
+import { PlayerSeekContext } from '../../../contexts/player/PlayerSeekProvider';
 
 const ContextBridge = ({ children, render }) => {
   return (
-    <SocketContext.Consumer>
-      {(value) => render(
-        <SocketContext.Provider value={value}>
-          {children}
-        </SocketContext.Provider>
-      )
-      }
-
-    </SocketContext.Consumer>
+    <AppContext.Consumer>
+      {(appContextValue) => (
+        <PlayerStateContext.Consumer>
+          {(playerStateContextValue) => (
+            <PlayerSeekContext.Consumer>
+              {(playerSeekContextValue) => (
+                <SocketContext.Consumer>
+                  {(socketContextValue) => render(
+                    <AppContext.Provider value={appContextValue}>
+                      <PlayerStateContext.Provider value={playerStateContextValue}>
+                        <PlayerSeekContext.Provider value={playerSeekContextValue}>
+                          <SocketContext.Provider value={socketContextValue}>
+                            {children}
+                          </SocketContext.Provider>
+                        </PlayerSeekContext.Provider>
+                      </PlayerStateContext.Provider>
+                    </AppContext.Provider>
+                  )
+                  }
+                </SocketContext.Consumer>
+              )}
+            </PlayerSeekContext.Consumer>
+          )}
+        </PlayerStateContext.Consumer>
+      )}
+    </AppContext.Consumer>
   );
 };
 

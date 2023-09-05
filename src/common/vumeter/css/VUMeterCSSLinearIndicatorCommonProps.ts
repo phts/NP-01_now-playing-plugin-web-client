@@ -1,5 +1,5 @@
-interface VUMeterLinearIndicatorCommonProps {
-  img: string;
+interface VUMeterCSSLinearIndicatorCommonProps {
+  img: HTMLImageElement;
   top: number;
   left: number;
   position: {
@@ -15,4 +15,4 @@ interface VUMeterLinearIndicatorCommonProps {
   value: number;
 }
 
-export default VUMeterLinearIndicatorCommonProps;
+export default VUMeterCSSLinearIndicatorCommonProps;

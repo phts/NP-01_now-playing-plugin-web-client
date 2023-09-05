@@ -1,6 +1,8 @@
 import { Sprite, useTick } from '@pixi/react';
 import * as PIXI from 'pixi.js';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { getCircularMeterIndicatorAngle } from '../../../utils/vumeter';
+import { usePlayerState } from '../../../contexts/PlayerProvider';
 
 export interface VUMeterPixiCircularIndicatorProps {
   img: PIXI.Texture;
@@ -29,19 +31,21 @@ interface IndicatorSpriteProps {
 
 function VUMeterPixiCircularIndicator(props: VUMeterPixiCircularIndicatorProps) {
   const { img, startAngle, stopAngle, distance, origin, getValue } = props;
+  const playerState = usePlayerState();
   const [ indicatorSpriteProps, setIndicatorSpriteProps ] = useState<IndicatorSpriteProps | null>(null);
   const lastValueRef = useRef(NaN);
 
-  useTick(() => {
+  const updateIndicator = useCallback(() => {
     const value = getValue();
     if (lastValueRef.current === value) {
       return;
     }
+    lastValueRef.current = value;
     const position = {
-      x: origin.x, // - (img.width / 2),
-      y: origin.y// - (img.height / 2) - distance
+      x: origin.x,
+      y: origin.y
     };
-    const angle = (((stopAngle - startAngle) / 100 * value) + startAngle) * -1;
+    const angle = getCircularMeterIndicatorAngle(startAngle, stopAngle, value);
     const pivot = {
       x: img.width / 2,
       y: (img.height / 2) + distance
@@ -51,7 +55,10 @@ function VUMeterPixiCircularIndicator(props: VUMeterPixiCircularIndicatorProps) 
       pivot,
       angle
     });
-  });
+  }, [ img, startAngle, stopAngle, distance, origin, getValue ]);
+
+  const enableTick = playerState.status === 'play' || !indicatorSpriteProps || lastValueRef.current !== 0;
+  useTick(updateIndicator, enableTick);
 
   const indicatorSprite = useMemo(() => {
     if (!indicatorSpriteProps) {

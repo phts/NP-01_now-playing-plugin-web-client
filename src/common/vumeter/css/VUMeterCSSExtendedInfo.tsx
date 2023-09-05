@@ -1,41 +1,24 @@
-/// <reference types="../../declaration.d.ts" />
+/// <reference types="../../../declaration.d.ts" />
 
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import styles from './VUMeterExtendedInfo.module.scss';
+import styles from './VUMeterCSSExtendedInfo.module.scss';
 import { VUMeterExtended } from 'now-playing-common';
-import { usePlayerState } from '../../contexts/PlayerProvider';
-import { PlayerState } from '../../contexts/player/PlayerStateProvider';
-import { useAppContext } from '../../contexts/AppContextProvider';
-import { getFormatIcon, getFormatResolution } from '../../utils/track';
-import Image from '../Image';
+import { usePlayerState } from '../../../contexts/PlayerProvider';
+import { PlayerState } from '../../../contexts/player/PlayerStateProvider';
+import { useAppContext } from '../../../contexts/AppContextProvider';
+import { getFormatIcon, getFormatResolution } from '../../../utils/track';
+import Image from '../../Image';
 import { ReactSVG } from 'react-svg';
-import VUMeterExtendedInfoTime from './VUMeterExtendedInfoTime';
+import VUMeterCSSExtendedInfoTime from './VUMeterCSSExtendedInfoTime';
 import Marquee from 'react-fast-marquee';
+import { VU_METER_FONT_FAMILY, loadMeterFonts } from '../../../utils/vumeter';
 
-export interface VUMeterPanelExtendedInfoProps {
+export interface VUMeterCSSExtendedInfoProps {
   config: Pick<VUMeterExtended, 'playInfo' | 'albumart' | 'timeRemaining' | 'font'>;
 }
 
-const FONT_FAMILY = {
-  light: 'VUMeter Light',
-  regular: 'VUMeter Regular',
-  bold: 'VUMeter Bold',
-  digi: 'VUMeter Digi'
-};
-
-const loadFont = async (family: string, url: string) => {
-  const fontFace = new FontFace(family, `url("${url}")`);
-  try {
-    const loadedFont = await fontFace.load();
-    document.fonts.add(loadedFont);
-  }
-  catch (error) {
-    console.log(`Failed to load font ${url}:`, error);
-  }
-};
-
-function VUMeterPanelExtendedInfo(props: VUMeterPanelExtendedInfoProps) {
+function VUMeterCSSExtendedInfo(props: VUMeterCSSExtendedInfoProps) {
   const { pluginInfo } = useAppContext();
   const playerState = usePlayerState();
   const { config } = props;
@@ -54,13 +37,7 @@ function VUMeterPanelExtendedInfo(props: VUMeterPanelExtendedInfoProps) {
 
   useEffect(() => {
     if (config) {
-      const loadFontPromises = [
-        loadFont(FONT_FAMILY.light, config.font.url.light),
-        loadFont(FONT_FAMILY.regular, config.font.url.regular),
-        loadFont(FONT_FAMILY.bold, config.font.url.bold),
-        loadFont(FONT_FAMILY.digi, config.font.url.digi)
-      ];
-      Promise.all(loadFontPromises).then(() => {
+      loadMeterFonts(config.font).then(() => {
         setFontsLoaded(true);
       });
     }
@@ -129,7 +106,7 @@ function VUMeterPanelExtendedInfo(props: VUMeterPanelExtendedInfoProps) {
     ]);
 
     const titleStyle = {
-      '--font-family': `"${FONT_FAMILY[playInfo.title.style]}", var(--app-font-family)`,
+      '--font-family': `"${VU_METER_FONT_FAMILY[playInfo.title.style]}", var(--app-font-family)`,
       '--font-size': `${font.size[playInfo.title.style]}px`,
       '--color': font.color
     } as React.CSSProperties;
@@ -174,7 +151,7 @@ function VUMeterPanelExtendedInfo(props: VUMeterPanelExtendedInfoProps) {
       '--top': `${pi.position.y}px`,
       '--left': `${pi.position.x}px`,
       '--width': `${playInfo.maxWidth}px`,
-      '--font-family': `"${FONT_FAMILY[pi.style]}", var(--app-font-family)`,
+      '--font-family': `"${VU_METER_FONT_FAMILY[pi.style]}", var(--app-font-family)`,
       '--font-size': `${font.size[pi.style]}px`,
       '--color': font.color
     } as React.CSSProperties;
@@ -226,9 +203,9 @@ function VUMeterPanelExtendedInfo(props: VUMeterPanelExtendedInfoProps) {
       {getTextComponent('album', 'Album', 'album')}
       {getTextComponent('sampleRate', 'SampleRate', 'samplerate')}
       {getTrackTypeComponent()}
-      <VUMeterExtendedInfoTime config={config} />
+      <VUMeterCSSExtendedInfoTime config={config} />
     </>
   );
 }
 
-export default VUMeterPanelExtendedInfo;
+export default VUMeterCSSExtendedInfo;

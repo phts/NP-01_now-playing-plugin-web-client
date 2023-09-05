@@ -1,10 +1,13 @@
 /// <reference types="../../../declaration.d.ts" />
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './VUMeterCSSPanel.module.scss';
-import { VUMeter, VUMeterExtended } from 'now-playing-common';
-import VUMeterExtendedInfo from '../VUMeterExtendedInfo';
-import VUMeterBasic from '../VUMeterBasic';
+import { VUMeter } from 'now-playing-common';
+import VUMeterCSSExtendedInfo from './VUMeterCSSExtendedInfo';
+import VUMeterCSSBasic from './VUMeterCSSBasic';
+import { isExtendedMeter } from '../../../utils/vumeter';
+import deepEqual from 'deep-equal';
+import VUMeterErrorPanel from '../VUMeterErrorPanel';
 
 export type VUMeterCSSPanelProps = {
   meter: VUMeter;
@@ -18,74 +21,135 @@ export type VUMeterCSSPanelProps = {
   };
 }
 
-interface PanelSize {
-  width: number;
-  height: number;
+export type VUMeterCSSLoadedAssets = {
+  error: false;
+  images: {
+    screenBackground?: HTMLImageElement;
+    background: HTMLImageElement;
+    foreground?: HTMLImageElement;
+    indicator: HTMLImageElement;
+  };
+} | {
+  error: true,
+  message: string
 }
 
-const isExtendedMeter = (meter: VUMeter): meter is VUMeterExtended => {
-  return Reflect.has(meter, 'extend') && !!Reflect.get(meter, 'extend');
-};
+type VUMeterCSSImageAssets = (VUMeterCSSLoadedAssets & { error: false })['images'];
 
 function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
   const { meter, offset, size: fitSize } = props;
-  const [ size, setSize ] = useState<PanelSize | null>(null);
+  const meterRef = useRef<VUMeter | null>(null);
+  const [ loadedAssets, setLoadedAssets ] = useState<VUMeterCSSLoadedAssets | null>(null);
 
   useEffect(() => {
-    const image = new Image();
-    image.src = meter.images.screenBackground || meter.images.background;
-    image.onload = () => {
-      setSize({
-        width: image.width,
-        height: image.height
+    const loadWithImageElement = (url: string) => {
+      return new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => {
+          resolve(image);
+        };
+        image.onerror = () => {
+          console.log(`Failed to load image from ${url}`);
+          reject({src: url});
+        };
+        image.src = url;
       });
     };
-    image.onerror = () => {
-      console.log(`Failed to load image from ${image.src}`);
-      setSize(null);
+
+    const loadAssets = async() => {
+      if (!deepEqual(meter, meterRef.current)) {
+        meterRef.current = meter;
+
+        setLoadedAssets(null);
+
+        const loadImagePromises = [
+          loadWithImageElement(meter.images.background),
+          loadWithImageElement(meter.images.indicator),
+          meter.images.screenBackground ? loadWithImageElement(meter.images.screenBackground) : Promise.resolve(null),
+          meter.images.foreground ? loadWithImageElement(meter.images.foreground) : Promise.resolve(null)
+        ];
+        let loadImageResult: Array<HTMLImageElement | null>;
+        try {
+          loadImageResult = await Promise.all(loadImagePromises);
+        }
+        catch (error) {
+          const errMessageParts = [ 'Failed to load VU meter asset' ];
+          if (error?.src) {
+            errMessageParts.push(error.src);
+          }
+          setLoadedAssets({
+            error: true,
+            message: errMessageParts.join(' from: ')
+          });
+          return;
+        }
+        const [ background, indicator, screenBackground, foreground ] = loadImageResult;
+        if (background && indicator) {
+          const loadedImageAssets: VUMeterCSSImageAssets = {
+            background,
+            indicator
+          };
+          if (screenBackground) {
+            loadedImageAssets.screenBackground = screenBackground;
+          }
+          if (foreground) {
+            loadedImageAssets.foreground = foreground;
+          }
+          setLoadedAssets({
+            error: false,
+            images: loadedImageAssets
+          });
+        }
+        else {
+          setLoadedAssets(null);
+        }
+      }
     };
 
-    return () => {
-      setSize(null);
-    };
+    loadAssets();
   }, [ meter ]);
 
   const extendedInfoComponent = useMemo(() => {
     if (meter && isExtendedMeter(meter)) {
-      return <VUMeterExtendedInfo config={meter} />;
+      return <VUMeterCSSExtendedInfo config={meter} />;
     }
     return null;
   }, [ meter ]);
 
-  if (!size || !meter) {
+  if (!loadedAssets) {
     return null;
   }
 
+  if (loadedAssets.error) {
+    return (
+      <VUMeterErrorPanel message={loadedAssets.message} />
+    );
+  }
+
+  const background = loadedAssets.images.screenBackground || loadedAssets.images.background;
   let scale = 1;
   let offsetDelta = {top: 0, left: 0};
   if (fitSize && fitSize.height > 0 && fitSize.width > 0) {
     scale = Math.min(
-      fitSize.width / size.width,
-      fitSize.height / size.height
+      fitSize.width / background.width,
+      fitSize.height / background.height
     );
 
-    if (scale !== 1) {
-      const scaledWidth = size.width * scale;
-      const scaledHeight = size.height * scale;
-      offsetDelta = {
-        top: (fitSize.height - scaledHeight) / 2,
-        left: (fitSize.width - scaledWidth) / 2
-      };
-    }
+    const scaledWidth = background.width * scale;
+    const scaledHeight = background.height * scale;
+    offsetDelta = {
+      top: (fitSize.height - scaledHeight) / 2,
+      left: (fitSize.width - scaledWidth) / 2
+    };
   }
 
-  const screenBackground = meter.images.screenBackground;
+  const screenBackground = loadedAssets.images.screenBackground;
   const panelStyles = {
     '--top': `${(offset ? offset.top : 0) + offsetDelta.top}px`,
     '--left': `${(offset ? offset.left : 0) + offsetDelta.left}px`,
-    '--width': `${size.width}px`,
-    '--height': `${size.height}px`,
-    '--background': screenBackground ? `url("${screenBackground}")` : 'none'
+    '--width': `${background.width}px`,
+    '--height': `${background.height}px`,
+    '--background': screenBackground ? `url("${screenBackground.src}")` : 'none'
   } as React.CSSProperties;
 
   if (scale !== 1) {
@@ -93,11 +157,9 @@ function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
     panelStyles.transformOrigin = '0 0';
   }
 
-  console.log('render vumeterpanel');
-
   return (
     <div className={styles.Layout} style={panelStyles}>
-      <VUMeterBasic config={meter} />
+      <VUMeterCSSBasic config={meter} assets={loadedAssets} />
       {extendedInfoComponent}
     </div>
   );

@@ -1,20 +1,18 @@
-/// <reference types="../../declaration.d.ts" />
+/// <reference types="../../../declaration.d.ts" />
 
 import React from 'react';
 import classNames from 'classnames';
-import styles from './VUMeterLinearIndicator.module.scss';
-import VUMeterLinearIndicatorCommonProps from './VUMeterLinearIndicatorCommonProps';
+import styles from './VUMeterCSSLinearIndicator.module.scss';
+import VUMeterCSSLinearIndicatorCommonProps from './VUMeterCSSLinearIndicatorCommonProps';
+import { getLinearMeterIndicatorLength } from '../../../utils/vumeter';
 
-export type VUMeterLinearSingleIndicatorProps = VUMeterLinearIndicatorCommonProps;
+export type VUMeterCSSLinearSingleIndicatorProps = VUMeterCSSLinearIndicatorCommonProps;
 
-function VUMeterLinearSingleIndicator(props: VUMeterLinearSingleIndicatorProps) {
+function VUMeterCSSLinearSingleIndicator(props: VUMeterCSSLinearSingleIndicatorProps) {
   const { img, top, left, position, stepWidth, direction, flipX, value } = props;
 
-  const maxSteps = position.regular + position.overload;
-  const steps = Math.round((maxSteps / 100) * value);
-  const regularSteps = Math.min(steps, position.regular);
-  const overloadSteps = steps - regularSteps;
-  const distance = (regularSteps * stepWidth.regular) + (overloadSteps * stepWidth.overload);
+  const { current: distance } = getLinearMeterIndicatorLength(position, stepWidth, value);
+
   let offset: { top: number; left: number; };
   switch (direction) {
     case 'left':
@@ -50,7 +48,7 @@ function VUMeterLinearSingleIndicator(props: VUMeterLinearSingleIndicatorProps) 
 
   return (
     <img
-      src={img}
+      src={img.src}
       className={mainClassNames}
       style={{
         '--top': `${offset.top}px`,
@@ -59,4 +57,4 @@ function VUMeterLinearSingleIndicator(props: VUMeterLinearSingleIndicatorProps) 
   );
 }
 
-export default VUMeterLinearSingleIndicator;
+export default VUMeterCSSLinearSingleIndicator;
