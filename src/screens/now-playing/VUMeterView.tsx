@@ -2,12 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from './VUMeterView.module.scss';
-import { CommonSettingsOf, NowPlayingScreenSettings } from 'now-playing-common';
+import { CommonSettingsCategory, CommonSettingsOf, NowPlayingScreenSettings } from 'now-playing-common';
 import VUMeterPanel, { VUMeterPanelMeterProps, VUMeterPanelProps } from '../../common/vumeter/VUMeterPanel';
+import { useSettings } from '../../contexts/SettingsProvider';
+import { useAppContext } from '../../contexts/AppContextProvider';
 
 export type VUMeterViewProps = CommonSettingsOf<NowPlayingScreenSettings>['vuMeter'];
 
 function VUMeterView(props: VUMeterViewProps) {
+  const { isKiosk } = useAppContext();
+  const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
   const [ meterPanelSize, setMeterPanelSize ] = useState({width: window.innerWidth, height: window.innerHeight});
 
   useEffect(() => {
@@ -55,12 +59,24 @@ function VUMeterView(props: VUMeterViewProps) {
     };
   }
 
+  let vuMeterImpl: 'pixi' | 'css';
+  const renderingSettings = isKiosk ?
+    performanceSettings.vuMeterRenderingKiosk :
+    performanceSettings.vuMeterRenderingOtherDevices;
+  switch (renderingSettings) {
+    case 'webgl':
+      vuMeterImpl = 'pixi';
+      break;
+    default:
+      vuMeterImpl = 'css';
+  }
+
   return (
     <div className={styles.Layout}>
       <VUMeterPanel
         config={vuMeterPanelConfig}
         size={meterPanelSize}
-        impl='pixi'
+        impl={vuMeterImpl}
       />
     </div>
   );

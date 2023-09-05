@@ -179,7 +179,6 @@ function VUMeterPanel(props: VUMeterPanelProps) {
         meter={loadedMeter.meter}
         size={props.size}
         offset={props.offset}
-        showFPS
       />
       :
       <VUMeterCSSPanel

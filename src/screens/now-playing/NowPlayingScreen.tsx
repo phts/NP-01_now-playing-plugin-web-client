@@ -38,14 +38,17 @@ interface NowPlayingScreenRestoreState {
   previouslyMounted?: boolean;
 }
 
-const getStartupView = (startupOptions: StartupOptions) => {
-  if (startupOptions.activeScreen === 'nowPlaying.basicView') {
-    return 'basic';
+const getStartupView = (startupOptions: StartupOptions): NowPlayingScreenProps['view'] => {
+  switch (startupOptions.activeScreen) {
+    case 'nowPlaying.basicView':
+      return 'basic';
+    case 'nowPlaying.infoView':
+      return 'info';
+    case 'nowPlaying.vuMeter':
+      return 'vuMeter';
+    default:
+      return undefined;
   }
-  else if (startupOptions.activeScreen === 'nowPlaying.infoView') {
-    return 'info';
-  }
-  return undefined;
 };
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
@@ -178,9 +181,13 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
 
   const getDockChildren = (position: DockComponentPlacement) => {
     const children: { order: number; component: React.JSX.Element; }[] = [];
+    const vuMeterViewActive = view === 'vuMeter';
+
+    const isVisible = <T, >(component: T & { enabled: boolean; placement: DockComponentPlacement; showInVUMeterView: boolean}) =>
+      component.enabled && component.placement === position && (!vuMeterViewActive || component.showInVUMeterView);
 
     const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator;
-    if (dockedVolumeIndicator.enabled && dockedVolumeIndicator.placement === position) {
+    if (isVisible(dockedVolumeIndicator)) {
       children.push({
         order: Number(dockedVolumeIndicator.displayOrder) || 0,
         component: <DockedVolumeIndicator key="dockedVolumeIndicator" />
@@ -188,7 +195,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     }
 
     const dockedClock = screenSettings.dockedClock;
-    if (dockedClock.enabled && dockedClock.placement === position) {
+    if (isVisible(dockedClock)) {
       children.push({
         order: Number(dockedClock.displayOrder) || 0,
         component: <DockedClock key="dockedClock" />
@@ -196,7 +203,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     }
 
     const dockedWeather = screenSettings.dockedWeather || {};
-    if (dockedWeather.enabled && dockedWeather.placement === position) {
+    if (isVisible(dockedWeather)) {
       children.push({
         order: Number(dockedWeather.displayOrder) || 0,
         component: <DockedWeather key="dockedWeather" />
@@ -205,20 +212,16 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
 
     const orderedChildren = children.sort((c1, c2) => (c1.order - c2.order)).map((c) => c.component);
 
-    if (position === 'top') {
-      const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger;
-      if (dockedActionPanelTrigger.enabled) {
-        orderedChildren.unshift(
-          <DockedActionPanelTrigger key="actionPanelTrigger" onClick={openActionPanel} />
-        );
-      }
+    const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger;
+    if (isVisible({...dockedActionPanelTrigger, placement: 'top'})) {
+      orderedChildren.unshift(
+        <DockedActionPanelTrigger key="actionPanelTrigger" onClick={openActionPanel} />
+      );
     }
 
-    if (position === 'top-right') {
-      const dockedMenu = screenSettings.dockedMenu;
-      if (dockedMenu.enabled) {
-        orderedChildren.push(getMenu());
-      }
+    const dockedMenu = screenSettings.dockedMenu;
+    if (isVisible({...dockedMenu, placement: 'top-right'})) {
+      orderedChildren.push(getMenu());
     }
 
     return orderedChildren;

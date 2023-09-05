@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './VUMeterPixiPanel.module.scss';
 import * as PIXI from 'pixi.js';
 import { Container, Sprite } from '@pixi/react';
-import { VUMeter } from 'now-playing-common';
+import { CommonSettingsCategory, VUMeter } from 'now-playing-common';
 import deepEqual from 'deep-equal';
 import VUMeterPixiBasic from './VUMeterPixiBasic';
 import VUMeterPixiStage from './VUMeterPixiContextBridge';
@@ -12,6 +12,7 @@ import VUMeterPixiExtendedInfo from './VUMeterPixiExtendedInfo';
 import VUMeterErrorPanel from '../VUMeterErrorPanel';
 import { isExtendedMeter } from '../../../utils/vumeter';
 import VUMeterPixiFPS from './VUMeterPixiFPS';
+import { useSettings } from '../../../contexts/SettingsProvider';
 
 export type VUMeterPixiPanelProps = {
   meter: VUMeter;
@@ -23,7 +24,6 @@ export type VUMeterPixiPanelProps = {
     width: number;
     height: number;
   };
-  showFPS?: boolean;
 }
 
 export type VUMeterPixiLoadedAssets = {
@@ -42,7 +42,8 @@ export type VUMeterPixiLoadedAssets = {
 type VUMeterPixiImageAssets = (VUMeterPixiLoadedAssets & { error: false })['images'];
 
 function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
-  const { meter, offset, size: fitSize, showFPS } = props;
+  const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
+  const { meter, offset, size: fitSize } = props;
   const meterRef = useRef<VUMeter | null>(null);
   const [ loadedAssets, setLoadedAssets ] = useState<VUMeterPixiLoadedAssets | null>(null);
 
@@ -183,7 +184,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
         {extendedInfoComponent}
       </Container>
       {
-        showFPS ?
+        performanceSettings.vuMeterShowWebGLFPS ?
           <VUMeterPixiFPS
             position={{x: stageSize.width - 18, y: stageSize.height - 18}}
             anchor={{x: 1, y: 1}}
