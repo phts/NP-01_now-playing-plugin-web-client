@@ -6,6 +6,7 @@ import { usePlayerState } from '../../contexts/PlayerProvider';
 import VUMeterCSSPanel from './css/VUMeterCSSPanel';
 import VUMeterPixiPanel from './pixi/VUMeterPixiPanel';
 import VUMeterErrorPanel from './VUMeterErrorPanel';
+import deepEqual from 'deep-equal';
 
 export type VUMeterPanelMeterProps = {
   meterType: 'random';
@@ -49,6 +50,7 @@ function VUMeterPanel(props: VUMeterPanelProps) {
   const playerState = usePlayerState();
   const { config } = props;
   const [ loadedMeter, setLoadedMeter ] = useState<LoadedMeter | null>(null);
+  const currentMeterRef = useRef<VUMeter | null>(null);
   const appUrl = pluginInfo?.appUrl || null;
   const [ refreshTrigger, setRefreshTrigger ] = useState(Date.now());
   const currentPlayerStateRef = useRef(playerState);
@@ -107,13 +109,28 @@ function VUMeterPanel(props: VUMeterPanelProps) {
   const meter = config.templateType === 'fixed' && config.meterType === 'fixed' ? config.meter : null;
 
   useEffect(() => {
+    const doSetLoadedMeter = (lm: LoadedMeter | null) => {
+      if (!lm) {
+        currentMeterRef.current = null;
+        setLoadedMeter(null);
+      }
+      else if (lm.error) {
+        currentMeterRef.current = null;
+        setLoadedMeter(lm);
+      }
+      else if (!deepEqual(lm.meter, currentMeterRef.current)) {
+        currentMeterRef.current = lm.meter;
+        setLoadedMeter(lm);
+      }
+    };
+
     const loadConfig = async () => {
       const url = template ? `${appUrl}/vumeter/${template}` : `${appUrl}/vumeter`;
       try {
         const res = await fetch(url);
         const configRes = (await res.json()) as VUMeterConfig;
         if (configRes.error) {
-          setLoadedMeter({
+          doSetLoadedMeter({
             error: true,
             message: configRes.error
           });
@@ -122,7 +139,7 @@ function VUMeterPanel(props: VUMeterPanelProps) {
         const meters = configRes.meters;
         if (!meters || meters.length === 0) {
           const errMessage = template ? `No VU meters defined in '${template}` : 'No VU meters found';
-          setLoadedMeter({
+          doSetLoadedMeter({
             error: true,
             message: errMessage
           });
@@ -132,7 +149,7 @@ function VUMeterPanel(props: VUMeterPanelProps) {
         if (template && meter) {
           targetMeter = meters.find((m) => m.name === meter) || null;
           if (!targetMeter) {
-            setLoadedMeter({
+            doSetLoadedMeter({
               error: true,
               message: `Meter '${meter}' not found in '${template}'`
             });
@@ -142,13 +159,13 @@ function VUMeterPanel(props: VUMeterPanelProps) {
         else {
           targetMeter = meters[random(0, meters.length - 1)];
         }
-        setLoadedMeter({
+        doSetLoadedMeter({
           error: false,
           meter: targetMeter
         });
       }
       catch (error) {
-        setLoadedMeter({
+        doSetLoadedMeter({
           error: true,
           message: `Failed to load VU meter template from: ${url}`
         });
@@ -156,7 +173,7 @@ function VUMeterPanel(props: VUMeterPanelProps) {
     };
 
     if (!appUrl) {
-      setLoadedMeter(null);
+      doSetLoadedMeter(null);
     }
     else {
       loadConfig();

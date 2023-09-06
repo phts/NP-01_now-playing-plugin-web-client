@@ -1,11 +1,10 @@
 /// <reference types="../../../declaration.d.ts" />
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './VUMeterPixiPanel.module.scss';
 import * as PIXI from 'pixi.js';
 import { Container, Sprite } from '@pixi/react';
 import { CommonSettingsCategory, VUMeter } from 'now-playing-common';
-import deepEqual from 'deep-equal';
 import VUMeterPixiBasic from './VUMeterPixiBasic';
 import VUMeterPixiStage from './VUMeterPixiContextBridge';
 import VUMeterPixiExtendedInfo from './VUMeterPixiExtendedInfo';
@@ -44,7 +43,6 @@ type VUMeterPixiImageAssets = (VUMeterPixiLoadedAssets & { error: false })['imag
 function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
   const { meter, offset, size: fitSize } = props;
-  const meterRef = useRef<VUMeter | null>(null);
   const [ loadedAssets, setLoadedAssets ] = useState<VUMeterPixiLoadedAssets | null>(null);
 
   useEffect(() => {
@@ -61,63 +59,56 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
 
   useEffect(() => {
     let aborted = false;
-    let loading = false;
 
     const doSetLoadedAssets = (assets: VUMeterPixiLoadedAssets | null) => {
       if (!aborted) {
         setLoadedAssets(assets);
-        loading = false;
       }
     };
 
     const loadAssets = async() => {
-      if (!deepEqual(meter, meterRef.current)) {
-        meterRef.current = meter;
-        loading = true;
+      setLoadedAssets(null);
 
-        setLoadedAssets(null);
-
-        const loadImagePromises = [
-          PIXI.Texture.fromURL(meter.images.background),
-          PIXI.Texture.fromURL(meter.images.indicator),
-          meter.images.screenBackground ? PIXI.Texture.fromURL(meter.images.screenBackground) : Promise.resolve(null),
-          meter.images.foreground ? PIXI.Texture.fromURL(meter.images.foreground) : Promise.resolve(null)
-        ];
-        let loadImageResult: Array<PIXI.Texture | null>;
-        try {
-          loadImageResult = await Promise.all(loadImagePromises);
+      const loadImagePromises = [
+        PIXI.Texture.fromURL(meter.images.background),
+        PIXI.Texture.fromURL(meter.images.indicator),
+        meter.images.screenBackground ? PIXI.Texture.fromURL(meter.images.screenBackground) : Promise.resolve(null),
+        meter.images.foreground ? PIXI.Texture.fromURL(meter.images.foreground) : Promise.resolve(null)
+      ];
+      let loadImageResult: Array<PIXI.Texture | null>;
+      try {
+        loadImageResult = await Promise.all(loadImagePromises);
+      }
+      catch (error) {
+        const errMessageParts = [ 'Failed to load VU meter asset' ];
+        if (error?.target?.src) {
+          errMessageParts.push(error.target.src);
         }
-        catch (error) {
-          const errMessageParts = [ 'Failed to load VU meter asset' ];
-          if (error?.target?.src) {
-            errMessageParts.push(error.target.src);
-          }
-          doSetLoadedAssets({
-            error: true,
-            message: errMessageParts.join(' from: ')
-          });
-          return;
+        doSetLoadedAssets({
+          error: true,
+          message: errMessageParts.join(' from: ')
+        });
+        return;
+      }
+      const [ background, indicator, screenBackground, foreground ] = loadImageResult;
+      if (background && indicator) {
+        const loadedImageAssets: VUMeterPixiImageAssets = {
+          background,
+          indicator
+        };
+        if (screenBackground) {
+          loadedImageAssets.screenBackground = screenBackground;
         }
-        const [ background, indicator, screenBackground, foreground ] = loadImageResult;
-        if (background && indicator) {
-          const loadedImageAssets: VUMeterPixiImageAssets = {
-            background,
-            indicator
-          };
-          if (screenBackground) {
-            loadedImageAssets.screenBackground = screenBackground;
-          }
-          if (foreground) {
-            loadedImageAssets.foreground = foreground;
-          }
-          doSetLoadedAssets({
-            error: false,
-            images: loadedImageAssets
-          });
+        if (foreground) {
+          loadedImageAssets.foreground = foreground;
         }
-        else {
-          doSetLoadedAssets(null);
-        }
+        doSetLoadedAssets({
+          error: false,
+          images: loadedImageAssets
+        });
+      }
+      else {
+        doSetLoadedAssets(null);
       }
     };
 
@@ -125,9 +116,6 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
 
     return () => {
       aborted = true;
-      if (loading) {
-        meterRef.current = null;
-      }
     };
   }, [ meter ]);
 

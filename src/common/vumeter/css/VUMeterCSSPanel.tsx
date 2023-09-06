@@ -1,12 +1,11 @@
 /// <reference types="../../../declaration.d.ts" />
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './VUMeterCSSPanel.module.scss';
 import { VUMeter } from 'now-playing-common';
 import VUMeterCSSExtendedInfo from './VUMeterCSSExtendedInfo';
 import VUMeterCSSBasic from './VUMeterCSSBasic';
 import { isExtendedMeter } from '../../../utils/vumeter';
-import deepEqual from 'deep-equal';
 import VUMeterErrorPanel from '../VUMeterErrorPanel';
 
 export type VUMeterCSSPanelProps = {
@@ -38,12 +37,10 @@ type VUMeterCSSImageAssets = (VUMeterCSSLoadedAssets & { error: false })['images
 
 function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
   const { meter, offset, size: fitSize } = props;
-  const meterRef = useRef<VUMeter | null>(null);
   const [ loadedAssets, setLoadedAssets ] = useState<VUMeterCSSLoadedAssets | null>(null);
 
   useEffect(() => {
     let aborted = false;
-    let loading = false;
 
     const loadWithImageElement = (url: string) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -62,58 +59,52 @@ function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
     const doSetLoadedAssets = (assets: VUMeterCSSLoadedAssets | null) => {
       if (!aborted) {
         setLoadedAssets(assets);
-        loading = false;
       }
     };
 
     const loadAssets = async() => {
-      if (!deepEqual(meter, meterRef.current)) {
-        meterRef.current = meter;
-        loading = true;
+      setLoadedAssets(null);
 
-        setLoadedAssets(null);
-
-        const loadImagePromises = [
-          loadWithImageElement(meter.images.background),
-          loadWithImageElement(meter.images.indicator),
-          meter.images.screenBackground ? loadWithImageElement(meter.images.screenBackground) : Promise.resolve(null),
-          meter.images.foreground ? loadWithImageElement(meter.images.foreground) : Promise.resolve(null)
-        ];
-        let loadImageResult: Array<HTMLImageElement | null>;
-        try {
-          loadImageResult = await Promise.all(loadImagePromises);
+      const loadImagePromises = [
+        loadWithImageElement(meter.images.background),
+        loadWithImageElement(meter.images.indicator),
+        meter.images.screenBackground ? loadWithImageElement(meter.images.screenBackground) : Promise.resolve(null),
+        meter.images.foreground ? loadWithImageElement(meter.images.foreground) : Promise.resolve(null)
+      ];
+      let loadImageResult: Array<HTMLImageElement | null>;
+      try {
+        loadImageResult = await Promise.all(loadImagePromises);
+      }
+      catch (error) {
+        const errMessageParts = [ 'Failed to load VU meter asset' ];
+        if (error?.src) {
+          errMessageParts.push(error.src);
         }
-        catch (error) {
-          const errMessageParts = [ 'Failed to load VU meter asset' ];
-          if (error?.src) {
-            errMessageParts.push(error.src);
-          }
-          doSetLoadedAssets({
-            error: true,
-            message: errMessageParts.join(' from: ')
-          });
-          return;
+        doSetLoadedAssets({
+          error: true,
+          message: errMessageParts.join(' from: ')
+        });
+        return;
+      }
+      const [ background, indicator, screenBackground, foreground ] = loadImageResult;
+      if (background && indicator) {
+        const loadedImageAssets: VUMeterCSSImageAssets = {
+          background,
+          indicator
+        };
+        if (screenBackground) {
+          loadedImageAssets.screenBackground = screenBackground;
         }
-        const [ background, indicator, screenBackground, foreground ] = loadImageResult;
-        if (background && indicator) {
-          const loadedImageAssets: VUMeterCSSImageAssets = {
-            background,
-            indicator
-          };
-          if (screenBackground) {
-            loadedImageAssets.screenBackground = screenBackground;
-          }
-          if (foreground) {
-            loadedImageAssets.foreground = foreground;
-          }
-          doSetLoadedAssets({
-            error: false,
-            images: loadedImageAssets
-          });
+        if (foreground) {
+          loadedImageAssets.foreground = foreground;
         }
-        else {
-          doSetLoadedAssets(null);
-        }
+        doSetLoadedAssets({
+          error: false,
+          images: loadedImageAssets
+        });
+      }
+      else {
+        doSetLoadedAssets(null);
       }
     };
 
@@ -121,9 +112,6 @@ function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
 
     return () => {
       aborted = true;
-      if (loading) {
-        meterRef.current = null;
-      }
     };
   }, [ meter ]);
 
