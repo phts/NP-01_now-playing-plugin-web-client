@@ -42,6 +42,9 @@ function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
   const [ loadedAssets, setLoadedAssets ] = useState<VUMeterCSSLoadedAssets | null>(null);
 
   useEffect(() => {
+    let aborted = false;
+    let loading = false;
+
     const loadWithImageElement = (url: string) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const image = new Image();
@@ -56,9 +59,17 @@ function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
       });
     };
 
+    const doSetLoadedAssets = (assets: VUMeterCSSLoadedAssets | null) => {
+      if (!aborted) {
+        setLoadedAssets(assets);
+        loading = false;
+      }
+    };
+
     const loadAssets = async() => {
       if (!deepEqual(meter, meterRef.current)) {
         meterRef.current = meter;
+        loading = true;
 
         setLoadedAssets(null);
 
@@ -77,7 +88,7 @@ function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
           if (error?.src) {
             errMessageParts.push(error.src);
           }
-          setLoadedAssets({
+          doSetLoadedAssets({
             error: true,
             message: errMessageParts.join(' from: ')
           });
@@ -95,18 +106,25 @@ function VUMeterCSSPanel(props: VUMeterCSSPanelProps) {
           if (foreground) {
             loadedImageAssets.foreground = foreground;
           }
-          setLoadedAssets({
+          doSetLoadedAssets({
             error: false,
             images: loadedImageAssets
           });
         }
         else {
-          setLoadedAssets(null);
+          doSetLoadedAssets(null);
         }
       }
     };
 
     loadAssets();
+
+    return () => {
+      aborted = true;
+      if (loading) {
+        meterRef.current = null;
+      }
+    };
   }, [ meter ]);
 
   const extendedInfoComponent = useMemo(() => {

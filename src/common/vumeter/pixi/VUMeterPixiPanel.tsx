@@ -60,9 +60,20 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   }, [ loadedAssets ]);
 
   useEffect(() => {
+    let aborted = false;
+    let loading = false;
+
+    const doSetLoadedAssets = (assets: VUMeterPixiLoadedAssets | null) => {
+      if (!aborted) {
+        setLoadedAssets(assets);
+        loading = false;
+      }
+    };
+
     const loadAssets = async() => {
       if (!deepEqual(meter, meterRef.current)) {
         meterRef.current = meter;
+        loading = true;
 
         setLoadedAssets(null);
 
@@ -81,7 +92,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
           if (error?.target?.src) {
             errMessageParts.push(error.target.src);
           }
-          setLoadedAssets({
+          doSetLoadedAssets({
             error: true,
             message: errMessageParts.join(' from: ')
           });
@@ -100,18 +111,25 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
           if (foreground) {
             loadedImageAssets.foreground = foreground;
           }
-          setLoadedAssets({
+          doSetLoadedAssets({
             error: false,
             images: loadedImageAssets
           });
         }
         else {
-          setLoadedAssets(null);
+          doSetLoadedAssets(null);
         }
       }
     };
 
     loadAssets();
+
+    return () => {
+      aborted = true;
+      if (loading) {
+        meterRef.current = null;
+      }
+    };
   }, [ meter ]);
 
   const extendedInfoComponent = useMemo(() => {
