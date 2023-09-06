@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import * as PIXI from 'pixi.js';
 import { Text, useApp, useTick } from '@pixi/react';
 import { useState } from 'react';
@@ -26,9 +26,12 @@ function VUMeterPixiFPS(props: VUMeterPixiFPSProps) {
   const { position, anchor } = props;
   const [ fpsText, setFPSText ] = useState('');
 
-  useTick(() => {
-    setFPSText(`${round(pixiApp.ticker.FPS, 2).toFixed(2)} FPS`);
-  });
+  const refresh = useCallback(() => {
+    setFPSText(`${round(pixiApp.ticker.FPS, 2).toFixed(2)} FPS
+    Ticks: ${pixiApp.ticker.count}`);
+  }, [ pixiApp ]);
+
+  useTick(refresh);
 
   return (
     <Text

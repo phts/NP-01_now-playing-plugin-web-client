@@ -202,7 +202,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
         {extendedInfoComponent}
       </Container>
       {
-        performanceSettings.vuMeterShowWebGLFPS ?
+        performanceSettings.vuMeterWebGLShowStats ?
           <VUMeterPixiFPS
             position={{x: stageSize.width - 18, y: stageSize.height - 18}}
             anchor={{x: 1, y: 1}}
