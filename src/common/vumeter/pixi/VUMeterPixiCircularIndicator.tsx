@@ -1,8 +1,9 @@
-import { Sprite, useTick } from '@pixi/react';
+import { Sprite } from '@pixi/react';
 import * as PIXI from 'pixi.js';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getCircularMeterIndicatorAngle } from '../../../utils/vumeter';
 import { usePlayerState } from '../../../contexts/PlayerProvider';
+import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
 
 export interface VUMeterPixiCircularIndicatorProps {
   img: PIXI.Texture;
@@ -32,6 +33,7 @@ interface IndicatorSpriteProps {
 function VUMeterPixiCircularIndicator(props: VUMeterPixiCircularIndicatorProps) {
   const { img, startAngle, stopAngle, distance, origin, getValue } = props;
   const playerState = usePlayerState();
+  const { ticker } = useVUMeterTicker();
   const [ indicatorSpriteProps, setIndicatorSpriteProps ] = useState<IndicatorSpriteProps | null>(null);
   const lastValueRef = useRef(NaN);
 
@@ -58,7 +60,16 @@ function VUMeterPixiCircularIndicator(props: VUMeterPixiCircularIndicatorProps) 
   }, [ img, startAngle, stopAngle, distance, origin, getValue ]);
 
   const enableTick = playerState.status === 'play' || !indicatorSpriteProps || lastValueRef.current !== 0;
-  useTick(updateIndicator, enableTick);
+
+  useEffect(() => {
+    if (enableTick) {
+      ticker.add(updateIndicator);
+
+      return () => {
+        ticker.remove(updateIndicator);
+      };
+    }
+  }, [ updateIndicator, enableTick ]);
 
   const indicatorSprite = useMemo(() => {
     if (!indicatorSpriteProps) {

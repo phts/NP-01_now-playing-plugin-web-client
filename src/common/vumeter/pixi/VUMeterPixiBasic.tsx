@@ -7,6 +7,7 @@ import { Sprite } from '@pixi/react';
 import VUMeterPixiLinearDefaultIndicator from './VUMeterPixiLinearDefaultIndicator';
 import VUMeterPixiCircularIndicator from './VUMeterPixiCircularIndicator';
 import VUMeterPixiLinearSingleIndicator from './VUMeterPixiLinearSingleIndicator';
+import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
 
 export interface VUMeterPixiBasicProps {
   config: VUMeter;
@@ -16,9 +17,14 @@ export interface VUMeterPixiBasicProps {
 const EMPTY_METER_DATA = {left: 0, right: 0, mono: 0};
 
 function VUMeterPixiBasic(props: VUMeterPixiBasicProps) {
+  const { ticker } = useVUMeterTicker();
   const { config, assets } = props;
   const { socket } = useSocket();
   const meterDataRef = useRef<VUMeterData>(EMPTY_METER_DATA);
+
+  useEffect(() => {
+    ticker.maxFPS = 1 / config.uiRefreshPeriod;
+  }, [ config.uiRefreshPeriod ]);
 
   useEffect(() => {
     if (socket) {

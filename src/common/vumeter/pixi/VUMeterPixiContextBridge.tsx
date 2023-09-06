@@ -4,6 +4,7 @@ import { SocketContext } from '../../../contexts/SocketProvider';
 import { PlayerStateContext } from '../../../contexts/player/PlayerStateProvider';
 import { Stage } from '@pixi/react';
 import { PlayerSeekContext } from '../../../contexts/player/PlayerSeekProvider';
+import { VUMeterPixiTickerProvider } from './VUMeterPixiTickerProvider';
 
 const ContextBridge = ({ children, render }) => {
   return (
@@ -41,7 +42,9 @@ const VUMeterPixiStage = ({ children, ...props }) => {
     <ContextBridge
       render={(children: React.ReactNode) => <Stage {...props}>{children}</Stage>}
     >
-      {children}
+      <VUMeterPixiTickerProvider>
+        {children}
+      </VUMeterPixiTickerProvider>
     </ContextBridge>
   );
 };

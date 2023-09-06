@@ -11,7 +11,7 @@ import VUMeterPixiStage from './VUMeterPixiContextBridge';
 import VUMeterPixiExtendedInfo from './VUMeterPixiExtendedInfo';
 import VUMeterErrorPanel from '../VUMeterErrorPanel';
 import { isExtendedMeter } from '../../../utils/vumeter';
-import VUMeterPixiFPS from './VUMeterPixiFPS';
+import VUMeterPixiStats from './VUMeterPixiStats';
 import { useSettings } from '../../../contexts/SettingsProvider';
 
 export type VUMeterPixiPanelProps = {
@@ -100,7 +100,6 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
         }
         const [ background, indicator, screenBackground, foreground ] = loadImageResult;
         if (background && indicator) {
-          PIXI.Ticker.shared.maxFPS = 1 / meter.uiRefreshPeriod;
           const loadedImageAssets: VUMeterPixiImageAssets = {
             background,
             indicator
@@ -181,6 +180,8 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
       width={stageSize.width}
       height={stageSize.height}
       style={stageStyles}
+      raf={false}
+      renderOnComponentChange={true}
       options={{
         antialias: true,
         resolution: window.devicePixelRatio
@@ -203,7 +204,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
       </Container>
       {
         performanceSettings.vuMeterWebGLShowStats ?
-          <VUMeterPixiFPS
+          <VUMeterPixiStats
             position={{x: stageSize.width - 18, y: stageSize.height - 18}}
             anchor={{x: 1, y: 1}}
           />

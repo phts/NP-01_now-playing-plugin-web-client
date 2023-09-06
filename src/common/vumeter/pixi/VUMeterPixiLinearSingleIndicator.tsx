@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import VUMeterPixiLinearIndicatorCommonProps from './VUMeterPixiLinearIndicatorCommonProps';
-import { Sprite, useTick } from '@pixi/react';
+import { Sprite } from '@pixi/react';
 import { getLinearMeterIndicatorLength } from '../../../utils/vumeter';
 import { usePlayerState } from '../../../contexts/PlayerProvider';
+import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
 
 export type VUMeterPixiLinearSingleIndicatorProps = VUMeterPixiLinearIndicatorCommonProps;
 
@@ -17,6 +18,7 @@ interface IndicatorSpriteProps {
 function VUMeterPixiLinearSingleIndicator(props: VUMeterPixiLinearSingleIndicatorProps) {
   const { img, top, left, position, stepWidth, direction, flipX, getValue } = props;
   const playerState = usePlayerState();
+  const { ticker } = useVUMeterTicker();
   const [ indicatorSpriteProps, setIndicatorSpriteProps ] = useState<IndicatorSpriteProps | null>(null);
   const lastValueRef = useRef(NaN);
 
@@ -68,7 +70,16 @@ function VUMeterPixiLinearSingleIndicator(props: VUMeterPixiLinearSingleIndicato
   }, [ img, top, left, position, stepWidth, direction, flipX, getValue ]);
 
   const enableTick = playerState.status === 'play' || !indicatorSpriteProps || lastValueRef.current !== 0;
-  useTick(updateIndicator, enableTick);
+
+  useEffect(() => {
+    if (enableTick) {
+      ticker.add(updateIndicator);
+
+      return () => {
+        ticker.remove(updateIndicator);
+      };
+    }
+  }, [ updateIndicator, enableTick ]);
 
   const indicatorSprite = useMemo(() => {
     if (!indicatorSpriteProps) {

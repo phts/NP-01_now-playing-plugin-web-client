@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Container, Graphics, Text, useTick } from '@pixi/react';
+import { Container, Graphics, Text } from '@pixi/react';
+import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
 
 export interface VUMeterPixiExtendedInfoTitleProps {
   text: string;
@@ -14,14 +15,17 @@ export interface VUMeterPixiExtendedInfoTitleProps {
 }
 
 interface MarqueeState {
-  textElement: React.ReactNode;
+  textElement: React.ReactNode; // The element to scroll
   left: number;
-  scrollPerSecond: number;
+  scrollDistancePerSecond: number;
+  cycleDistance: number;
   pauseState: {
     active: boolean;
     millisPaused: number;
   }
 }
+
+type MarqueeRenderProps = Pick<MarqueeState, 'textElement' | 'left'>;
 
 const getMarqueeCycleGap = (metrics: PIXI.TextMetrics) => {
   return metrics.height * 3;
@@ -30,8 +34,11 @@ const getMarqueeCycleGap = (metrics: PIXI.TextMetrics) => {
 const MARQUEE_CYCLE_PAUSE_MILLIS = 2000;
 
 function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) {
+  const { ticker } = useVUMeterTicker();
   const { text, style, position, maxWidth, center } = props;
-  const [ marqueeState, setMarqueeState ] = useState<MarqueeState | null>(null);
+  const [ marqueeActive, setMarqueeActive ] = useState(false);
+  const marqueeStateRef = useRef<MarqueeState | null>(null);
+  const [ marqueeRenderProps, setMarqueeRenderProps ] = useState<MarqueeRenderProps | null>(null);
   const marqueeContainerMaskRef = useRef(null);
 
   const metrics = useMemo(() => {
@@ -40,56 +47,76 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
 
   useEffect(() => {
     if (metrics.width > maxWidth) {
+      const cycleDistance = metrics.width + getMarqueeCycleGap(metrics);
+
       const textElement = (
         <Container>
           <Text text={text} style={style} />
-          <Text text={text} style={style} position={{x: metrics.width + getMarqueeCycleGap(metrics), y: 0}} />
+          <Text text={text} style={style} position={{x: cycleDistance, y: 0}} />
         </Container>
       );
 
-      setMarqueeState({
+      marqueeStateRef.current = {
         textElement,
         left: 0,
-        scrollPerSecond: 40 / 800 * metrics.width,
+        scrollDistancePerSecond: 40 / 800 * metrics.width,
+        cycleDistance,
         pauseState: {
           active: true,
           millisPaused: 0
         }
-      });
+      };
+      setMarqueeActive(true);
     }
     else {
       // No marquee needed
-      setMarqueeState(null);
+      marqueeStateRef.current = null;
+      setMarqueeActive(false);
     }
   }, [ metrics, text, style ]);
 
-  useTick((delta) => {
+  const scrollMarquee = useCallback((delta: number) => {
+    const marqueeState = marqueeStateRef.current;
     if (!marqueeState) {
       return;
     }
-    const fps = PIXI.Ticker.shared.FPS;
+    const fps = ticker.FPS;
     if (marqueeState.pauseState.active) {
       const millisPaused = marqueeState.pauseState.millisPaused + ((delta / fps) * 1000);
       if (millisPaused < MARQUEE_CYCLE_PAUSE_MILLIS) {
         marqueeState.pauseState.millisPaused = millisPaused;
-        setMarqueeState({...marqueeState});
+        setMarqueeRenderProps({
+          textElement: marqueeState.textElement,
+          left: marqueeState.left
+        });
         return;
       }
       marqueeState.pauseState.active = false;
       marqueeState.pauseState.millisPaused = 0;
     }
-    const scroll = (marqueeState.scrollPerSecond / fps) * delta;
-    let newLeft = marqueeState.left - scroll;
-    if (newLeft + metrics.width + getMarqueeCycleGap(metrics) < 0) {
+    const scrollDistance = (marqueeState.scrollDistancePerSecond / fps) * delta;
+    let newLeft = marqueeState.left - scrollDistance;
+    if (newLeft + marqueeState.cycleDistance < 0) {
       // Scrolled one cycle
       newLeft = 0;
       marqueeState.pauseState.active = true;
     }
-    setMarqueeState({
-      ...marqueeState,
+    marqueeState.left = newLeft;
+    setMarqueeRenderProps({
+      textElement: marqueeState.textElement,
       left: newLeft
     });
-  }, !!marqueeState);
+  }, []);
+
+  useEffect(() => {
+    if (marqueeActive) {
+      ticker.add(scrollMarquee);
+
+      return () => {
+        ticker.remove(scrollMarquee);
+      };
+    }
+  }, [ marqueeActive ]);
 
   const drawMarqueeContainerMask = useCallback((g: PIXI.Graphics) => {
     g.clear()
@@ -98,7 +125,7 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
       .endFill();
   }, [ maxWidth, metrics.height ]);
 
-  if (!marqueeState) {
+  if (!marqueeActive || !marqueeRenderProps) {
     return (
       <Text
         text={text}
@@ -117,8 +144,8 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
       mask={marqueeContainerMaskRef.current}
       visible={!!marqueeContainerMaskRef.current}
     >
-      <Container position={{x: marqueeState.left, y: 0}}>
-        {marqueeState.textElement}
+      <Container position={{x: marqueeRenderProps.left, y: 0}}>
+        {marqueeRenderProps.textElement}
       </Container>
       <Graphics
         draw={drawMarqueeContainerMask}
