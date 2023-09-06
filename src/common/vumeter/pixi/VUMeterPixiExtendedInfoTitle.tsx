@@ -40,6 +40,7 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
   const marqueeStateRef = useRef<MarqueeState | null>(null);
   const [ marqueeRenderProps, setMarqueeRenderProps ] = useState<MarqueeRenderProps | null>(null);
   const marqueeContainerMaskRef = useRef(null);
+  const textElementRef = useRef<PIXI.Container | null>(null);
 
   const metrics = useMemo(() => {
     return PIXI.TextMetrics.measureText(text, style);
@@ -50,7 +51,7 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
       const cycleDistance = metrics.width + getMarqueeCycleGap(metrics);
 
       const textElement = (
-        <Container>
+        <Container key={Date.now().toString()} ref={textElementRef} cacheAsBitmap>
           <Text text={text} style={style} />
           <Text text={text} style={style} position={{x: cycleDistance, y: 0}} />
         </Container>
@@ -67,12 +68,18 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
         }
       };
       setMarqueeActive(true);
+
+      return () => {
+        if (textElementRef.current) {
+          textElementRef.current.destroy();
+        }
+      };
     }
-    else {
-      // No marquee needed
-      marqueeStateRef.current = null;
-      setMarqueeActive(false);
-    }
+
+    // No marquee needed
+    marqueeStateRef.current = null;
+    setMarqueeActive(false);
+
   }, [ metrics, text, style, maxWidth ]);
 
   const scrollMarquee = useCallback(() => {
