@@ -59,7 +59,7 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
       marqueeStateRef.current = {
         textElement,
         left: 0,
-        scrollDistancePerSecond: 40 / 800 * metrics.width,
+        scrollDistancePerSecond: 40 / 800 * maxWidth,
         cycleDistance,
         pauseState: {
           active: true,
@@ -73,16 +73,16 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
       marqueeStateRef.current = null;
       setMarqueeActive(false);
     }
-  }, [ metrics, text, style ]);
+  }, [ metrics, text, style, maxWidth ]);
 
-  const scrollMarquee = useCallback((delta: number) => {
+  const scrollMarquee = useCallback(() => {
     const marqueeState = marqueeStateRef.current;
     if (!marqueeState) {
       return;
     }
-    const fps = ticker.FPS;
+    const elapsedMS = ticker.elapsedMS;
     if (marqueeState.pauseState.active) {
-      const millisPaused = marqueeState.pauseState.millisPaused + ((delta / fps) * 1000);
+      const millisPaused = marqueeState.pauseState.millisPaused + elapsedMS;
       if (millisPaused < MARQUEE_CYCLE_PAUSE_MILLIS) {
         marqueeState.pauseState.millisPaused = millisPaused;
         setMarqueeRenderProps({
@@ -94,7 +94,7 @@ function VUMeterPixiExtendedInfoTitle(props: VUMeterPixiExtendedInfoTitleProps) 
       marqueeState.pauseState.active = false;
       marqueeState.pauseState.millisPaused = 0;
     }
-    const scrollDistance = (marqueeState.scrollDistancePerSecond / fps) * delta;
+    const scrollDistance = (marqueeState.scrollDistancePerSecond / 1000) * elapsedMS;
     let newLeft = marqueeState.left - scrollDistance;
     if (newLeft + marqueeState.cycleDistance < 0) {
       // Scrolled one cycle
