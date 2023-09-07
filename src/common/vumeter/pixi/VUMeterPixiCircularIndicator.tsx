@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getCircularMeterIndicatorAngle } from '../../../utils/vumeter';
 import { usePlayerState } from '../../../contexts/PlayerProvider';
 import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
-import deepEqual from 'deep-equal';
 
 export interface VUMeterPixiCircularIndicatorProps {
   img: PIXI.Texture;
@@ -31,11 +30,8 @@ interface IndicatorSpriteProps {
   angle: number;
 }
 
-type IndicatorGeomDeps = Pick<VUMeterPixiCircularIndicatorProps, 'startAngle' | 'stopAngle' | 'distance' | 'origin'>;
-
 function VUMeterPixiCircularIndicator(props: VUMeterPixiCircularIndicatorProps) {
   const { img, startAngle, stopAngle, distance, origin, getValue } = props;
-  const currentIndicatorGeomDepsRef = useRef<IndicatorGeomDeps>({startAngle, stopAngle, distance, origin});
   const playerState = usePlayerState();
   const { ticker } = useVUMeterTicker();
   const [ indicatorSpriteProps, setIndicatorSpriteProps ] = useState<IndicatorSpriteProps | null>(null);
@@ -64,10 +60,12 @@ function VUMeterPixiCircularIndicator(props: VUMeterPixiCircularIndicatorProps) 
   }, [ img, startAngle, stopAngle, distance, origin, getValue ]);
 
   useEffect(() => {
-    if (!deepEqual({startAngle, stopAngle, distance, origin}, currentIndicatorGeomDepsRef.current)) {
-      updateIndicator(true);
-    }
-  }, [ updateIndicator, startAngle, stopAngle, distance, origin ]);
+    /**
+     * In case `value` has not changed (such as when paused or stopped), force update to
+     * render components with changed `updateIndicator` callback dependencies.
+     */
+    updateIndicator(true);
+  }, [ updateIndicator ]);
 
   const enableTick = playerState.status === 'play' || !indicatorSpriteProps || lastValueRef.current !== 0;
 

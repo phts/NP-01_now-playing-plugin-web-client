@@ -4,7 +4,6 @@ import { Container, Graphics, Sprite } from '@pixi/react';
 import { getLinearMeterIndicatorLength } from '../../../utils/vumeter';
 import { usePlayerState } from '../../../contexts/PlayerProvider';
 import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
-import deepEqual from 'deep-equal';
 
 export type VUMeterPixiLinearDefaultIndicatorProps = VUMeterPixiLinearIndicatorCommonProps;
 
@@ -22,12 +21,8 @@ interface IndicatorSpriteProps {
   flipX: boolean;
 }
 
-type IndicatorGeomDeps = Pick<VUMeterPixiLinearDefaultIndicatorProps,
-  'top' | 'left' | 'position' | 'stepWidth' | 'direction' | 'flipX'>;
-
 function VUMeterPixiLinearDefaultIndicator(props: VUMeterPixiLinearDefaultIndicatorProps) {
   const { img, top, left, position, stepWidth, direction, flipX, getValue } = props;
-  const currentIndicatorGeomDepsRef = useRef<IndicatorGeomDeps>({top, left, position, stepWidth, direction, flipX});
   const playerState = usePlayerState();
   const { ticker } = useVUMeterTicker();
   const [ indicatorSpriteProps, setIndicatorSpriteProps ] = useState<IndicatorSpriteProps | null>(null);
@@ -88,10 +83,12 @@ function VUMeterPixiLinearDefaultIndicator(props: VUMeterPixiLinearDefaultIndica
   }, [ img, top, left, position, stepWidth, direction, flipX, getValue ]);
 
   useEffect(() => {
-    if (!deepEqual({top, left, position, stepWidth, direction, flipX}, currentIndicatorGeomDepsRef.current)) {
-      updateIndicator(true);
-    }
-  }, [ updateIndicator, top, left, position, stepWidth, direction, flipX ]);
+    /**
+     * In case `value` has not changed (such as when paused or stopped), force update to
+     * render components with changed `updateIndicator` callback dependencies.
+     */
+    updateIndicator(true);
+  }, [ updateIndicator ]);
 
   const enableTick = playerState.status === 'play' || !indicatorSpriteProps || lastValueRef.current !== 0;
 
