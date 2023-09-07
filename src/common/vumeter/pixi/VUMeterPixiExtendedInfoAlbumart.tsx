@@ -19,9 +19,11 @@ function VUMeterPixiExtendedInfoAlbumart(props: VUMeterPixiExtendedInfoAlbumartP
   const [ maskRef, setMaskRef ] = useState<PIXI.Graphics | null>(null);
 
   useEffect(() => {
-    if (texture) {
-      texture.destroy();
-    }
+    return () => {
+      if (texture) {
+        texture.destroy(true);
+      }
+    };
   }, [ texture ]);
 
   const loadAlbumart = useCallback(async (src?: string): Promise<PIXI.Texture | null> => {
@@ -64,7 +66,7 @@ function VUMeterPixiExtendedInfoAlbumart(props: VUMeterPixiExtendedInfoAlbumartP
         setTexture(texture);
       }
       else if (texture) {
-        texture.destroy();
+        texture.destroy(true);
       }
     });
 

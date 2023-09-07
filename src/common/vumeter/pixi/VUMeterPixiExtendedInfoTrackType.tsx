@@ -49,6 +49,14 @@ function VUMeterPixiExtendedInfoTrackType(props: VUMeterPixiExtendedInfoTrackTyp
   const [ formatIconSpriteProps, setFormatIconSpriteProps ] = useState<FormatIconSpriteProps | null>(null);
 
   useEffect(() => {
+    return () => {
+      if (formatIconSpriteProps?.texture) {
+        formatIconSpriteProps.texture.destroy(true);
+      }
+    };
+  }, [ formatIconSpriteProps?.texture ]);
+
+  useEffect(() => {
     let aborted = false;
     let spriteProps: FormatIconSpriteProps | null;
 
@@ -143,7 +151,11 @@ function VUMeterPixiExtendedInfoTrackType(props: VUMeterPixiExtendedInfoTrackTyp
     };
   }, [ position, size, color, formatIconUrl ]);
 
-  return formatIconSpriteProps ? <Sprite {...formatIconSpriteProps} /> : null;
+  if (!formatIconSpriteProps || !formatIconSpriteProps.texture.valid) {
+    return null;
+  }
+
+  return <Sprite {...formatIconSpriteProps} />;
 }
 
 export default VUMeterPixiExtendedInfoTrackType;
