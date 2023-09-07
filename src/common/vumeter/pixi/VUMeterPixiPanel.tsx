@@ -1,19 +1,19 @@
 /// <reference types="../../../declaration.d.ts" />
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './VUMeterPixiPanel.module.scss';
 import * as PIXI from 'pixi.js';
 import { Container, Sprite } from '@pixi/react';
 import { CommonSettingsCategory, VUMeter } from 'now-playing-common';
 import VUMeterPixiBasic from './VUMeterPixiBasic';
-import VUMeterPixiStage from './VUMeterPixiContextBridge';
+import VUMeterPixiStage from './VUMeterPixiStage';
 import VUMeterPixiExtendedInfo from './VUMeterPixiExtendedInfo';
 import VUMeterErrorPanel from '../VUMeterErrorPanel';
 import { isExtendedMeter } from '../../../utils/vumeter';
 import VUMeterPixiStats from './VUMeterPixiStats';
 import { useSettings } from '../../../contexts/SettingsProvider';
 
-export type VUMeterPixiPanelProps = {
+export interface VUMeterPixiPanelProps {
   meter: VUMeter;
   offset?: {
     top: number;
@@ -38,107 +38,116 @@ export type VUMeterPixiLoadedAssets = {
   message: string
 }
 
+interface RenderProps {
+  meter: VUMeter;
+  assets: VUMeterPixiLoadedAssets;
+}
+
 type VUMeterPixiImageAssets = (VUMeterPixiLoadedAssets & { error: false })['images'];
 
 function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
   const { meter, offset, size: fitSize } = props;
-  const [ loadedAssets, setLoadedAssets ] = useState<VUMeterPixiLoadedAssets | null>(null);
+  const [ renderProps, setRenderProps ] = useState<RenderProps | null>(null);
 
   useEffect(() => {
     return () => {
       // Destroy old assets
-      if (loadedAssets && !loadedAssets.error) {
-        Object.keys(loadedAssets.images).forEach((key) => {
-          const texture = loadedAssets.images[key] as PIXI.Texture;
+      const renderAssets = renderProps?.assets;
+      if (renderAssets && !renderAssets.error) {
+        Object.keys(renderAssets.images).forEach((key) => {
+          const texture = renderAssets.images[key] as PIXI.Texture;
           texture.destroy(true);
         });
       }
     };
-  }, [ loadedAssets ]);
+  }, [ renderProps ]);
+
+  const loadAssets = useCallback(async(meter: VUMeter): Promise<VUMeterPixiLoadedAssets> => {
+    const loadImagePromises = [
+      PIXI.Texture.fromURL(meter.images.background),
+      PIXI.Texture.fromURL(meter.images.indicator),
+      meter.images.screenBackground ? PIXI.Texture.fromURL(meter.images.screenBackground) : Promise.resolve(null),
+      meter.images.foreground ? PIXI.Texture.fromURL(meter.images.foreground) : Promise.resolve(null)
+    ];
+    let loadImageResult: Array<PIXI.Texture | null>;
+    try {
+      loadImageResult = await Promise.all(loadImagePromises);
+    }
+    catch (error) {
+      const errMessageParts = [ 'Failed to load VU meter asset' ];
+      if (error?.target?.src) {
+        errMessageParts.push(error.target.src);
+      }
+      return {
+        error: true,
+        message: errMessageParts.join(' from: ')
+      };
+    }
+    const [ background, indicator, screenBackground, foreground ] = loadImageResult;
+    if (background && indicator) {
+      const loadedImageAssets: VUMeterPixiImageAssets = {
+        background,
+        indicator
+      };
+      if (screenBackground) {
+        loadedImageAssets.screenBackground = screenBackground;
+      }
+      if (foreground) {
+        loadedImageAssets.foreground = foreground;
+      }
+      return {
+        error: false,
+        images: loadedImageAssets
+      };
+    }
+
+    return {
+      error: true,
+      message: 'Failed to load VU meter asset: could not obtain background or indicator image texture.'
+    };
+
+  }, []);
 
   useEffect(() => {
     let aborted = false;
 
-    const doSetLoadedAssets = (assets: VUMeterPixiLoadedAssets | null) => {
+    loadAssets(meter).then((assets) => {
       if (!aborted) {
-        setLoadedAssets(assets);
-      }
-    };
-
-    const loadAssets = async() => {
-      setLoadedAssets(null);
-
-      const loadImagePromises = [
-        PIXI.Texture.fromURL(meter.images.background),
-        PIXI.Texture.fromURL(meter.images.indicator),
-        meter.images.screenBackground ? PIXI.Texture.fromURL(meter.images.screenBackground) : Promise.resolve(null),
-        meter.images.foreground ? PIXI.Texture.fromURL(meter.images.foreground) : Promise.resolve(null)
-      ];
-      let loadImageResult: Array<PIXI.Texture | null>;
-      try {
-        loadImageResult = await Promise.all(loadImagePromises);
-      }
-      catch (error) {
-        const errMessageParts = [ 'Failed to load VU meter asset' ];
-        if (error?.target?.src) {
-          errMessageParts.push(error.target.src);
-        }
-        doSetLoadedAssets({
-          error: true,
-          message: errMessageParts.join(' from: ')
-        });
-        return;
-      }
-      const [ background, indicator, screenBackground, foreground ] = loadImageResult;
-      if (background && indicator) {
-        const loadedImageAssets: VUMeterPixiImageAssets = {
-          background,
-          indicator
-        };
-        if (screenBackground) {
-          loadedImageAssets.screenBackground = screenBackground;
-        }
-        if (foreground) {
-          loadedImageAssets.foreground = foreground;
-        }
-        doSetLoadedAssets({
-          error: false,
-          images: loadedImageAssets
+        setRenderProps({
+          meter,
+          assets
         });
       }
-      else {
-        doSetLoadedAssets(null);
-      }
-    };
-
-    loadAssets();
+    });
 
     return () => {
       aborted = true;
     };
-  }, [ meter ]);
+  }, [ meter, loadAssets ]);
 
   const extendedInfoComponent = useMemo(() => {
-    if (meter && isExtendedMeter(meter)) {
-      return <VUMeterPixiExtendedInfo config={meter} />;
+    if (renderProps && isExtendedMeter(renderProps.meter)) {
+      return <VUMeterPixiExtendedInfo config={renderProps.meter} />;
     }
     return null;
-  }, [ meter ]);
+  }, [ renderProps ]);
 
-  if (!loadedAssets) {
+  if (!renderProps) {
     return null;
   }
 
-  if (loadedAssets.error) {
+  const renderAssets = renderProps.assets;
+
+  if (renderAssets.error) {
     return (
-      <VUMeterErrorPanel message={loadedAssets.message} />
+      <VUMeterErrorPanel message={renderAssets.message} />
     );
   }
 
   let scale = 1;
   let offsetDelta = {top: 0, left: 0};
-  const background = loadedAssets.images.screenBackground || loadedAssets.images.background;
+  const background = renderAssets.images.screenBackground || renderAssets.images.background;
   const stageSize = {
     width: background.width,
     height: background.height
@@ -168,26 +177,20 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
       width={stageSize.width}
       height={stageSize.height}
       style={stageStyles}
-      raf={false}
-      renderOnComponentChange={true}
-      options={{
-        antialias: true,
-        resolution: window.devicePixelRatio
-      }}
     >
       <Container
         position={{x: 0, y: 0}}
         scale={scale}>
         {
-          loadedAssets.images.screenBackground ?
+          renderAssets.images.screenBackground ?
             <Sprite
-              texture={loadedAssets.images.screenBackground}
+              texture={renderAssets.images.screenBackground}
               position={{x: 0, y: 0}}
             />
             :
             null
         }
-        <VUMeterPixiBasic config={meter} assets={loadedAssets} />
+        <VUMeterPixiBasic config={renderProps.meter} assets={renderAssets} />
         {extendedInfoComponent}
       </Container>
       {

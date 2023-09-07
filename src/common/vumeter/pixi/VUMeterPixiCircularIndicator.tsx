@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getCircularMeterIndicatorAngle } from '../../../utils/vumeter';
 import { usePlayerState } from '../../../contexts/PlayerProvider';
 import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
+import deepEqual from 'deep-equal';
 
 export interface VUMeterPixiCircularIndicatorProps {
   img: PIXI.Texture;
@@ -30,16 +31,19 @@ interface IndicatorSpriteProps {
   angle: number;
 }
 
+type IndicatorGeomDeps = Pick<VUMeterPixiCircularIndicatorProps, 'startAngle' | 'stopAngle' | 'distance' | 'origin'>;
+
 function VUMeterPixiCircularIndicator(props: VUMeterPixiCircularIndicatorProps) {
   const { img, startAngle, stopAngle, distance, origin, getValue } = props;
+  const currentIndicatorGeomDepsRef = useRef<IndicatorGeomDeps>({startAngle, stopAngle, distance, origin});
   const playerState = usePlayerState();
   const { ticker } = useVUMeterTicker();
   const [ indicatorSpriteProps, setIndicatorSpriteProps ] = useState<IndicatorSpriteProps | null>(null);
   const lastValueRef = useRef(NaN);
 
-  const updateIndicator = useCallback(() => {
+  const updateIndicator = useCallback((force = false) => {
     const value = getValue();
-    if (lastValueRef.current === value) {
+    if (lastValueRef.current === value && !force) {
       return;
     }
     lastValueRef.current = value;
@@ -59,17 +63,27 @@ function VUMeterPixiCircularIndicator(props: VUMeterPixiCircularIndicatorProps) 
     });
   }, [ img, startAngle, stopAngle, distance, origin, getValue ]);
 
+  useEffect(() => {
+    if (!deepEqual({startAngle, stopAngle, distance, origin}, currentIndicatorGeomDepsRef.current)) {
+      updateIndicator(true);
+    }
+  }, [ updateIndicator, startAngle, stopAngle, distance, origin ]);
+
   const enableTick = playerState.status === 'play' || !indicatorSpriteProps || lastValueRef.current !== 0;
+
+  const updateIndicatorTick = useCallback(() => {
+    updateIndicator();
+  }, [ updateIndicator ]);
 
   useEffect(() => {
     if (enableTick) {
-      ticker.add(updateIndicator);
+      ticker.add(updateIndicatorTick);
 
       return () => {
-        ticker.remove(updateIndicator);
+        ticker.remove(updateIndicatorTick);
       };
     }
-  }, [ updateIndicator, enableTick ]);
+  }, [ updateIndicatorTick, enableTick ]);
 
   const indicatorSprite = useMemo(() => {
     if (!indicatorSpriteProps) {

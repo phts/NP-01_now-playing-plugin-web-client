@@ -4,6 +4,7 @@ import { Container, Graphics, Sprite } from '@pixi/react';
 import { getLinearMeterIndicatorLength } from '../../../utils/vumeter';
 import { usePlayerState } from '../../../contexts/PlayerProvider';
 import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
+import deepEqual from 'deep-equal';
 
 export type VUMeterPixiLinearDefaultIndicatorProps = VUMeterPixiLinearIndicatorCommonProps;
 
@@ -21,17 +22,21 @@ interface IndicatorSpriteProps {
   flipX: boolean;
 }
 
+type IndicatorGeomDeps = Pick<VUMeterPixiLinearDefaultIndicatorProps,
+  'top' | 'left' | 'position' | 'stepWidth' | 'direction' | 'flipX'>;
+
 function VUMeterPixiLinearDefaultIndicator(props: VUMeterPixiLinearDefaultIndicatorProps) {
   const { img, top, left, position, stepWidth, direction, flipX, getValue } = props;
+  const currentIndicatorGeomDepsRef = useRef<IndicatorGeomDeps>({top, left, position, stepWidth, direction, flipX});
   const playerState = usePlayerState();
   const { ticker } = useVUMeterTicker();
   const [ indicatorSpriteProps, setIndicatorSpriteProps ] = useState<IndicatorSpriteProps | null>(null);
   const lastValueRef = useRef(NaN);
   const maskRef = useRef(null);
 
-  const updateIndicator = useCallback(() => {
+  const updateIndicator = useCallback((force = false) => {
     const value = getValue();
-    if (lastValueRef.current === value) {
+    if (lastValueRef.current === value && !force) {
       return;
     }
     lastValueRef.current = value;
@@ -82,17 +87,27 @@ function VUMeterPixiLinearDefaultIndicator(props: VUMeterPixiLinearDefaultIndica
     });
   }, [ img, top, left, position, stepWidth, direction, flipX, getValue ]);
 
+  useEffect(() => {
+    if (!deepEqual({top, left, position, stepWidth, direction, flipX}, currentIndicatorGeomDepsRef.current)) {
+      updateIndicator(true);
+    }
+  }, [ updateIndicator, top, left, position, stepWidth, direction, flipX ]);
+
   const enableTick = playerState.status === 'play' || !indicatorSpriteProps || lastValueRef.current !== 0;
+
+  const updateIndicatorTick = useCallback(() => {
+    updateIndicator();
+  }, [ updateIndicator ]);
 
   useEffect(() => {
     if (enableTick) {
-      ticker.add(updateIndicator);
+      ticker.add(updateIndicatorTick);
 
       return () => {
-        ticker.remove(updateIndicator);
+        ticker.remove(updateIndicatorTick);
       };
     }
-  }, [ updateIndicator, enableTick ]);
+  }, [ updateIndicatorTick, enableTick ]);
 
   const indicatorSprite = useMemo(() => {
     if (!indicatorSpriteProps) {

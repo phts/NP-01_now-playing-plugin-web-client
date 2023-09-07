@@ -38,10 +38,23 @@ const ContextBridge = ({ children, render }) => {
 };
 
 const VUMeterPixiStage = ({ children, ...props }) => {
-  return (
-    <ContextBridge
-      render={(children: React.ReactNode) => <Stage {...props}>{children}</Stage>}
+
+  const render = (children: React.ReactNode) => (
+    <Stage
+      {...props}
+      raf={false}
+      renderOnComponentChange={true}
+      options={{
+        antialias: true,
+        resolution: window.devicePixelRatio
+      }}
     >
+      {children}
+    </Stage>
+  );
+
+  return (
+    <ContextBridge render={render}>
       <VUMeterPixiTickerProvider>
         {children}
       </VUMeterPixiTickerProvider>
