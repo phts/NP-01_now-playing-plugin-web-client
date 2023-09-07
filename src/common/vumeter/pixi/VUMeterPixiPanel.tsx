@@ -1,6 +1,6 @@
 /// <reference types="../../../declaration.d.ts" />
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './VUMeterPixiPanel.module.scss';
 import * as PIXI from 'pixi.js';
 import { Container, Sprite } from '@pixi/react';
@@ -49,6 +49,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
   const { meter, offset, size: fitSize } = props;
   const [ renderProps, setRenderProps ] = useState<RenderProps | null>(null);
+  const isWebGLSupported = useRef(PIXI.utils.isWebGLSupported());
 
   useEffect(() => {
     return () => {
@@ -135,6 +136,13 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
 
   if (!renderProps) {
     return null;
+  }
+
+  if (!isWebGLSupported.current) {
+    const message = 'WebGL rendering is not supported on this device.';
+    return (
+      <VUMeterErrorPanel message={message} />
+    );
   }
 
   const renderAssets = renderProps.assets;
