@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { VUMeterExtended } from 'now-playing-common';
 import { useAppContext } from '../../../contexts/AppContextProvider';
 import { sanitizeImageUrl } from '../../../utils/track';
@@ -14,56 +14,64 @@ function VUMeterPixiExtendedInfoAlbumart(props: VUMeterPixiExtendedInfoAlbumartP
   const { pluginInfo, host } = useAppContext();
   const { src, config } = props;
   const { albumart: albumartConfig, font: fontConfig } = config;
+  const currentSrcRef = useRef<string | null | undefined>(null);
   const [ texture, setTexture ] = useState<PIXI.Texture | null>(null);
   const [ maskRef, setMaskRef ] = useState<PIXI.Graphics | null>(null);
 
-  if (!albumartConfig) {
-    return null;
-  }
+  useEffect(() => {
+    if (texture) {
+      texture.destroy();
+    }
+  }, [ texture ]);
+
+  const loadAlbumart = useCallback(async (src?: string): Promise<PIXI.Texture | null> => {
+    if (!pluginInfo) {
+      return null;
+    }
+    const sanitizedSrc = sanitizeImageUrl(src || null, host);
+
+    /**
+     * Use proxy to bypass any CORS restrictions that would prevent texture from being
+     * obtained or used in WebGL context.
+     */
+    const proxyUrl = new URL('proxy', pluginInfo.appUrl);
+    proxyUrl.searchParams.set('url', sanitizedSrc);
+
+    let texture: PIXI.Texture | null;
+    try {
+      texture = await PIXI.Texture.fromURL(proxyUrl.toString());
+    }
+    catch (error) {
+      console.log(`Failed to load albumart through proxy from ${sanitizedSrc}:`, error);
+      if (src) {
+        return loadAlbumart();
+      }
+      texture = null;
+    }
+    return texture;
+  }, [ pluginInfo, host ]);
 
   useEffect(() => {
-    if (!albumartConfig || !pluginInfo) {
+    if (!albumartConfig || currentSrcRef.current === src) {
       return;
     }
 
     let aborted = false;
-    let _texture: PIXI.Texture | null;
 
-    const loadAlbumart = async (src?: string) => {
-      const sanitizedSrc = sanitizeImageUrl(src || null, host);
-
-      /**
-       * Use proxy to bypass any CORS restrictions that would prevent texture from being
-       * obtained or used in WebGL context.
-       */
-      const proxyUrl = new URL('proxy', pluginInfo.appUrl);
-      proxyUrl.searchParams.set('url', sanitizedSrc);
-
-      try {
-        _texture = await PIXI.Texture.fromURL(proxyUrl.toString());
-      }
-      catch (error) {
-        console.log(`Failed to load albumart through proxy from ${sanitizedSrc}:`, error);
-        if (src) {
-          return loadAlbumart();
-        }
-        _texture = null;
-      }
+    loadAlbumart(src).then((texture) => {
       if (!aborted) {
-        setTexture(_texture);
+        currentSrcRef.current = texture ? src : null;
+        setTexture(texture);
       }
-    };
-
-    loadAlbumart(src);
+      else if (texture) {
+        texture.destroy();
+      }
+    });
 
     return () => {
       aborted = true;
-      if (_texture) {
-        _texture.destroy(true);
-        setTexture(null);
-      }
     };
-  }, [ src, albumartConfig, host, pluginInfo ]);
+  }, [ src, albumartConfig, loadAlbumart ]);
 
   const drawMask = useCallback((g: PIXI.Graphics) => {
     if (!albumartConfig) {
@@ -75,7 +83,7 @@ function VUMeterPixiExtendedInfoAlbumart(props: VUMeterPixiExtendedInfoAlbumartP
       .endFill();
   }, [ albumartConfig ]);
 
-  if (!texture || !albumartConfig) {
+  if (!texture || !texture.valid || !albumartConfig) {
     return null;
   }
 
