@@ -59,7 +59,7 @@ function VUMeterPanel(props: VUMeterPanelProps) {
   const lastLoadMeterParamsRef = useRef<LoadMeterParams | null>(null);
   const lastRefreshTriggerRef = useRef(NaN);
   const appUrl = pluginInfo?.appUrl || null;
-  const [ refreshTrigger, setRefreshTrigger ] = useState(Date.now());
+  const [ refreshTrigger, setRefreshTrigger ] = useState(NaN);
   const currentPlayerStateRef = useRef(playerState);
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -113,6 +113,9 @@ function VUMeterPanel(props: VUMeterPanelProps) {
   const meter = config.templateType === 'fixed' && config.meterType === 'fixed' ? config.meter : null;
 
   const loadMeterConfig = useCallback(async(template: string | null, meter: string | null): Promise<LoadedMeter | null> => {
+    if (!appUrl) {
+      return null;
+    }
     const url = template ? `${appUrl}/vumeter/${template}` : `${appUrl}/vumeter`;
     try {
       const res = await fetch(url);
@@ -175,9 +178,12 @@ function VUMeterPanel(props: VUMeterPanelProps) {
   useEffect(() => {
     const loadMeterParams = { template, meter };
 
+    // Guard against `refreshInterval` change -> `startRefreshTimer` change -> this refresh
     if (lastRefreshTriggerRef.current === refreshTrigger && deepEqual(loadMeterParams, lastLoadMeterParamsRef.current)) {
       return;
     }
+
+    lastRefreshTriggerRef.current = refreshTrigger;
 
     loadMeterConfig(template, meter).then((loadedMeter) => {
       if (!loadedMeter || loadedMeter.error) {
