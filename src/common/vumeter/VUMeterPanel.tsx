@@ -45,12 +45,19 @@ type LoadedMeter = {
   message: string;
 }
 
+interface LoadMeterParams {
+  template: string | null;
+  meter: string | null;
+}
+
 function VUMeterPanel(props: VUMeterPanelProps) {
   const { pluginInfo } = useAppContext();
   const playerState = usePlayerState();
   const { config } = props;
   const [ loadedMeter, setLoadedMeter ] = useState<LoadedMeter | null>(null);
   const currentMeterRef = useRef<VUMeter | null>(null);
+  const lastLoadMeterParamsRef = useRef<LoadMeterParams | null>(null);
+  const lastRefreshTriggerRef = useRef(NaN);
   const appUrl = pluginInfo?.appUrl || null;
   const [ refreshTrigger, setRefreshTrigger ] = useState(Date.now());
   const currentPlayerStateRef = useRef(playerState);
@@ -72,10 +79,7 @@ function VUMeterPanel(props: VUMeterPanelProps) {
     };
   }, [ clearRefreshTimer ]);
 
-  useEffect(() => {
-    if (!loadedMeter) {
-      return;
-    }
+  const startRefreshTimer = useCallback(() => {
     clearRefreshTimer();
     if (refreshInterval > 0) {
       refreshTimerRef.current = setTimeout(() => {
@@ -85,7 +89,7 @@ function VUMeterPanel(props: VUMeterPanelProps) {
     return () => {
       clearRefreshTimer();
     };
-  }, [ clearRefreshTimer, refreshInterval, loadedMeter ]);
+  }, [ clearRefreshTimer, refreshInterval ]);
 
   // Random: refresh when playerState URI / title / album... changes
   useEffect(() => {
@@ -108,77 +112,85 @@ function VUMeterPanel(props: VUMeterPanelProps) {
   const template = config.templateType === 'fixed' ? config.template : null;
   const meter = config.templateType === 'fixed' && config.meterType === 'fixed' ? config.meter : null;
 
-  useEffect(() => {
-    const doSetLoadedMeter = (lm: LoadedMeter | null) => {
-      if (!lm) {
-        currentMeterRef.current = null;
-        setLoadedMeter(null);
-      }
-      else if (lm.error) {
-        currentMeterRef.current = null;
-        setLoadedMeter(lm);
-      }
-      else if (!deepEqual(lm.meter, currentMeterRef.current)) {
-        currentMeterRef.current = lm.meter;
-        setLoadedMeter(lm);
-      }
-    };
-
-    const loadConfig = async () => {
-      const url = template ? `${appUrl}/vumeter/${template}` : `${appUrl}/vumeter`;
-      try {
-        const res = await fetch(url);
-        const configRes = (await res.json()) as VUMeterConfig;
-        if (configRes.error) {
-          doSetLoadedMeter({
-            error: true,
-            message: configRes.error
-          });
-          return;
-        }
-        const meters = configRes.meters;
-        if (!meters || meters.length === 0) {
-          const errMessage = template ? `No VU meters defined in '${template}` : 'No VU meters found';
-          doSetLoadedMeter({
-            error: true,
-            message: errMessage
-          });
-          return;
-        }
-        let targetMeter: VUMeter | null = null;
-        if (template && meter) {
-          targetMeter = meters.find((m) => m.name === meter) || null;
-          if (!targetMeter) {
-            doSetLoadedMeter({
-              error: true,
-              message: `Meter '${meter}' not found in '${template}'`
-            });
-            return;
-          }
-        }
-        else {
-          targetMeter = meters[random(0, meters.length - 1)];
-        }
-        doSetLoadedMeter({
-          error: false,
-          meter: targetMeter
-        });
-      }
-      catch (error) {
-        doSetLoadedMeter({
+  const loadMeterConfig = useCallback(async(template: string | null, meter: string | null): Promise<LoadedMeter | null> => {
+    const url = template ? `${appUrl}/vumeter/${template}` : `${appUrl}/vumeter`;
+    try {
+      const res = await fetch(url);
+      const configRes = (await res.json()) as VUMeterConfig;
+      if (configRes.error) {
+        return {
           error: true,
-          message: `Failed to load VU meter template from: ${url}`
-        });
+          message: configRes.error
+        };
       }
-    };
+      const meters = configRes.meters;
+      if (!meters || meters.length === 0) {
+        const errMessage = template ? `No VU meters defined in '${template}` : 'No VU meters found';
+        return {
+          error: true,
+          message: errMessage
+        };
+      }
+      let targetMeter: VUMeter | null = null;
+      if (template && meter) {
+        targetMeter = meters.find((m) => m.name === meter) || null;
+        if (!targetMeter) {
+          return {
+            error: true,
+            message: `Meter '${meter}' not found in '${template}'`
+          };
+        }
+      }
+      else {
+        targetMeter = meters[random(0, meters.length - 1)];
+      }
+      return {
+        error: false,
+        meter: targetMeter
+      };
+    }
+    catch (error) {
+      return {
+        error: true,
+        message: `Failed to load VU meter template from: ${url}`
+      };
+    }
+  }, [ appUrl ]);
 
-    if (!appUrl) {
-      doSetLoadedMeter(null);
+  const doSetLoadedMeter = useCallback((lm: LoadedMeter | null) => {
+    if (!lm) {
+      currentMeterRef.current = null;
+      setLoadedMeter(null);
     }
-    else {
-      loadConfig();
+    else if (lm.error) {
+      currentMeterRef.current = null;
+      setLoadedMeter(lm);
     }
-  }, [ template, meter, appUrl, refreshTrigger ]);
+    else if (!deepEqual(lm.meter, currentMeterRef.current)) {
+      currentMeterRef.current = lm.meter;
+      setLoadedMeter(lm);
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadMeterParams = { template, meter };
+
+    if (lastRefreshTriggerRef.current === refreshTrigger && deepEqual(loadMeterParams, lastLoadMeterParamsRef.current)) {
+      return;
+    }
+
+    loadMeterConfig(template, meter).then((loadedMeter) => {
+      if (!loadedMeter || loadedMeter.error) {
+        lastLoadMeterParamsRef.current = null;
+      }
+      else {
+        lastLoadMeterParamsRef.current = loadMeterParams;
+      }
+      doSetLoadedMeter(loadedMeter);
+      startRefreshTimer();
+    });
+
+  }, [ template, meter, loadMeterConfig, refreshTrigger, startRefreshTimer ]);
 
   if (!loadedMeter) {
     return null;
