@@ -105,6 +105,10 @@ function VUMeterPixiExtendedInfoTrackType(props: VUMeterPixiExtendedInfoTrackTyp
           if (child.name === 'path') {
             child.attributes.fill = color;
           }
+          if (!child.attributes.style) {
+            child.attributes.style = '';
+          }
+          child.attributes.style += `; fill: ${color}`;
         }
 
         // Create data URI from SVG payload
