@@ -172,6 +172,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   const extraStats = useMemo(() => {
     if (performanceSettings.vuMeterWebGLShowStats) {
       return {
+        Template: meter.template,
         Meter: meter.name
       };
     }
