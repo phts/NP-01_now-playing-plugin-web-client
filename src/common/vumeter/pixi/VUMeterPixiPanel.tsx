@@ -45,6 +45,33 @@ interface RenderProps {
 
 type VUMeterPixiImageAssets = (VUMeterPixiLoadedAssets & { error: false })['images'];
 
+type LoadImageAssetResult = ({
+  error: false;
+  texture: PIXI.Texture;
+} | {
+  error: true;
+  url: string;
+}) & {
+  assetName: keyof VUMeterPixiImageAssets;
+}
+
+const loadImageTexture = async (url: string, assetName: LoadImageAssetResult['assetName']): Promise<LoadImageAssetResult> => {
+  try {
+    return {
+      error: false,
+      assetName,
+      texture: await PIXI.Texture.fromURL(url)
+    };
+  }
+  catch (error) {
+    return {
+      error: true,
+      assetName,
+      url
+    };
+  }
+};
+
 function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
   const { meter, offset, size: fitSize } = props;
@@ -66,48 +93,56 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
 
   const loadAssets = useCallback(async(meter: VUMeter): Promise<VUMeterPixiLoadedAssets> => {
     const loadImagePromises = [
-      PIXI.Texture.fromURL(meter.images.background),
-      PIXI.Texture.fromURL(meter.images.indicator),
-      meter.images.screenBackground ? PIXI.Texture.fromURL(meter.images.screenBackground) : Promise.resolve(null),
-      meter.images.foreground ? PIXI.Texture.fromURL(meter.images.foreground) : Promise.resolve(null)
+      loadImageTexture(meter.images.background, 'background'),
+      loadImageTexture(meter.images.indicator, 'indicator')
     ];
-    let loadImageResult: Array<PIXI.Texture | null>;
-    try {
-      loadImageResult = await Promise.all(loadImagePromises);
+    if (meter.images.screenBackground) {
+      loadImagePromises.push(loadImageTexture(meter.images.screenBackground, 'screenBackground'));
     }
-    catch (error) {
-      const errMessageParts = [ 'Failed to load VU meter asset' ];
-      if (error?.target?.src) {
-        errMessageParts.push(error.target.src);
-      }
+    if (meter.images.foreground) {
+      loadImagePromises.push(loadImageTexture(meter.images.foreground, 'foreground'));
+    }
+    const loadImageResult: Array<LoadImageAssetResult> = await Promise.all(loadImagePromises);
+
+    const errorResult = (url: string, tag: string): VUMeterPixiLoadedAssets => {
+      loadImageResult.forEach((r) => {
+        if (!r.error) {
+          r.texture.destroy(true);
+        }
+      });
       return {
         error: true,
-        message: errMessageParts.join(' from: ')
+        message: `Failed to load VU meter ${tag} from: ${url}`
       };
-    }
+    };
+
     const [ background, indicator, screenBackground, foreground ] = loadImageResult;
-    if (background && indicator) {
-      const loadedImageAssets: VUMeterPixiImageAssets = {
-        background,
-        indicator
-      };
-      if (screenBackground) {
-        loadedImageAssets.screenBackground = screenBackground;
+
+    for (const requiredAsset of [ background, indicator ]) {
+      if (requiredAsset.error) {
+        return errorResult(requiredAsset.url, requiredAsset.assetName);
       }
-      if (foreground) {
-        loadedImageAssets.foreground = foreground;
+    }
+    const loadedImageAssets: VUMeterPixiImageAssets = {
+      background: (background as LoadImageAssetResult & {error: false}).texture,
+      indicator: (indicator as LoadImageAssetResult & {error: false}).texture
+    };
+
+    for (const optionalAsset of [ screenBackground, foreground ]) {
+      if (optionalAsset) {
+        if (!optionalAsset.error) {
+          loadedImageAssets[optionalAsset.assetName] = optionalAsset.texture;
+        }
+        else {
+          console.warn(`Failed to load VU meter ${optionalAsset.assetName} from: ${optionalAsset.url}`);
+        }
       }
-      return {
-        error: false,
-        images: loadedImageAssets
-      };
     }
 
     return {
-      error: true,
-      message: 'Failed to load VU meter asset: could not obtain background or indicator image texture.'
+      error: false,
+      images: loadedImageAssets
     };
-
   }, []);
 
   useEffect(() => {
@@ -169,6 +204,10 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
     width: background.width,
     height: background.height
   };
+  if (!renderAssets.images.screenBackground) {
+    stageSize.width += renderProps.meter.meter.x;
+    stageSize.height += renderProps.meter.meter.y;
+  }
   if (fitSize && fitSize.height > 0 && fitSize.width > 0) {
     scale = Math.min(
       fitSize.width / background.width,
