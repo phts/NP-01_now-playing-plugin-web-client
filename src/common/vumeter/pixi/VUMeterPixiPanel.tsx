@@ -134,6 +134,15 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
     return null;
   }, [ renderProps ]);
 
+  const extraStats = useMemo(() => {
+    if (performanceSettings.vuMeterWebGLShowStats) {
+      return {
+        Meter: meter.name
+      };
+    }
+    return undefined;
+  }, [ performanceSettings.vuMeterWebGLShowStats, meter.name ]);
+
   if (!renderProps) {
     return null;
   }
@@ -206,6 +215,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
           <VUMeterPixiStats
             position={{x: stageSize.width - 18, y: stageSize.height - 18}}
             anchor={{x: 1, y: 1}}
+            extraStats={extraStats}
           />
           :
           null

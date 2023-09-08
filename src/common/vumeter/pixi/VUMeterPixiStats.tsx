@@ -8,7 +8,8 @@ import { useVUMeterTicker } from './VUMeterPixiTickerProvider';
 const style = new PIXI.TextStyle({
   fontFamily: [ 'Roboto', 'sans-serif' ],
   fontSize: 24,
-  fill: '#00FF00'
+  fill: '#00FF00',
+  align: 'right'
 });
 
 export interface VUMeterPixiStatsProps {
@@ -20,11 +21,12 @@ export interface VUMeterPixiStatsProps {
     x: number;
     y: number;
   };
+  extraStats?: Record<string, string>;
 }
 
 function VUMeterPixiStats(props: VUMeterPixiStatsProps) {
   const { ticker } = useVUMeterTicker();
-  const { position, anchor } = props;
+  const { position, anchor, extraStats } = props;
   const [ statsText, setStatsText ] = useState('');
 
   useEffect(() => {
@@ -33,15 +35,19 @@ function VUMeterPixiStats(props: VUMeterPixiStatsProps) {
         `${round(ticker.FPS, 2).toFixed(2)} FPS`,
         `Ticks: ${ticker.count}`
       ];
+      if (extraStats) {
+        for (const [ key, value ] of Object.entries(extraStats)) {
+          lines.push(`${key}: ${value}`);
+        }
+      }
       setStatsText(lines.join('\n'));
     };
-
     ticker.add(refresh);
 
     return () => {
       ticker.remove(refresh);
     };
-  }, []);
+  }, [ extraStats ]);
 
   return (
     <Text
