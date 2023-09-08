@@ -3,7 +3,7 @@ import { VUMeter, VUMeterData } from 'now-playing-common';
 import { useSocket } from '../../../contexts/SocketProvider';
 import VUMeterPixiLinearIndicatorCommonProps from './VUMeterPixiLinearIndicatorCommonProps';
 import { VUMeterPixiLoadedAssets } from './VUMeterPixiPanel';
-import { Sprite } from '@pixi/react';
+import { Container, Sprite } from '@pixi/react';
 import VUMeterPixiLinearDefaultIndicator from './VUMeterPixiLinearDefaultIndicator';
 import VUMeterPixiCircularIndicator from './VUMeterPixiCircularIndicator';
 import VUMeterPixiLinearSingleIndicator from './VUMeterPixiLinearSingleIndicator';
@@ -133,24 +133,18 @@ function VUMeterPixiBasic(props: VUMeterPixiBasicProps) {
   const foreground = useMemo(() => {
     if (assets.images.foreground) {
       return (
-        <Sprite
-          texture={assets.images.foreground}
-          position={{x: config.meter.x, y: config.meter.y}}
-        />
+        <Sprite texture={assets.images.foreground} />
       );
     }
     return null;
   }, [ config, assets ]);
 
   return (
-    <>
-      <Sprite
-        texture={assets.images.background}
-        position={{x: config.meter.x, y: config.meter.y}}
-      />
+    <Container position={{x: config.meter.x, y: config.meter.y}}>
+      <Sprite texture={assets.images.background}/>
       {getIndicator()}
       {foreground}
-    </>
+    </Container>
   );
 }
 
