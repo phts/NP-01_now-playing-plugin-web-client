@@ -147,13 +147,22 @@ function VUMeterCSSExtendedInfo(props: VUMeterCSSExtendedInfoProps) {
     if (!pi || !ps) {
       return null;
     }
+
+    let fontColor: string;
+    if (playInfoKey === 'sampleRate') {
+      fontColor = playInfo.trackType?.color || font.color;
+    }
+    else {
+      fontColor = font.color;
+    }
+
     const style = {
       '--top': `${pi.position.y}px`,
       '--left': `${pi.position.x}px`,
       '--width': `${playInfo.maxWidth}px`,
       '--font-family': `"${VU_METER_FONT_FAMILY[pi.style]}", var(--app-font-family)`,
       '--font-size': `${font.size[pi.style]}px`,
-      '--color': font.color
+      '--color': fontColor
     } as React.CSSProperties;
 
     const className = classNames([

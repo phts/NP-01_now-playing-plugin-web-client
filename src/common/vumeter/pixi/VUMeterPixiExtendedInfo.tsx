@@ -101,10 +101,18 @@ function VUMeterPixiExtendedInfo(props: VUMeterPixiExtendedInfoProps) {
       return null;
     }
 
+    let fontColor: string;
+    if (playInfoKey === 'sampleRate') {
+      fontColor = playInfoConfig.trackType?.color || fontConfig.color;
+    }
+    else {
+      fontColor = fontConfig.color;
+    }
+
     const textStyle = new PIXI.TextStyle({
       fontFamily: [ VU_METER_FONT_FAMILY[pi.style], 'Roboto', 'sans-serif' ],
       fontSize: fontConfig.size[pi.style],
-      fill: fontConfig.color
+      fill: fontColor
     });
     const fittedText = truncWithEllipsis(ps.toString(), textStyle, playInfoConfig.maxWidth);
     const position = {
