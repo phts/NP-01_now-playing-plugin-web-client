@@ -44,6 +44,19 @@ const getSVGDataURI = (payload: string) => {
   return `data:image/svg+xml,${encoded}`;
 };
 
+const setSVGFill = (svgNode: svgson.INode, color: string) => {
+  if (svgNode.name === 'path') {
+    svgNode.attributes.fill = color;
+
+    if (!svgNode.attributes.style) {
+      svgNode.attributes.style = '';
+    }
+    svgNode.attributes.style += `; fill: ${color}`;
+  }
+
+  svgNode.children.forEach((c) => setSVGFill(c, color));
+};
+
 function VUMeterPixiExtendedInfoTrackType(props: VUMeterPixiExtendedInfoTrackTypeProps) {
   const { position, size, color, formatIconUrl } = props;
   const [ formatIconSpriteProps, setFormatIconSpriteProps ] = useState<FormatIconSpriteProps | null>(null);
@@ -100,16 +113,8 @@ function VUMeterPixiExtendedInfoTrackType(props: VUMeterPixiExtendedInfoTrackTyp
         const bestWidth = scale * vbWidth;
         const bestHeight = scale * vbHeight;
 
-        // Modify SVG payload to override path fill with color
-        for (const child of payload.children) {
-          if (child.name === 'path') {
-            child.attributes.fill = color;
-          }
-          if (!child.attributes.style) {
-            child.attributes.style = '';
-          }
-          child.attributes.style += `; fill: ${color}`;
-        }
+        // Set fill color
+        setSVGFill(payload, color);
 
         // Create data URI from SVG payload
         const modified = svgson.stringify(payload);
