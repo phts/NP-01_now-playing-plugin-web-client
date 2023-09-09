@@ -37,7 +37,7 @@ const ContextBridge = ({ children, render }) => {
   );
 };
 
-const VUMeterPixiStage = ({ children, ...props }) => {
+const VUMeterPixiStage = ({ children, forceCanvas = false, ...props }) => {
 
   const render = (children: React.ReactNode) => (
     <Stage
@@ -46,7 +46,8 @@ const VUMeterPixiStage = ({ children, ...props }) => {
       renderOnComponentChange={true}
       options={{
         antialias: true,
-        resolution: window.devicePixelRatio
+        resolution: window.devicePixelRatio,
+        forceCanvas
       }}
     >
       {children}

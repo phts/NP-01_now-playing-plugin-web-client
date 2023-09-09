@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
 import React, { useMemo } from 'react';
 import { VUMeterExtended } from 'now-playing-common';
 import { usePlayerSeek, usePlayerState } from '../../../contexts/PlayerProvider';

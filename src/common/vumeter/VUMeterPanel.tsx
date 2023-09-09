@@ -34,7 +34,7 @@ export interface VUMeterPanelProps {
     width: number;
     height: number;
   };
-  impl?: 'css' | 'pixi';
+  impl: 'webgl' | 'canvas' | 'css';
 }
 
 type LoadedMeter = {
@@ -209,11 +209,12 @@ function VUMeterPanel(props: VUMeterPanelProps) {
   }
 
   return (
-    props.impl === undefined || props.impl === 'pixi' ?
+    props.impl === 'webgl' || props.impl === 'canvas' ?
       <VUMeterPixiPanel
         meter={loadedMeter.meter}
         size={props.size}
         offset={props.offset}
+        impl={props.impl}
       />
       :
       <VUMeterCSSPanel

@@ -1,5 +1,5 @@
 import { Sprite } from '@pixi/react';
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getCircularMeterIndicatorAngle } from '../../../utils/vumeter';
 import { usePlayerState } from '../../../contexts/PlayerProvider';

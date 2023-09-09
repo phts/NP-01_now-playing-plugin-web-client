@@ -59,17 +59,9 @@ function VUMeterView(props: VUMeterViewProps) {
     };
   }
 
-  let vuMeterImpl: 'pixi' | 'css';
-  const renderingSettings = isKiosk ?
+  const vuMeterImpl = isKiosk ?
     performanceSettings.vuMeterRenderingKiosk :
     performanceSettings.vuMeterRenderingOtherDevices;
-  switch (renderingSettings) {
-    case 'webgl':
-      vuMeterImpl = 'pixi';
-      break;
-    default:
-      vuMeterImpl = 'css';
-  }
 
   return (
     <div className={styles.Layout}>

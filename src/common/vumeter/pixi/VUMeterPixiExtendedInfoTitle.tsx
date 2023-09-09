@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Container, Graphics, Text } from '@pixi/react';
 import { useVUMeterTicker } from './VUMeterPixiTickerProvider';

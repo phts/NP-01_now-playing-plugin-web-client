@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './VUMeterPixiPanel.module.scss';
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
 import { Container, Sprite } from '@pixi/react';
 import { CommonSettingsCategory, VUMeter } from 'now-playing-common';
 import VUMeterPixiBasic from './VUMeterPixiBasic';
@@ -23,6 +23,7 @@ export interface VUMeterPixiPanelProps {
     width: number;
     height: number;
   };
+  impl: 'webgl' | 'canvas';
 }
 
 export type VUMeterPixiLoadedAssets = {
@@ -74,8 +75,10 @@ const loadImageTexture = async (url: string, assetName: LoadImageAssetResult['as
 
 function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
   const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
-  const { meter, offset, size: fitSize } = props;
+  const { meter, offset, size: fitSize, impl } = props;
   const [ renderProps, setRenderProps ] = useState<RenderProps | null>(null);
+  const [ forceRefreshing, setForceRefreshing ] = useState(false);
+  const isFirstRunRef = useRef(true);
   const isWebGLSupported = useRef(PIXI.utils.isWebGLSupported());
 
   useEffect(() => {
@@ -90,6 +93,22 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
       }
     };
   }, [ renderProps ]);
+
+  useEffect(() => {
+    if (isFirstRunRef.current) {
+      return;
+    }
+    // Probably unsafe to change PIXI.Application.renderer directly...
+    // So force refresh when impl changes from 'webgl' to 'canvas' or vice versa.
+    setForceRefreshing(true);
+    const timer = setTimeout(() => {
+      setForceRefreshing(false);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [ impl ]);
 
   const loadAssets = useCallback(async(meter: VUMeter): Promise<VUMeterPixiLoadedAssets> => {
     const loadImagePromises = [
@@ -179,15 +198,12 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
     return undefined;
   }, [ performanceSettings.vuMeterWebGLShowStats, meter.name ]);
 
-  if (!renderProps) {
-    return null;
-  }
+  useEffect(() => {
+    isFirstRunRef.current = false;
+  }, []);
 
-  if (!isWebGLSupported.current) {
-    const message = 'WebGL rendering is not supported on this device.';
-    return (
-      <VUMeterErrorPanel message={message} />
-    );
+  if (!renderProps || forceRefreshing) {
+    return null;
   }
 
   const renderAssets = renderProps.assets;
@@ -234,6 +250,7 @@ function VUMeterPixiPanel(props: VUMeterPixiPanelProps) {
       width={stageSize.width}
       height={stageSize.height}
       style={stageStyles}
+      forceCanvas={impl === 'canvas' || !isWebGLSupported.current}
     >
       <Container
         position={{x: 0, y: 0}}

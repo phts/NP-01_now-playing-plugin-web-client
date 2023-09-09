@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
 import { Text } from '@pixi/react';
 import { useState } from 'react';
 import { round } from 'lodash';

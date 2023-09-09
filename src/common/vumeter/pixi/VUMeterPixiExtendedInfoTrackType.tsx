@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
 import React, { useEffect, useState } from 'react';
 import { Sprite } from '@pixi/react';
 import * as svgson from 'svgson';
