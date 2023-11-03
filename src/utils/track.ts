@@ -52,8 +52,7 @@ export function getFormatResolution(track: TrackInfo) {
   if (track.bitdepth) {
     resolutionProps.push(track.bitdepth);
   }
-  return resolutionProps.join(', ');
-
+  return resolutionProps.join(' / ');
 }
 
 export function getFormatIcon(trackType: TrackInfo['trackType'], host: string) {
