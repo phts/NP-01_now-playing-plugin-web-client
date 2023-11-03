@@ -24,10 +24,11 @@ import { ClickEvent } from '@szhsin/react-menu';
 import { TrackInfoTextProps } from '../../common/TrackInfoText';
 import { CommonSettingsCategory, DockComponentPlacement } from 'now-playing-common';
 import { StartupOptions } from 'now-playing-common/dist/config/StartupOptions';
+import VUMeterView from './VUMeterView';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
-  view?: 'basic' | 'info';
+  view?: 'basic' | 'info' | 'vuMeter';
   style?: React.CSSProperties;
   className?: string;
 }
@@ -37,14 +38,17 @@ interface NowPlayingScreenRestoreState {
   previouslyMounted?: boolean;
 }
 
-const getStartupView = (startupOptions: StartupOptions) => {
-  if (startupOptions.activeScreen === 'nowPlaying.basicView') {
-    return 'basic';
+const getStartupView = (startupOptions: StartupOptions): NowPlayingScreenProps['view'] => {
+  switch (startupOptions.activeScreen) {
+    case 'nowPlaying.basicView':
+      return 'basic';
+    case 'nowPlaying.infoView':
+      return 'info';
+    case 'nowPlaying.vuMeter':
+      return 'vuMeter';
+    default:
+      return undefined;
   }
-  else if (startupOptions.activeScreen === 'nowPlaying.infoView') {
-    return 'info';
-  }
-  return undefined;
 };
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
@@ -177,9 +181,13 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
 
   const getDockChildren = (position: DockComponentPlacement) => {
     const children: { order: number; component: React.JSX.Element; }[] = [];
+    const vuMeterViewActive = view === 'vuMeter';
+
+    const isVisible = <T, >(component: T & { enabled: boolean; placement: DockComponentPlacement; showInVUMeterView: boolean}) =>
+      component.enabled && component.placement === position && (!vuMeterViewActive || component.showInVUMeterView);
 
     const dockedVolumeIndicator = screenSettings.dockedVolumeIndicator;
-    if (dockedVolumeIndicator.enabled && dockedVolumeIndicator.placement === position) {
+    if (isVisible(dockedVolumeIndicator)) {
       children.push({
         order: Number(dockedVolumeIndicator.displayOrder) || 0,
         component: <DockedVolumeIndicator key="dockedVolumeIndicator" />
@@ -187,7 +195,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     }
 
     const dockedClock = screenSettings.dockedClock;
-    if (dockedClock.enabled && dockedClock.placement === position) {
+    if (isVisible(dockedClock)) {
       children.push({
         order: Number(dockedClock.displayOrder) || 0,
         component: <DockedClock key="dockedClock" />
@@ -195,7 +203,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     }
 
     const dockedWeather = screenSettings.dockedWeather || {};
-    if (dockedWeather.enabled && dockedWeather.placement === position) {
+    if (isVisible(dockedWeather)) {
       children.push({
         order: Number(dockedWeather.displayOrder) || 0,
         component: <DockedWeather key="dockedWeather" />
@@ -204,20 +212,16 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
 
     const orderedChildren = children.sort((c1, c2) => (c1.order - c2.order)).map((c) => c.component);
 
-    if (position === 'top') {
-      const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger;
-      if (dockedActionPanelTrigger.enabled) {
-        orderedChildren.unshift(
-          <DockedActionPanelTrigger key="actionPanelTrigger" onClick={openActionPanel} />
-        );
-      }
+    const dockedActionPanelTrigger = screenSettings.dockedActionPanelTrigger;
+    if (isVisible({...dockedActionPanelTrigger, placement: 'top'})) {
+      orderedChildren.unshift(
+        <DockedActionPanelTrigger key="actionPanelTrigger" onClick={openActionPanel} />
+      );
     }
 
-    if (position === 'top-right') {
-      const dockedMenu = screenSettings.dockedMenu;
-      if (dockedMenu.enabled) {
-        orderedChildren.push(getMenu());
-      }
+    const dockedMenu = screenSettings.dockedMenu;
+    if (isVisible({...dockedMenu, placement: 'top-right'})) {
+      orderedChildren.push(getMenu());
     }
 
     return orderedChildren;
@@ -321,8 +325,20 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     e.syntheticEvent.stopPropagation();
     const { action } = e.value;
     switch (action) {
-      case 'toggleView':
-        setView(view === 'basic' ? 'info' : 'basic');
+      case 'setBasicView':
+        if (view !== 'basic') {
+          setView('basic');
+        }
+        break;
+      case 'setInfoView':
+        if (view !== 'info') {
+          setView('info');
+        }
+        break;
+      case 'setVUMeterView':
+        if (view !== 'vuMeter') {
+          setView('vuMeter');
+        }
         break;
       case 'gotoArtist':
       case 'gotoAlbum':
@@ -350,12 +366,33 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     const menuItems: PopupMenuItem[] = [
       {
         type: 'item',
-        key: 'toggleView',
+        key: 'setBasicView',
         value: {
-          action: 'toggleView'
+          action: 'setBasicView'
         },
-        icon: view === 'basic' ? 'newspaper' : 'art_track',
-        title: view === 'basic' ? t('screen.nowPlaying.infoView') : t('screen.nowPlaying.basicView')
+        icon: 'art_track',
+        title: t('screen.nowPlaying.basicView'),
+        selected: view === 'basic'
+      },
+      {
+        type: 'item',
+        key: 'setInfoView',
+        value: {
+          action: 'setInfoView'
+        },
+        icon: 'newspaper',
+        title: t('screen.nowPlaying.infoView'),
+        selected: view === 'info'
+      },
+      {
+        type: 'item',
+        key: 'setVUMeterView',
+        value: {
+          action: 'setVUMeterView'
+        },
+        icon: 'speed',
+        title: t('screen.nowPlaying.vuMeterView'),
+        selected: view === 'vuMeter'
       },
       {
         type: 'divider',
@@ -396,6 +433,16 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     );
   };
 
+  const { vuMeter: vuMeterSettings } = screenSettings;
+  const vuMeterViewComponent = useMemo(() => {
+    if (view !== 'vuMeter') {
+      return null;
+    }
+    return <VUMeterView {...vuMeterSettings} />;
+
+  }, [ view, vuMeterSettings.templateType, vuMeterSettings.template, vuMeterSettings.meterType,
+    vuMeterSettings.meter, vuMeterSettings.randomRefreshInterval, vuMeterSettings.randomRefreshOnTrackChange ]);
+
   const layoutClasses = classNames([
     styles.Layout,
     props.className
@@ -428,7 +475,9 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
             marqueeTitle={marqueeTitle} />
           : view === 'info' ?
             <InfoView playerState={playerState} />
-            : null}
+            : view === 'vuMeter' ?
+              vuMeterViewComponent
+              : null}
       </div>
     </div>
   );

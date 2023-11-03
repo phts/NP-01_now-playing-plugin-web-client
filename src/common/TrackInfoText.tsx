@@ -43,7 +43,7 @@ function getPosition(playerState: PlayerState) {
 }
 
 function TrackInfoText(props: TrackInfoTextProps) {
-  const { host } = useAppContext();
+  const { pluginInfo } = useAppContext();
   const playerState = props.playerState;
   const title = playerState.title || '';
   const pos = getPosition(playerState);
@@ -52,7 +52,7 @@ function TrackInfoText(props: TrackInfoTextProps) {
   const year = playerState.year ? ` (${playerState.year})` : '';
   const tracknumber = playerState.tracknumber;
   const formatResolution = getFormatResolution(playerState);
-  const formatIcon = getFormatIcon(playerState.trackType, host);
+  const formatIcon = pluginInfo ? getFormatIcon(playerState.trackType, pluginInfo.appUrl) : null;
   const concatArtistAlbum = props.concatArtistAlbum !== undefined && props.concatArtistAlbum;
   const visibility = props.trackInfoVisibility || DEFAULT_TRACK_INFO_VISIBILITY;
   const trackInfoOrder = props.trackInfoOrder || DEFAULT_TRACK_INFO_ORDER;

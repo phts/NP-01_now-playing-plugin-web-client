@@ -1,0 +1,13 @@
+.Layout {
+  --top: 0;
+  --left: 0;
+  --distance: 0;
+  --rotate: 0;
+
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  transform-origin: center calc(50% + var(--distance));
+  //rotate: var(--rotate); --> Not supported in legacy Chromium version used by Volumio
+  transform: rotate((var(--rotate)));
+}

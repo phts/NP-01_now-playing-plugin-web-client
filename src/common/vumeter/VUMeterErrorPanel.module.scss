@@ -1,0 +1,12 @@
+.Layout {
+  margin: auto;
+  width: 80%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--common-foreground-color, #ccc);
+  line-height: 1.5em;
+  line-break: anywhere;
+}

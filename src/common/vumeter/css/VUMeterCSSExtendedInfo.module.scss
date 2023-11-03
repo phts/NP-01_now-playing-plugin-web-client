@@ -1,0 +1,120 @@
+@mixin text-element {
+  --top: 0;
+  --left: 0;
+  --font-family: inherit;
+  --font-size: inherit;
+  --width: auto;
+  --color: inherit;
+
+  display: -webkit-box;
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: var(--width);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  color: var(--color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  
+  &--centered {
+    text-align: center;
+  }
+}
+
+.MarqueeTitleWrapper {
+  --top: 0;
+  --left: 0;
+  --width: auto;
+
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: var(--width);
+  overflow-x: hidden;
+  display: flex;
+
+  &--centered {
+    justify-content: center;
+  }
+}
+
+.Title {
+  --font-family: inherit;
+  --font-size: inherit;
+  --color: inherit;
+
+  display: -webkit-box;
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  color: var(--color);
+  overflow: hidden;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+
+  &--marqueeRunning {
+    padding-right: 3em;
+  }
+
+  &--marqueeStopped {
+    flex: 0 0 auto;
+  }
+}
+
+.Artist {
+  @include text-element();
+}
+
+.Album {
+  @include text-element();
+}
+
+.SampleRate {
+  @include text-element();
+}
+
+.AlbumArt {
+  --top: 0;
+  --left: 0;
+  --width: auto;
+  --height: auto;
+  --border: none;
+
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: var(--width);
+  height: var(--height);
+  border: var(--border);
+  object-fit: cover;
+}
+
+.TrackType {
+  --top: 0;
+  --left: 0;
+  --color: inherit;
+  --width: auto;
+  --height: auto;
+  --iconUrl: none;
+
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: var(--width);
+  height: var(--height);
+
+  svg {
+    // Need `display: block` to eliminate space in parent div
+    // https://stackoverflow.com/questions/22300062/svg-and-parent-height-of-svg-different
+    display: block;
+    width: var(--width);
+    height: var(--height);
+    path {
+      fill: var(--color);
+    }
+  }
+}

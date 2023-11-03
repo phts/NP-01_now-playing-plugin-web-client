@@ -19,7 +19,7 @@ export interface AppContextValue {
   setKiosk: (kiosk: boolean) => void;
 }
 
-const AppContext = createContext({} as AppContextValue);
+export const AppContext = createContext({} as AppContextValue);
 
 const pluginInfoReducer: Reducer<PluginInfo | null, PluginInfo | null> = (currentPluginInfo, newPluginInfo) =>
   deepEqual(currentPluginInfo, newPluginInfo) ? currentPluginInfo : newPluginInfo;

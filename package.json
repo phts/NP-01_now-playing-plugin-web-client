@@ -27,6 +27,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@pixi/react": "^7.1.1",
     "@szhsin/react-menu": "^4.0.2",
     "cash-dom": "^8.1.5",
     "classnames": "^2.3.2",
@@ -38,7 +39,8 @@
     "lodash": "^4.17.21",
     "luxon": "^3.3.0",
     "md5": "^2.3.0",
-    "now-playing-common": "git+https://github.com/patrickkfkan/volumio-now-playing-common#v0.2.2",
+    "now-playing-common": "github:patrickkfkan/volumio-now-playing-common#vu",
+    "pixi.js-legacy": "^7.2.4",
     "rc-scrollbars": "^1.1.6",
     "rc-slider": "^10.2.1",
     "react": "^18.2.0",
@@ -48,9 +50,11 @@
     "react-modal": "^3.16.1",
     "react-range": "^1.8.14",
     "react-spring": "^8.0.27",
+    "react-svg": "^16.1.22",
     "react-swipeable": "^7.0.1",
     "react-transition-group": "^4.4.5",
     "socket.io-client": "^1.7.4",
+    "svgson": "^5.3.1",
     "toasted-notes": "^3.2.0",
     "web-vitals": "^2.1.2"
   },

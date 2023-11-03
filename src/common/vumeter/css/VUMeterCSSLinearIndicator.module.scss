@@ -1,0 +1,14 @@
+.Layout {
+  --top: 0;
+  --left: 0;
+  --clip: none;
+
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  clip-path: var(--clip);
+
+  &--flipX {
+    transform: scaleX(-1);
+  }
+}

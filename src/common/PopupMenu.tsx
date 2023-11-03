@@ -12,6 +12,7 @@ export interface PopupMenuItem {
   value?: any;
   title?: string;
   icon?: string;
+  selected?: boolean;
 }
 
 export interface PopupMenuProps extends StylesBundleProps {
@@ -45,9 +46,25 @@ function PopupMenu(props: PopupMenuProps) {
   const menuOpened = menuProps.state !== undefined && menuProps.state !== 'closed';
 
   const getMenu = () => {
-    const getIcon = (item: PopupMenuItem) => item.icon ?
-      (<span className={classNames('material-icons', getElementClassName('menuItemIcon'))}>{item.icon}</span>)
-      : null;
+    const getIcon = (item: PopupMenuItem) => {
+      let iconName = item.icon;
+      const style: React.CSSProperties = {};
+      if (item.selected) {
+        iconName = 'check';
+        style.color = 'var(--menu-item-selected-color)';
+      }
+      return iconName ?
+        <span style={style} className={classNames('material-icons', getElementClassName('menuItemIcon'))}>{iconName}</span>
+        : null;
+    };
+
+    const getTitle = (item: PopupMenuItem) => {
+      if (item.selected) {
+        const style: React.CSSProperties = { color: 'var(--menu-item-selected-color)' };
+        return <span style={style}>{item.title}</span>;
+      }
+      return item.title;
+    };
 
     return (
       <ControlledMenu
@@ -84,7 +101,7 @@ function PopupMenu(props: PopupMenuProps) {
               key={item.key}
               value={item.value}>
               {getIcon(item)}
-              {item.title}
+              {getTitle(item)}
             </MenuItem>
           );
 

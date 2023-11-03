@@ -19,11 +19,14 @@ export function sanitizeImageUrl(url: string | null, host: string) {
 
 }
 
-export function millisecondsToString(ms: number) {
-  const mm = Math.trunc(ms / 1000 / 60);
-  let ss = `${Math.trunc((ms / 1000) % 60)}`;
+export function millisecondsToString(ms: number, padMinutes = 0) {
+  let mm = Math.trunc(ms / 1000 / 60).toString();
+  let ss = Math.trunc((ms / 1000) % 60).toString();
   if (ss.length === 1) {
     ss = `0${ss}`;
+  }
+  if (padMinutes > 1 && mm.length < padMinutes) {
+    mm = '0'.repeat(padMinutes - mm.length) + mm;
   }
   return `${mm}:${ss}`;
 }
@@ -55,7 +58,7 @@ export function getFormatResolution(track: TrackInfo) {
   return resolutionProps.join(' / ');
 }
 
-export function getFormatIcon(trackType: TrackInfo['trackType'], host: string) {
+export function getFormatIcon(trackType: TrackInfo['trackType'], appUrl: string) {
   if (!trackType) {
     return null;
   }
@@ -101,7 +104,7 @@ export function getFormatIcon(trackType: TrackInfo['trackType'], host: string) {
       url = null;
   }
   if (url) {
-    return `${host}/app/assets-common/format-icons/${url}.svg`;
+    return `${appUrl}/sys_asset/format_icon/${url}.svg`;
   }
 
   return null;
