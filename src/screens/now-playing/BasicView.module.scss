@@ -108,7 +108,7 @@
       gap: 1em;
     }
     @media (min-width: 768px) {
-      gap: 24px;
+      gap: 16px;
     }
   }
 
@@ -138,7 +138,7 @@
     @extend .Button__icon;
     line-height: 1.5em;
     font-size: 1em;
-    width: 1.5em;
+    width: 1em;
     z-index: 1;
   }
 
