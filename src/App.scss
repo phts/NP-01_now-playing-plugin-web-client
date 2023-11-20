@@ -46,6 +46,10 @@ body {
 .App {
   font-family: var(--app-font-family);
   overflow: hidden;
+  position: relative;
+  width: calc(100vw - 10px);
+  height: 100vh;
+  margin: 0 0 0 10px;
 }
 
 // Menus
