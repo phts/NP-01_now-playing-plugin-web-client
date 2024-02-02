@@ -46,9 +46,9 @@
   --default-track-info-max-height: auto;
 
   --base-font-size: var(--default-base-font-size);
-  --title-font-size: 34px;
-  --artist-font-size: 30px;
-  --album-font-size: 24px;
+  --title-font-size: 28px;
+  --artist-font-size: 24px;
+  --album-font-size: 20px;
   --media-info-font-size: 16px;
   --seek-time-font-size: var(--default-seek-time-font-size);
   --metadata-font-size: var(--default-metadata-font-size);
@@ -61,11 +61,11 @@
   --text-alignment-h: var(--default-text-alignment-h);
   --text-alignment-v: var(--default-text-alignment-v);
   --text-alignment-lyrics: var(--default-text-alignment-lyrics);
-  --title-margin: 0 0 15px 0;
-  --artist-margin: -10px 0 10px 0;
+  --title-margin: 12px 0 5px 0;
+  --artist-margin: -8px 0 0 0;
   --album-margin: var(--default-album-margin);
   --media-info-margin: auto 0 0 0;
-  --max-title-lines: 3;
+  --max-title-lines: 4;
   --max-artist-lines: 1;
   --max-album-lines: 1;
   --widget-primary-color: #555;
