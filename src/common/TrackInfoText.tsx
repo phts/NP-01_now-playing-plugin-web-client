@@ -49,7 +49,7 @@ function TrackInfoText(props: TrackInfoTextProps) {
   const pos = getPosition(playerState);
   const artist = playerState.artist || '';
   const album = playerState.album || '';
-  const year = playerState.year ? ` (${playerState.year})` : '';
+  const year = playerState.year ? `(${playerState.year})` : '';
   const tracknumber = playerState.tracknumber;
   const formatResolution = getFormatResolution(playerState);
   const formatIcon = getFormatIcon(playerState.trackType, host);
@@ -173,7 +173,10 @@ function TrackInfoText(props: TrackInfoTextProps) {
         if (!visibility.album) {
           return null;
         }
-        return concatArtistAlbum ? null : <span key={key} className={getElementClassName('album')}>{album + year}</span>;
+        return concatArtistAlbum ? null : <>
+          <span key={key} className={getElementClassName('album')}>{album}</span>
+          <span key="album-year" className={getElementClassName('year')}>{year}</span>
+        </>;
 
       case 'mediaInfo':
         if (!visibility.mediaInfo) {
