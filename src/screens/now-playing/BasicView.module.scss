@@ -67,9 +67,12 @@
 
   &__artist {
     color: var(--artist-font-color);
+    -webkit-line-clamp: var(--max-artist-lines);
+  }
+
+  &__artist-tracknumber {
     font-size: var(--artist-font-size);
     margin: var(--artist-margin);
-    -webkit-line-clamp: var(--max-artist-lines);
   }
 
   &__album {

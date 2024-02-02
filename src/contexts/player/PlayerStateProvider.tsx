@@ -26,6 +26,7 @@ export interface PlayerState {
   repeatSingle?: boolean;
   random?: boolean;
   position?: number;
+  queueTotal?: number;
 }
 
 export type PlayerStateContextValue = PlayerState;

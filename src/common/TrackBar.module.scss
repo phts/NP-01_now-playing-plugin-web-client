@@ -58,6 +58,10 @@
     -webkit-line-clamp: 1;
   }
 
+  &__tracknumber {
+    color: var(--trackbar-title-color);
+  }
+
   &__artistAlbum {
     color: var(--trackbar-artist-album-color);
     font-family: var(--trackbar-artist-album-font-family);
@@ -169,6 +173,6 @@
     .VolumeBar {
       bottom: -100%;
       opacity: 0;
-    }  
+    }
   }
 }

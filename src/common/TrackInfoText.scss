@@ -7,14 +7,30 @@
   &__title,
   &__artist,
   &__album,
+  &__tracknumber,
   &__artistAlbum {
     display: -webkit-box;
     color: var(--track-info-text-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+  }
+
+  &__title,
+  &__artist,
+  &__album,
+  &__artistAlbum {
+    overflow: hidden;
+    text-overflow: ellipsis;
     word-break: break-word;
+  }
+
+  &__tracknumber {
+    margin: 0 0 0 5px;
+  }
+
+  &__artist-tracknumber {
+    display: flex;
+    justify-content: space-between;
   }
 
   &__title {
@@ -39,14 +55,11 @@
 
   &__artist {
     line-height: 1.4em;
-//    max-height: 1.4em;
   }
 
   &__album {
     line-height: 1.2em;
-//    max-height: 1.2em;
   }
-
 
   &__format {
     text-align: right;

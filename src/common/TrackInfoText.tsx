@@ -30,16 +30,21 @@ const DEFAULT_TRACK_INFO_VISIBILITY = {
 
 const DEFAULT_TRACK_INFO_ORDER = [
   'title', 'artist', 'album', 'mediaInfo'
-];
+] as const;
 
 function getPosition(playerState: PlayerState) {
-  if (typeof playerState.position === 'undefined') {
+  const {trackType, queueTotal, position} = playerState;
+  if ([ 'webradio', 'Podcast' ].includes(trackType as string)) {
     return '';
   }
-  if ([ 'webradio', 'Podcast' ].includes(playerState.trackType as string)) {
+  if (!queueTotal) {
     return '';
   }
-  return `${String(playerState.position + 1).padStart(2, '0')}. `;
+  if (typeof position === 'undefined') {
+    return '';
+  }
+
+  return `${position + 1}&nbsp;/&nbsp;${queueTotal}`;
 }
 
 function TrackInfoText(props: TrackInfoTextProps) {
@@ -50,7 +55,6 @@ function TrackInfoText(props: TrackInfoTextProps) {
   const artist = playerState.artist || '';
   const album = playerState.album || '';
   const year = playerState.year ? `(${playerState.year})` : '';
-  const tracknumber = playerState.tracknumber;
   const formatResolution = getFormatResolution(playerState);
   const formatIcon = getFormatIcon(playerState.trackType, host);
   const concatArtistAlbum = props.concatArtistAlbum !== undefined && props.concatArtistAlbum;
@@ -142,7 +146,7 @@ function TrackInfoText(props: TrackInfoTextProps) {
         if (!visibility.title) {
           return null;
         }
-        const _titleEl = <span ref={titleEl} key={key} className={getElementClassName('title')}>{tracknumber ? title : pos + title}</span>;
+        const _titleEl = <span ref={titleEl} key={key} className={getElementClassName('title')}>{title}</span>;
         if (marqueeTitle) {
           return (
             <div ref={marqueeTitleWrapperEl} className={getElementClassName('marqueeTitleWrapper')}>
@@ -160,14 +164,20 @@ function TrackInfoText(props: TrackInfoTextProps) {
             artistAlbum += artistAlbum ? ' - ' : '';
             artistAlbum += album;
           }
-          return <span key="artistAlbum" className={getElementClassName('artistAlbum')}>{artistAlbum}</span>;
+          return <div key="artistAlbum" className={getElementClassName('artist-tracknumber')}>
+            <span className={getElementClassName('artistAlbum')}>{artistAlbum}</span>
+            <span className={getElementClassName('tracknumber')} dangerouslySetInnerHTML={{__html: pos}}></span>
+          </div>;
         }
 
         if (!visibility.artist) {
           return null;
         }
 
-        return <span key={key} className={getElementClassName('artist')}>{artist}</span>;
+        return <div key={key} className={getElementClassName('artist-tracknumber')}>
+          <span className={getElementClassName('artist')}>{artist}</span>
+          <span className={getElementClassName('tracknumber')} dangerouslySetInnerHTML={{__html: pos}}></span>
+        </div>;
 
       case 'album':
         if (!visibility.album) {
