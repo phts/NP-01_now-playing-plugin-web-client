@@ -50,6 +50,12 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
     }
   }, [ socket, playerState.random ]);
 
+  const onStopAfterCurrentClicked = useCallback(() => {
+    if (socket) {
+      socket.emit('toggleStopAfterCurrent');
+    }
+  }, [ socket ]);
+
   const getButtonStyles = (buttonName: string): ButtonProps['styles'] => {
     if (props.buttonStyles) {
       const baseClassName = props.buttonStyles.baseClassName;
@@ -121,6 +127,16 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
           onClick: onRandomClicked
         };
         break;
+      case 'stop-after-current':
+        buttonProps = {
+          key: 'stop-after-current',
+          icon: playerState.duration ? 'pause_presentation' : '',
+          styles: getButtonStyles('stop-after-current'),
+          toggleable: true,
+          toggled: playerState.stopAfterCurrent,
+          onClick: onStopAfterCurrentClicked
+        };
+        break;
       default:
         buttonProps = null;
     }
@@ -133,7 +149,7 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
   };
 
   const getButtons = () => {
-    const buttons = props.buttons || [ 'repeat', 'previous', 'play', 'next', 'random' ];
+    const buttons = props.buttons || [ 'stop-after-current', 'repeat', 'previous', 'play', 'next', 'random' ];
     const components: React.ReactNode[] = [];
     buttons.forEach((button) => {
       if (typeof button === 'string') {

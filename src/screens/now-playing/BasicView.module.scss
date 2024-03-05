@@ -151,7 +151,8 @@
   }
 
   &--repeat,
-  &--random {
+  &--random,
+  &--stop-after-current {
     display: none;
   }
 
@@ -198,14 +199,16 @@
 
   @media all and (orientation: landscape) and (min-width: 340px) {
     &--repeat,
-    &--random {
+    &--random,
+    &--stop-after-current {
       display: inline-block;
     }
   }
 
   @media all and (orientation: portrait) and (min-width: 240px) and (min-height: 400px) {
     &--repeat,
-    &--random {
+    &--random,
+    &--stop-after-current {
       display: inline-block;
     }
   }
