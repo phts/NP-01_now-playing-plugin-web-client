@@ -150,6 +150,12 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--playback-buttons-size'] = screenSettings.playbackButtonSize;
     }
 
+    if (screenSettings.seekbarStyling === 'custom') {
+      _css['--seekbar-height'] = screenSettings.seekbarThickness;
+      _css['--seekbar-track-border-radius'] = screenSettings.seekbarBorderRadius;
+      _css['--seekbar-thumb-size'] = screenSettings.seekbarThumbSize;
+    }
+
     if (screenSettings.widgetMargins === 'custom') {
       _css['--playback-buttons-margin'] = screenSettings.playbackButtonsMargin;
       _css['--seekbar-margin'] = screenSettings.seekbarMargin;
@@ -233,6 +239,10 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
   const widgetsVisibility = screenSettings.widgetVisibility === 'custom' ? {
     playbackButtons: screenSettings.playbackButtonsVisibility,
     seekbar: screenSettings.seekbarVisibility
+  } : undefined;
+
+  const seekbarProps = screenSettings.seekbarStyling === 'custom' ? {
+    showThumb: screenSettings.seekbarShowThumb
   } : undefined;
 
   const trackInfoOrder = useMemo(() => {
@@ -423,11 +433,12 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
             playerState={playerState}
             trackInfoVisibility={trackInfoVisibility}
             widgetsVisibility={widgetsVisibility}
+            seekbarProps={seekbarProps}
             albumartVisibility={screenSettings.albumartVisibility}
             trackInfoOrder={trackInfoOrder}
             marqueeTitle={marqueeTitle} />
           : view === 'info' ?
-            <InfoView playerState={playerState} />
+            <InfoView playerState={playerState} seekbarProps={seekbarProps} />
             : null}
       </div>
     </div>

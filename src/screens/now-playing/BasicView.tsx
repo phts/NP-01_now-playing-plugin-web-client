@@ -21,6 +21,9 @@ export interface BasicViewProps {
     playbackButtons: boolean;
     seekbar: boolean;
   };
+  seekbarProps?: {
+    showThumb: boolean;
+  };
   albumartVisibility?: boolean;
   trackInfoOrder?: Array<'title' | 'artist' | 'album' | 'mediaInfo'>;
   marqueeTitle: boolean;
@@ -38,11 +41,16 @@ const DEFAULT_WIDGETS_VISIBILITY = {
   seekbar: true
 };
 
+const DEFAULT_SEEKBAR_PROPS = {
+  showThumb: true
+};
+
 function BasicView(props: BasicViewProps) {
   const {
     playerState,
     trackInfoVisibility = DEFAULT_TRACK_INFO_VISIBILITY,
     widgetsVisibility = DEFAULT_WIDGETS_VISIBILITY,
+    seekbarProps = DEFAULT_SEEKBAR_PROPS,
     albumartVisibility = true
   } = props;
 
@@ -103,6 +111,7 @@ function BasicView(props: BasicViewProps) {
                 baseClassName: 'Seekbar',
                 bundle: styles
               }}
+              showThumb={seekbarProps.showThumb}
               playerState={playerState} />
             : null}
         </div>

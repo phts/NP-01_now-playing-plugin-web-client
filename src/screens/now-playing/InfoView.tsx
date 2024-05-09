@@ -10,10 +10,17 @@ import { PlayerState } from '../../contexts/player/PlayerStateProvider';
 
 export interface InfoViewProps {
   playerState: PlayerState;
+  seekbarProps?: {
+    showThumb: boolean;
+  };
 }
 
+const DEFAULT_SEEKBAR_PROPS = {
+  showThumb: true
+};
+
 function InfoView(props: InfoViewProps) {
-  const { playerState } = props;
+  const { playerState, seekbarProps = DEFAULT_SEEKBAR_PROPS } = props;
 
   const playerButtonGroupClasses = classNames(
     [ `${styles.PlayerButtonGroup}` ],
@@ -38,6 +45,7 @@ function InfoView(props: InfoViewProps) {
             baseClassName: 'Seekbar',
             bundle: styles
           }}
+          showThumb={seekbarProps.showThumb}
           playerState={playerState} />
         <PlayerButtonGroup
           className={playerButtonGroupClasses}

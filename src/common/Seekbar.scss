@@ -1,25 +1,40 @@
 .Seekbar {
+
+  $butt-width: calc(var(--seekbar-thumb-size) / 2);
+  $butt-width-off: calc(var(--seekbar-thumb-size) / -2);
+
+  &--noThumb {
+    --seekbar-thumb-size: var(--seekbar-height) !important;
+    --seekbar-thumb-border-radius: none !important;
+
+    :global {
+      .rc-slider {
+        clip-path: inset(0 $butt-width-off 0 $butt-width-off round var(--seekbar-track-border-radius));
+      }
+    }
+  }
+
   &__slider {
     position: relative;
     width: calc(100% - var(--seekbar-thumb-size));
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 3px;
-    
+  
     @mixin track-ext($position) {
       content: '';
-      width: calc(var(--seekbar-thumb-size) / 2); 
+      width: $butt-width; 
       height: 100%;
       position: absolute;
       top: 0;
       @if $position == start {
-        left: calc(var(--seekbar-thumb-size) / -2);
+        left: $butt-width-off;
         background: var(--seekbar-track-played-color);
         border-top-left-radius: var(--seekbar-track-border-radius);
         border-bottom-left-radius: var(--seekbar-track-border-radius);
       }
       @else if $position == end {
-        right: calc(var(--seekbar-thumb-size) / -2);
+        right: $butt-width-off;
         background: var(--seekbar-track-remaining-color);
         border-top-right-radius: var(--seekbar-track-border-radius);
         border-bottom-right-radius: var(--seekbar-track-border-radius);
@@ -59,7 +74,7 @@
         background: var(--seekbar-thumb-color);
         width: var(--seekbar-thumb-size);
         height: var(--seekbar-thumb-size);
-        border-radius: 50%;
+        border-radius: var(--seekbar-thumb-border-radius);
         outline: none;
       }
     }
