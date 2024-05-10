@@ -24,6 +24,7 @@ import { ClickEvent } from '@szhsin/react-menu';
 import { TrackInfoTextProps } from '../../common/TrackInfoText';
 import { CommonSettingsCategory, DockComponentPlacement } from 'now-playing-common';
 import { StartupOptions } from 'now-playing-common/dist/config/StartupOptions';
+import DockedMediaFormat from './DockedMediaFormat';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
@@ -205,6 +206,14 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       children.push({
         order: Number(dockedWeather.displayOrder) || 0,
         component: <DockedWeather key="dockedWeather" />
+      });
+    }
+
+    const dockedMediaFormat = screenSettings.dockedMediaFormat || {};
+    if (dockedMediaFormat.enabled && dockedMediaFormat.placement === position) {
+      children.push({
+        order: Number(dockedMediaFormat.displayOrder) || 0,
+        component: <DockedMediaFormat key="dockedMediaFormat" />
       });
     }
 
