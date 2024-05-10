@@ -9,7 +9,6 @@ import { SwipeEventData, useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
 import { ScreenProps, useScreens } from '../../contexts/ScreenContextProvider';
 import { ACTION_PANEL, VOLUME_INDICATOR } from '../../modals/CommonModals';
-import PopupMenu, { PopupMenuItem } from '../../common/PopupMenu';
 import BasicView from './BasicView';
 import InfoView from './InfoView';
 import { useSettings } from '../../contexts/SettingsProvider';
@@ -19,12 +18,11 @@ import DockedVolumeIndicator from './DockedVolumeIndicator';
 import DockedClock from './DockedClock';
 import DockedWeather from './DockedWeather';
 import DockedActionPanelTrigger from './DockedActionPanelTrigger';
-import { useTranslation } from 'react-i18next';
-import { ClickEvent } from '@szhsin/react-menu';
 import { TrackInfoTextProps } from '../../common/TrackInfoText';
 import { CommonSettingsCategory, DockComponentPlacement } from 'now-playing-common';
 import { StartupOptions } from 'now-playing-common/dist/config/StartupOptions';
 import DockedMediaFormat from './DockedMediaFormat';
+import DockedMenu from './DockedMenu';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
@@ -61,7 +59,6 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
   const restoreState = store.get<NowPlayingScreenRestoreState>(RESTORE_STATE_KEY, {}, true);
   const startupView = !restoreState.previouslyMounted ? getStartupView(startupOptions) : undefined;
   const [ view, setView ] = useState(startupView || restoreState.view || props.view || 'basic');
-  const { t } = useTranslation();
 
   useEffect(() => {
     return () => {
@@ -336,9 +333,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     screenEl.current = el;
   };
 
-  const handleMenuItemClicked = (e: ClickEvent) => {
-    e.syntheticEvent.stopPropagation();
-    const { action } = e.value;
+  const handleMenuItemClicked = (action: string) => {
     switch (action) {
       case 'toggleView':
         setView(view === 'basic' ? 'info' : 'basic');
@@ -360,58 +355,16 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
         });
         break;
       default:
-
     }
   };
 
   // Menu
   const getMenu = () => {
-    const menuItems: PopupMenuItem[] = [
-      {
-        type: 'item',
-        key: 'toggleView',
-        value: {
-          action: 'toggleView'
-        },
-        icon: view === 'basic' ? 'newspaper' : 'art_track',
-        title: view === 'basic' ? t('screen.nowPlaying.infoView') : t('screen.nowPlaying.basicView')
-      },
-      {
-        type: 'divider',
-        key: 'divider1'
-      },
-      {
-        type: 'item',
-        key: 'gotoArtist',
-        value: {
-          action: 'gotoArtist'
-        },
-        icon: 'person',
-        title: t('action.gotoArtist')
-      },
-      {
-        type: 'item',
-        key: 'gotoAlbum',
-        value: {
-          action: 'gotoAlbum'
-        },
-        icon: 'album',
-        title: t('action.gotoAlbum')
-      }
-    ];
-
     return (
-      <PopupMenu
-        styles={{
-          baseClassName: 'PopupMenu',
-          bundle: styles,
-          extraClassNames: [ 'no-swipe' ]
-        }}
-        key="nowPlayingPopupMenu"
-        align="end"
-        direction="bottom"
-        onMenuItemClick={handleMenuItemClicked}
-        menuItems={menuItems} />
+      <DockedMenu
+        view={view}
+        iconStyle={screenSettings.dockedMenu.iconStyle}
+        onMenuItemClick={handleMenuItemClicked} />
     );
   };
 
