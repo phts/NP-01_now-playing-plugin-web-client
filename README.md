@@ -2,6 +2,11 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.6.0:
+- Add support for seekbar styling options
+- Add support for 'Dock Component - Media Format'
+- Add support for new 'Dock Component - Menu' options
+
 0.5.2:
 - Add support for 'Startup Options'
 - Fix My Background URLs in Background component
