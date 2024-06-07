@@ -11,7 +11,7 @@
 
 .AlbumArt {
   display: var(--albumart-visibility);
-  margin-right: 12px;
+  margin: var(--albumart-margin);
 
   &__image {
     filter: drop-shadow(0 0 8px #00000080);

@@ -38,6 +38,7 @@
   --default-albumart-fit: cover;
   --default-albumart-border: none;
   --default-albumart-border-radius: 0px;
+  --default-albumart-margin: 0 12px 0 0;
   --default-track-info-width: auto;
   --default-track-info-height: auto;
   --default-track-info-min-width: auto;
@@ -81,6 +82,7 @@
   --albumart-fit: var(--default-albumart-fit);
   --albumart-border: var(--default-albumart-border);
   --albumart-border-radius: var(--default-albumart-border-radius);
+  --albumart-margin: var(--default-albumart-margin);
   --track-info-width: var(--default-track-info-width);
   --track-info-height: var(--default-track-info-height);
   --track-info-min-width: var(--default-track-info-min-width);

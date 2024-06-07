@@ -176,6 +176,10 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--albumart-border-radius'] = screenSettings.albumartBorderRadius;
     }
 
+    if (screenSettings.albumartMargin) {
+      _css['--albumart-margin'] = screenSettings.albumartMargin;
+    }
+
     return _css;
   }, [ screenSettings ]);
 
