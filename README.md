@@ -2,6 +2,10 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.6.1:
+- Add support for 'Content Region' settings
+- Add support for 'Album Art -> Margin' setting
+
 0.6.0:
 - Add support for seekbar styling options
 - Add support for 'Dock Component - Media Format'
