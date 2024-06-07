@@ -1,6 +1,7 @@
 import { DefaultStartupOptions } from 'now-playing-common/dist/config/StartupOptions';
 import { PluginInfo } from '../contexts/AppContextProvider';
 import { CommonSettingsCategory, CommonSettingsOf, DefaultActionPanelSettings, DefaultBackgroundSettings, DefaultIdleScreenSettings, DefaultLocalizationSettings, DefaultNowPlayingScreenSettings, DefaultPerformanceSettings, DefaultThemeSettings } from 'now-playing-common';
+import { DefaultContentRegionSettings } from 'now-playing-common/dist/config/ContentRegionSettings';
 
 export function getInitialData<T>(prop: string, defaultVal: T): T;
 export function getInitialData<T>(prop: string, defaultVal?: T): T | undefined;
@@ -34,6 +35,8 @@ export function getInitialSettings<T extends CommonSettingsCategory>(category: T
   switch (category) {
     case CommonSettingsCategory.Startup:
       return settings?.[category] || DefaultStartupOptions;
+    case CommonSettingsCategory.ContentRegion:
+      return settings?.[category] || DefaultContentRegionSettings;
     case CommonSettingsCategory.NowPlayingScreen:
       return settings?.[category] || DefaultNowPlayingScreenSettings;
     case CommonSettingsCategory.IdleScreen:

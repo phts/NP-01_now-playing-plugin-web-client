@@ -2,6 +2,7 @@
 
 .Layout {
   /* Default styles */
+  --default-content-padding: 20px;
   --default-base-font-size: 10px;
   --default-title-font-size: 1.5em;
   --default-artist-font-size: 1em;
@@ -46,6 +47,7 @@
   --default-track-info-max-width: auto;
   --default-track-info-max-height: auto;
 
+  --content-padding: var(--default-content-padding);
   --base-font-size: var(--default-base-font-size);
   --title-font-size: var(--default-title-font-size);
   --artist-font-size: var(--default-artist-font-size);
@@ -96,7 +98,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  padding: 20px;
+  padding: var(--content-padding);
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;

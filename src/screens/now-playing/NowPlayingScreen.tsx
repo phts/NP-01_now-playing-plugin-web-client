@@ -51,6 +51,7 @@ const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 function NowPlayingScreen(props: NowPlayingScreenProps) {
   const playerState = usePlayerState();
   const { openModal, disableModal, enableModal } = useModals();
+  const { settings: contentRegionSettings } = useSettings(CommonSettingsCategory.ContentRegion);
   const { settings: screenSettings } = useSettings(CommonSettingsCategory.NowPlayingScreen);
   const { settings: startupOptions } = useSettings(CommonSettingsCategory.Startup);
   const screenEl = useRef<HTMLDivElement | null>(null);
@@ -96,6 +97,16 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
   // Custom styles
   const css = useMemo(() => {
     const _css: any = {};
+
+    if (contentRegionSettings.padding === 'custom') {
+      if (contentRegionSettings.npBasicViewPadding && view === 'basic') {
+        _css['--content-padding'] = contentRegionSettings.npBasicViewPadding;
+      }
+      else if (contentRegionSettings.npInfoViewPadding && view === 'info') {
+        _css['--content-padding'] = contentRegionSettings.npInfoViewPadding;
+      }
+    }
+
     if (screenSettings.fontSizes === 'custom') {
       _css['--title-font-size'] = screenSettings.titleFontSize;
       _css['--artist-font-size'] = screenSettings.artistFontSize;
@@ -181,7 +192,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     }
 
     return _css;
-  }, [ screenSettings ]);
+  }, [ screenSettings, contentRegionSettings, view ]);
 
   const getDockChildren = (position: DockComponentPlacement) => {
     const children: { order: number; component: React.JSX.Element; }[] = [];
