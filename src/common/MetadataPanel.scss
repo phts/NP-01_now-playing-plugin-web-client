@@ -9,6 +9,7 @@
   --art-fit: cover;
   --art-border: none; 
   --art-border-radius: 0.5em; 
+  --content-font-family: inherit;
   --title-primary-font-size: inherit;
   --title-primary-font-family: inherit;
   --title-primary-color: var(--track-info-text-color);
@@ -121,6 +122,7 @@
   &__contentsWrapper {
     display: flex;
     height: calc(100% - var(--header-height));
+    font-family: var(--content-font-family);
     overflow:hidden;
     box-sizing: border-box;
 

@@ -24,6 +24,7 @@ import { PlayerProvider } from './contexts/PlayerProvider';
 import { WeatherProvider } from './contexts/WeatherProvider';
 import I18nLoader from './i18n/I18nLoader';
 import { DefaultPerformanceSettings } from 'now-playing-common';
+import { FontContextProvider } from './contexts/FontProvider';
 
 function App() {
   useEffect(() => {
@@ -63,28 +64,30 @@ function App() {
                       <DisconnectedIndicator />
                       <ServiceProvider>
                         <WeatherProvider>
-                          <ScreenContextProvider>
-                            <NowPlayingScreen
-                              screenId="NowPlaying"
-                              mountOnEnter
-                              unmountOnExit={DefaultPerformanceSettings.unmountNowPlayingScreenOnExit} />
-                            <BrowseScreen
-                              screenId="Browse"
-                              usesTrackBar
-                              mountOnEnter
-                              unmountOnExit={DefaultPerformanceSettings.unmountBrowseScreenOnExit} />
-                            <QueueScreen
-                              screenId="Queue"
-                              float
-                              usesTrackBar
-                              mountOnEnter
-                              unmountOnExit={DefaultPerformanceSettings.unmountQueueScreenOnExit} />
-                            <VolumioScreen
-                              screenId="Volumio"
-                              mountOnEnter
-                              unmountOnExit={DefaultPerformanceSettings.unmountVolumioScreenOnExit} />
-                            <CommonModals />
-                          </ScreenContextProvider>
+                          <FontContextProvider>
+                            <ScreenContextProvider>
+                              <NowPlayingScreen
+                                screenId="NowPlaying"
+                                mountOnEnter
+                                unmountOnExit={DefaultPerformanceSettings.unmountNowPlayingScreenOnExit} />
+                              <BrowseScreen
+                                screenId="Browse"
+                                usesTrackBar
+                                mountOnEnter
+                                unmountOnExit={DefaultPerformanceSettings.unmountBrowseScreenOnExit} />
+                              <QueueScreen
+                                screenId="Queue"
+                                float
+                                usesTrackBar
+                                mountOnEnter
+                                unmountOnExit={DefaultPerformanceSettings.unmountQueueScreenOnExit} />
+                              <VolumioScreen
+                                screenId="Volumio"
+                                mountOnEnter
+                                unmountOnExit={DefaultPerformanceSettings.unmountVolumioScreenOnExit} />
+                              <CommonModals />
+                            </ScreenContextProvider>
+                          </FontContextProvider>
                         </WeatherProvider>
                       </ServiceProvider>
                     </ModalStateProvider>

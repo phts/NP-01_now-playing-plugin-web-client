@@ -4,6 +4,12 @@
   /* Default styles */
   --default-content-padding: 20px;
   --default-base-font-size: 10px;
+  --default-title-font-style: "Noto Sans Display", sans-serif;
+  --default-artist-font-style: inherit;
+  --default-album-font-style: inherit;
+  --default-media-info-font-style: sans-serif;
+  --default-seek-time-font-style: inherit;
+  --default-metadata-font-style: inherit;
   --default-title-font-size: 1.5em;
   --default-artist-font-size: 1em;
   --default-album-font-size: 0.8em;
@@ -48,6 +54,12 @@
   --default-track-info-max-height: auto;
 
   --content-padding: var(--default-content-padding);
+  --title-font-style: var(--default-title-font-style);
+  --artist-font-style: var(--default-artist-font-style);
+  --album-font-style: var(--default-album-font-style);
+  --media-info-font-style: var(--default-media-info-font-style);
+  --seek-time-font-style: var(--default-seek-time-font-style);
+  --metadata-font-style: var(--default-metadata-font-style);
   --base-font-size: var(--default-base-font-size);
   --title-font-size: var(--default-title-font-size);
   --artist-font-size: var(--default-artist-font-size);

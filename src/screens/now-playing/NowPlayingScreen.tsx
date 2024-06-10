@@ -23,6 +23,7 @@ import { CommonSettingsCategory, DockComponentPlacement } from 'now-playing-comm
 import { StartupOptions } from 'now-playing-common/dist/config/StartupOptions';
 import DockedMediaFormat from './DockedMediaFormat';
 import DockedMenu from './DockedMenu';
+import { LoadedFont, useFonts } from '../../contexts/FontProvider';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
@@ -48,12 +49,22 @@ const getStartupView = (startupOptions: StartupOptions) => {
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
 
+type FontFamily =
+  'NowPlayingScreen_Title' |
+  'NowPlayingScreen_Artist' |
+  'NowPlayingScreen_Album' |
+  'NowPlayingScreen_MediaInfo' |
+  'NowPlayingScreen_SeekTime' |
+  'NowPlayingScreen_Metadata';
+
 function NowPlayingScreen(props: NowPlayingScreenProps) {
   const playerState = usePlayerState();
   const { openModal, disableModal, enableModal } = useModals();
   const { settings: contentRegionSettings } = useSettings(CommonSettingsCategory.ContentRegion);
   const { settings: screenSettings } = useSettings(CommonSettingsCategory.NowPlayingScreen);
   const { settings: startupOptions } = useSettings(CommonSettingsCategory.Startup);
+  const { loadFont, getLoadedFonts } = useFonts();
+  const [ loadedFonts, setLoadedFonts ] = useState<LoadedFont[]>([]);
   const screenEl = useRef<HTMLDivElement | null>(null);
   const { activeScreenId, switchScreen } = useScreens();
   const store = useStore();
@@ -90,6 +101,35 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     restoreState.view = view;
   }, [ restoreState, view ]);
 
+  useEffect(() => {
+    const loadFontPromises = [
+      loadFont('NowPlayingScreen_Title', screenSettings.titleFontStyle),
+      loadFont('NowPlayingScreen_Artist', screenSettings.artistFontStyle),
+      loadFont('NowPlayingScreen_Album', screenSettings.albumFontStyle),
+      loadFont('NowPlayingScreen_MediaInfo', screenSettings.mediaInfoFontStyle),
+      loadFont('NowPlayingScreen_SeekTime', screenSettings.seekTimeFontStyle),
+      loadFont('NowPlayingScreen_Metadata', screenSettings.metadataFontStyle)
+    ];
+    Promise.all(loadFontPromises).then((results) => {
+      // `loadFont()` returns true when document's fonts have actually changed
+      if (!results.every((r) => !r)) {
+        const families: FontFamily[] = [
+          'NowPlayingScreen_Title',
+          'NowPlayingScreen_Artist',
+          'NowPlayingScreen_Album',
+          'NowPlayingScreen_MediaInfo',
+          'NowPlayingScreen_SeekTime',
+          'NowPlayingScreen_Metadata'
+        ];
+        const loaded = getLoadedFonts().filter((f) => families.includes(f.family as any));
+        setLoadedFonts(loaded);
+      }
+    })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [ loadFont, getLoadedFonts, screenSettings ]);
+
   const openActionPanel = useCallback(() => {
     openModal(ACTION_PANEL);
   }, [ openModal ]);
@@ -104,6 +144,27 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       }
       else if (contentRegionSettings.npInfoViewPadding && view === 'info') {
         _css['--content-padding'] = contentRegionSettings.npInfoViewPadding;
+      }
+    }
+
+    if (screenSettings.fontStyles === 'custom') {
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_Title')) {
+        _css['--title-font-style'] = 'NowPlayingScreen_Title';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_Artist')) {
+        _css['--artist-font-style'] = 'NowPlayingScreen_Artist';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_Album')) {
+        _css['--album-font-style'] = 'NowPlayingScreen_Album';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_MediaInfo')) {
+        _css['--media-info-font-style'] = 'NowPlayingScreen_MediaInfo';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_SeekTime')) {
+        _css['--seek-time-font-style'] = 'NowPlayingScreen_SeekTime';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_Metadata')) {
+        _css['--metadata-font-style'] = 'NowPlayingScreen_Metadata';
       }
     }
 
@@ -192,7 +253,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     }
 
     return _css;
-  }, [ screenSettings, contentRegionSettings, view ]);
+  }, [ screenSettings, contentRegionSettings, view, loadedFonts ]);
 
   const getDockChildren = (position: DockComponentPlacement) => {
     const children: { order: number; component: React.JSX.Element; }[] = [];
