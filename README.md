@@ -2,6 +2,9 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.6.2
+- Add support for font style settings
+
 0.6.1:
 - Add support for 'Content Region' settings
 - Add support for 'Album Art -> Margin' setting
