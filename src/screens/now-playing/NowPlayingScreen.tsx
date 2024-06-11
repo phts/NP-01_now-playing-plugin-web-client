@@ -139,11 +139,21 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     const _css: any = {};
 
     if (contentRegionSettings.padding === 'custom') {
-      if (contentRegionSettings.npBasicViewPadding && view === 'basic') {
-        _css['--content-padding'] = contentRegionSettings.npBasicViewPadding;
+      if (view === 'basic') {
+        if (contentRegionSettings.npBasicViewPadding) {
+          _css['--content-padding'] = contentRegionSettings.npBasicViewPadding;
+        }
+        if (contentRegionSettings.npBasicViewPaddingPortrait) {
+          _css['--content-padding-portrait'] = contentRegionSettings.npBasicViewPaddingPortrait;
+        }
       }
-      else if (contentRegionSettings.npInfoViewPadding && view === 'info') {
-        _css['--content-padding'] = contentRegionSettings.npInfoViewPadding;
+      else if (view === 'info') {
+        if (contentRegionSettings.npInfoViewPadding) {
+          _css['--content-padding'] = contentRegionSettings.npInfoViewPadding;
+        }
+        if (contentRegionSettings.npInfoViewPaddingPortrait) {
+          _css['--content-padding-portrait'] = contentRegionSettings.npInfoViewPaddingPortrait;
+        }
       }
     }
 

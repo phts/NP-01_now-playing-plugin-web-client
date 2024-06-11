@@ -3,6 +3,7 @@
 .Layout {
   /* Default styles */
   --default-content-padding: 20px;
+  --default-content-padding-portrait: 2em 40px;
   --default-base-font-size: 10px;
   --default-title-font-style: "Noto Sans Display", sans-serif;
   --default-artist-font-style: inherit;
@@ -54,6 +55,7 @@
   --default-track-info-max-height: auto;
 
   --content-padding: var(--default-content-padding);
+  --content-padding-portrait: var(--default-content-padding-portrait);
   --title-font-style: var(--default-title-font-style);
   --artist-font-style: var(--default-artist-font-style);
   --album-font-style: var(--default-album-font-style);
@@ -128,7 +130,7 @@
   }
 
   @media all and (orientation: portrait) {
-    padding: 2em 40px;
+    padding: var(--content-padding-portrait);
 
     &__contents {
       flex-direction: column;
