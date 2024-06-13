@@ -64,6 +64,14 @@
     -webkit-line-clamp: var(--max-title-lines);
   }
 
+  &__marqueeTitleWrapper {
+    margin: var(--title-margin);
+  }
+
+  &__marqueeTitleWrapper &__title {
+    margin: unset !important;
+  }
+
   &__artist {
     color: var(--artist-font-color);
     font-family: var(--artist-font-style);
