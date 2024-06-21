@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { StylesBundleProps } from './StylesBundle';
 import { MetadataServiceGetInfoResult } from '../services/MetadataService';
+import escapeHTML from 'escape-html';
 
 interface MetadataPanelProps extends StylesBundleProps {
   restoreStateKey?: string;
@@ -390,20 +391,31 @@ function MetadataPanel(props: MetadataPanelProps) {
           isEmpty = !description || description === '?';
           contents = (description && description !== '?') ? <>{description}</> : t(`metadata.${forInfoType}Unavailable`);
         }
-        else if (forInfoType === 'lyrics') {
-          const embedContents = state.info?.song?.embedContents?.contentParts.join();
-          if (embedContents) {
-            // Strip links first
-            const wrapper = document.createElement('div');
-            wrapper.innerHTML = embedContents;
-            const anchors = Array.from(wrapper.getElementsByTagName('a'));
-            for (const anchor of anchors) {
-              anchor.replaceWith(...anchor.childNodes);
-            }
-
+        else if (forInfoType === 'lyrics' && state.info?.song?.lyrics) {
+          let lyricsHTML: string | null;
+          switch (state.info.song.lyrics.type) {
+            case 'plain':
+              lyricsHTML = state.info.song.lyrics.lines
+                .map((line) => escapeHTML(line))
+                .join('</br>');
+              break;
+            case 'html':
+              // Strip links
+              const wrapper = document.createElement('div');
+              wrapper.innerHTML = state.info.song.lyrics.lines;
+              const anchors = Array.from(wrapper.getElementsByTagName('a'));
+              for (const anchor of anchors) {
+                anchor.replaceWith(...anchor.childNodes);
+              }
+              lyricsHTML = wrapper.innerHTML;
+              break;
+            default:
+              lyricsHTML = null;
+          }
+          if (lyricsHTML) {
             contents = <div
               className={getElementClassName('lyrics')}
-              dangerouslySetInnerHTML={{ __html: wrapper.innerHTML }} />;
+              dangerouslySetInnerHTML={{ __html: lyricsHTML }} />;
           }
           else {
             contents = t(`metadata.${forInfoType}Unavailable`);
