@@ -39,6 +39,15 @@
   height: calc(100% - 5em);
 }
 
+@import '../../common/SyncedLyricsPanel';
+
+.SyncedLyricsPanel {
+  --text-align: var(--text-alignment-lyrics, center);
+  --line-font-color: var(--synced-lyrics-color);
+  --current-line-font-color: var(--synced-lyrics-current-line-color);
+  --current-line-font-size: var(--synced-lyrics-current-line-font-size);
+}
+
 .BottomBar {
   display: flex;
   flex-direction: column;

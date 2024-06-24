@@ -6,15 +6,21 @@ export interface MetadataServiceGetSongInfoParams {
   name?: string;
   album?: string;
   artist?: string;
+  uri?: string;
+  service?: string;
 }
 
 export interface MetadataServiceGetAlbumInfoParams {
   name?: string;
   artist?: string;
+  uri?: string;
+  service?: string;
 }
 
 export interface MetadataServiceGetArtistInfoParams {
   name?: string;
+  uri?: string;
+  service?: string;
 }
 
 export interface MetadataServiceGetInfoResult {
@@ -43,11 +49,21 @@ export default class MetadataService extends EventEmitter {
     return this.#apiPath !== null;
   }
 
+  #cleanParams<T extends object>(params: T): T {
+    const result = {} as T;
+    for (const key of Object.keys(params)) {
+      if (params[key as keyof T] !== undefined) {
+        result[key as keyof T] = params[key as keyof T];
+      }
+    }
+    return result;
+  }
+
   async getSongInfo(params: MetadataServiceGetSongInfoParams) {
     if (!this.#apiPath) {
       return;
     }
-    const payload = { ...params, type: 'song' };
+    const payload = { ...this.#cleanParams(params), type: 'song' };
     const data = await requestPluginApiEndpoint(this.#apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
       this.#pushFetched({
@@ -65,7 +81,7 @@ export default class MetadataService extends EventEmitter {
     if (!this.#apiPath) {
       return;
     }
-    const payload = { ...params, type: 'album' };
+    const payload = { ...this.#cleanParams(params), type: 'album' };
     const data = await requestPluginApiEndpoint(this.#apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
       this.#pushFetched({
@@ -82,7 +98,7 @@ export default class MetadataService extends EventEmitter {
     if (!this.#apiPath) {
       return;
     }
-    const payload = { ...params, type: 'artist' };
+    const payload = { ...this.#cleanParams(params), type: 'artist' };
     const data = await requestPluginApiEndpoint(this.#apiPath, '/metadata/fetchInfo', payload);
     if (data.success) {
       this.#pushFetched({

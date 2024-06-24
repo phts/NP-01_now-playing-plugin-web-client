@@ -405,7 +405,10 @@ function BrowseScreen(props: BrowseScreenProps) {
       expectsContentsRefresh = true;
     }
     else if (action === 'viewInfo') {
-      const modalData: any = {};
+      const modalData: any = {
+        uri: item.uri,
+        service: item.service
+      };
       if (item.type === 'song') {
         modalData.song = item.title;
         modalData.album = item.album;

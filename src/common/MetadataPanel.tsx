@@ -3,6 +3,7 @@ import Image from './Image';
 import { SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Scrollbars } from 'rc-scrollbars';
 import Button from './Button';
+import SyncedLyricsPanel from './SyncedLyricsPanel';
 import './MetadataPanel.scss';
 import { useMetadataService } from '../contexts/ServiceProvider';
 import { useToasts } from '../contexts/NotificationProvider';
@@ -18,6 +19,8 @@ interface MetadataPanelProps extends StylesBundleProps {
   song?: string;
   album?: string;
   artist?: string;
+  uri?: string;
+  service?: string;
   placeholderImage?: string;
   infoChooserButtonStyles?: {
     baseClassName: string;
@@ -25,6 +28,7 @@ interface MetadataPanelProps extends StylesBundleProps {
       [k: string]: string;
     };
   };
+  disableSyncedLyrics?: boolean;
 }
 
 export type MetadataPanelInfoType = keyof MetadataServiceGetInfoResult['info'] | 'lyrics';
@@ -39,6 +43,8 @@ interface MetadataPanelRestoreState {
       song?: string;
       album?: string;
       artist?: string;
+      uri?: string;
+      service?: string;
     }
     error?: {
       message: string;
@@ -77,11 +83,23 @@ const getAvailableInfoTypes = (song: any, album: any, artist: any) => {
 };
 
 function MetadataPanel(props: MetadataPanelProps) {
-  const { restoreStateKey, song, album, artist, placeholderImage, infoChooserButtonStyles } = props;
+  const
+    { restoreStateKey,
+      song, album, artist, uri,
+      service: _service, placeholderImage,
+      infoChooserButtonStyles, disableSyncedLyrics = false } = props;
   const metadataService = useMetadataService();
   const showToast = useToasts();
   const scrollbarRefs = useRef<Partial<Record<MetadataPanelInfoType, Scrollbars | null>>>({});
   const { t } = useTranslation();
+
+  let service: string | undefined = _service;
+  if (uri) {
+    const serviceByUri = uri.split('/')[0];
+    if (serviceByUri) {
+      service = serviceByUri;
+    }
+  }
 
   const store = useStore();
   const restoreState = useMemo(() => {
@@ -99,13 +117,15 @@ function MetadataPanel(props: MetadataPanelProps) {
         if ((status === 'idle' || status === 'loading') ||
           forProps.song !== song ||
           forProps.album !== album ||
-          forProps.artist !== artist) {
+          forProps.artist !== artist ||
+          forProps.uri !== uri ||
+          forProps.service !== service) {
           rs.state = { status: 'idle' };
         }
       }
     }
     return rs;
-  }, [ restoreStateKey, store, song, album, artist ]);
+  }, [ restoreStateKey, store, song, album, artist, uri, service ]);
 
   const availableInfoTypes = useMemo(() => {
     return getAvailableInfoTypes(song, album, artist);
@@ -211,7 +231,7 @@ function MetadataPanel(props: MetadataPanelProps) {
           setState({
             status: 'fetched',
             info,
-            forProps: { song, album, artist }
+            forProps: { song, album, artist, uri, service }
           });
         }
       };
@@ -224,7 +244,7 @@ function MetadataPanel(props: MetadataPanelProps) {
         setState({
           status: 'error',
           error: { message },
-          forProps: { song, album, artist }
+          forProps: { song, album, artist, uri, service }
         });
       };
 
@@ -236,36 +256,44 @@ function MetadataPanel(props: MetadataPanelProps) {
         metadataService.off('error', handleError);
       };
     }
-  }, [ metadataService, song, artist, album, setState, showToast ]);
+  }, [ metadataService, song, artist, album, uri, service, setState, showToast ]);
 
-  // Fetch info when song / artist / album changes
+  // Fetch info when song / artist / album / uri / service changes
   useEffect(() => {
     if (state.forProps &&
       state.forProps.song === song &&
       state.forProps.album === album &&
-      state.forProps.artist === artist) {
+      state.forProps.artist === artist &&
+      state.forProps.uri === uri &&
+      state.forProps.service === service) {
       return;
     }
-    const forProps = { song, album, artist };
+    const forProps = { song, album, artist, uri, service };
     if (metadataService.isReady()) {
       if (song) {
         const params = {
           name: song,
           artist,
-          album
+          album,
+          uri,
+          service
         };
         metadataService.getSongInfo(params);
       }
       else if (album) {
         const params = {
           name: album,
-          artist
+          artist,
+          uri,
+          service
         };
         metadataService.getAlbumInfo(params);
       }
       else if (artist) {
         const params = {
-          name: artist
+          name: artist,
+          uri,
+          service
         };
         metadataService.getArtistInfo(params);
       }
@@ -283,7 +311,7 @@ function MetadataPanel(props: MetadataPanelProps) {
         forProps
       });
     }
-  }, [ metadataService, song, artist, album, state, setState, t ]);
+  }, [ metadataService, song, artist, album, uri, service, state, setState, t ]);
 
   // Components
 
@@ -409,13 +437,31 @@ function MetadataPanel(props: MetadataPanelProps) {
               }
               lyricsHTML = wrapper.innerHTML;
               break;
-            default:
-              lyricsHTML = null;
+            case 'synced':
+              if (disableSyncedLyrics) {
+                lyricsHTML = state.info.song.lyrics.lines
+                  .map((line) => escapeHTML(line.text))
+                  .join('</br>');
+              }
+              else {
+                lyricsHTML = null;
+              }
+              break;
           }
           if (lyricsHTML) {
             contents = <div
               className={getElementClassName('lyrics')}
               dangerouslySetInnerHTML={{ __html: lyricsHTML }} />;
+          }
+          else if (state.info.song.lyrics.type === 'synced') {
+            contents = (
+              <SyncedLyricsPanel
+                styles={{
+                  baseClassName: 'SyncedLyricsPanel',
+                  bundle: stylesBundle || undefined
+                }}
+                lyrics={state.info.song.lyrics} />
+            );
           }
           else {
             contents = t(`metadata.${forInfoType}Unavailable`);
@@ -460,7 +506,7 @@ function MetadataPanel(props: MetadataPanelProps) {
       );
 
     });
-  }, [ availableInfoTypes, state, getElementClassName, t ]);
+  }, [ availableInfoTypes, disableSyncedLyrics, state, getElementClassName, t ]);
 
   // Toggle 'active' class on infoType or state change
   useEffect(() => {
