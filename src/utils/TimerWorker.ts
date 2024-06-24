@@ -1,6 +1,9 @@
+import { now } from 'lodash';
+
 let seek = 0;
 let timer: NodeJS.Timeout | null = null;
 let max = 0;
+let dateMillis: number;
 
 onmessage = (e) => {
   const command = e.data.command;
@@ -22,12 +25,16 @@ onmessage = (e) => {
 function startTimer(beginSeek: number, max: number) {
   clearTimer();
   seek = beginSeek;
+  dateMillis = now();
   setMax(max);
   if (!timer) {
     timer = setInterval(() => {
-      seek = Math.min(seek + 1000, max);
+      const lastDateMillis = dateMillis;
+      dateMillis = now();
+      const realElapsed = dateMillis - lastDateMillis;
+      seek = Math.min(seek + realElapsed, max);
       postMessage({ event: 'seek', seek });
-    }, 1000);
+    }, 500);
   }
 }
 
