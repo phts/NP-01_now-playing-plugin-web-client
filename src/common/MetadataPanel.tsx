@@ -460,12 +460,16 @@ function MetadataPanel(props: MetadataPanelProps) {
                   baseClassName: 'SyncedLyricsPanel',
                   bundle: stylesBundle || undefined
                 }}
-                lyrics={state.info.song.lyrics} />
+                lyrics={state.info.song.lyrics}
+                delay={0} />
             );
           }
           else {
             contents = t(`metadata.${forInfoType}Unavailable`);
           }
+        }
+        else {
+          contents = t(`metadata.${forInfoType}Unavailable`);
         }
       }
       else if (state.status === 'error' && state.error) {

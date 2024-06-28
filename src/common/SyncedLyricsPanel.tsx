@@ -1,22 +1,40 @@
 import classNames from 'classnames';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
 import { Scrollbars } from 'rc-scrollbars';
 import './SyncedLyricsPanel.scss';
 import React from 'react';
 import { StylesBundleProps } from './StylesBundle';
-import { MetadataLyrics } from 'now-playing-common';
+import { MetadataSyncedLyrics } from 'now-playing-common';
 import { usePlayerSeek } from '../contexts/PlayerProvider';
+import deepEqual from 'deep-equal';
 
 interface SyncedLyricsPanelProps extends StylesBundleProps {
-  lyrics: MetadataLyrics & {type: 'synced'};
+  lyrics: MetadataSyncedLyrics;
+  delay: number;
+}
+
+interface CurrentLine {
+  index: number;
+  highlight: boolean;
+}
+
+function currentLineReducer(currentValue: CurrentLine, newValue: Partial<CurrentLine>) {
+  const _new = {
+    index: newValue.index !== undefined ? newValue.index : currentValue.index,
+    highlight: newValue.highlight !== undefined ? newValue.highlight : currentValue.highlight
+  };
+  if (!deepEqual(currentValue, _new)) {
+    return _new;
+  }
+  return currentValue;
 }
 
 function SyncedLyricsPanel(props: SyncedLyricsPanelProps) {
-  const { lyrics } = props;
+  const { lyrics, delay = 0 } = props;
   const { currentSeekPosition } = usePlayerSeek();
   const scrollbarRef = useRef<Scrollbars | null>(null);
   const lineElementRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [ currentLineIndex, setCurrentLineIndex ] = useState(-1);
+  const [ currentLine, setCurrentLine ] = useReducer(currentLineReducer, { index: -1, highlight: false });
 
   const baseClassName = props.styles ? props.styles.baseClassName : null;
   const stylesBundle = baseClassName ? props.styles?.bundle : null;
@@ -36,29 +54,36 @@ function SyncedLyricsPanel(props: SyncedLyricsPanelProps) {
   useEffect(() => {
     return () => {
       lineElementRefs.current = [];
+      setCurrentLine({ index: -1, highlight: false });
     };
   }, [ lyrics ]);
 
   useEffect(() => {
+    const p = currentSeekPosition - delay;
     const index = lyrics.lines.findIndex((line, index) => {
-      const nextStart = lyrics.lines[index + 1] ? lyrics.lines[index + 1].start : -1;
-      return currentSeekPosition >= line.start && (nextStart < 0 || currentSeekPosition < nextStart);
+      const end = line.end !== undefined ? line.end : (lyrics.lines[index + 1] ? lyrics.lines[index + 1].start : -1);
+      return p >= line.start && (end < 0 || p < end);
     });
-    setCurrentLineIndex(index);
-  }, [ lyrics, currentSeekPosition ]);
+    if (index >= 0) {
+      setCurrentLine({ index, highlight: true });
+    }
+    else {
+      setCurrentLine({ highlight: false });
+    }
+  }, [ lyrics, currentSeekPosition, delay ]);
 
   const lineElements = useMemo(() => lyrics.lines.map((line, index) => {
     let lineClassName: string;
     if (baseClassName && stylesBundle) {
       lineClassName = classNames(
         stylesBundle[`${baseClassName}__line`] || 'SyncedLyricsPanel__line',
-        index === currentLineIndex ? stylesBundle[`${baseClassName}__line--current`] || 'SyncedLyricsPanel__line--current' : null
+        index === currentLine.index && currentLine.highlight ? stylesBundle[`${baseClassName}__line--current`] || 'SyncedLyricsPanel__line--current' : null
       );
     }
     else {
       lineClassName = classNames(
         'SyncedLyricsPanel__line',
-        index === currentLineIndex ? 'SyncedLyricsPanel__line--current' : null
+        index === currentLine.index && currentLine.highlight ? 'SyncedLyricsPanel__line--current' : null
       );
     }
     return (
@@ -70,13 +95,13 @@ function SyncedLyricsPanel(props: SyncedLyricsPanelProps) {
         {line.text || ' '}
       </div>
     );
-  }), [ lyrics, currentLineIndex, baseClassName, stylesBundle ]);
+  }), [ lyrics, currentLine, baseClassName, stylesBundle ]);
 
   useEffect(() => {
     if (!scrollbarRef.current) {
       return;
     }
-    const lineElement = lineElementRefs.current[currentLineIndex];
+    const lineElement = lineElementRefs.current[currentLine.index];
     const scrollbar = scrollbarRef.current;
     if (lineElement) {
       const lineY = lineElement.offsetTop;
@@ -88,7 +113,7 @@ function SyncedLyricsPanel(props: SyncedLyricsPanelProps) {
     else {
       scrollbarRef.current.scrollTop(0);
     }
-  }, [ currentLineIndex ]);
+  }, [ currentLine ]);
 
   return (
     <div
