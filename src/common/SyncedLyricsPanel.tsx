@@ -4,13 +4,13 @@ import { Scrollbars } from 'rc-scrollbars';
 import './SyncedLyricsPanel.scss';
 import React from 'react';
 import { StylesBundleProps } from './StylesBundle';
-import { MetadataSyncedLyrics } from 'now-playing-common';
+import { CommonSettingsCategory, MetadataSyncedLyrics } from 'now-playing-common';
 import { usePlayerSeek } from '../contexts/PlayerProvider';
 import deepEqual from 'deep-equal';
+import { useSettings } from '../contexts/SettingsProvider';
 
 interface SyncedLyricsPanelProps extends StylesBundleProps {
   lyrics: MetadataSyncedLyrics;
-  delay: number;
 }
 
 interface CurrentLine {
@@ -30,8 +30,10 @@ function currentLineReducer(currentValue: CurrentLine, newValue: Partial<Current
 }
 
 function SyncedLyricsPanel(props: SyncedLyricsPanelProps) {
-  const { lyrics, delay = 0 } = props;
+  const { lyrics } = props;
   const { currentSeekPosition } = usePlayerSeek();
+  const { settings: performanceSettings } = useSettings(CommonSettingsCategory.Performance);
+  const syncedLyricsDelay = performanceSettings.syncedLyricsDelay;
   const scrollbarRef = useRef<Scrollbars | null>(null);
   const lineElementRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [ currentLine, setCurrentLine ] = useReducer(currentLineReducer, { index: -1, highlight: false });
@@ -59,7 +61,7 @@ function SyncedLyricsPanel(props: SyncedLyricsPanelProps) {
   }, [ lyrics ]);
 
   useEffect(() => {
-    const p = currentSeekPosition - delay;
+    const p = currentSeekPosition - syncedLyricsDelay;
     const index = lyrics.lines.findIndex((line, index) => {
       const end = line.end !== undefined ? line.end : (lyrics.lines[index + 1] ? lyrics.lines[index + 1].start : -1);
       return p >= line.start && (end < 0 || p < end);
@@ -70,7 +72,7 @@ function SyncedLyricsPanel(props: SyncedLyricsPanelProps) {
     else {
       setCurrentLine({ highlight: false });
     }
-  }, [ lyrics, currentSeekPosition, delay ]);
+  }, [ lyrics, currentSeekPosition, syncedLyricsDelay ]);
 
   const lineElements = useMemo(() => lyrics.lines.map((line, index) => {
     let lineClassName: string;

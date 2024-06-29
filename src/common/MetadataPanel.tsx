@@ -460,8 +460,7 @@ function MetadataPanel(props: MetadataPanelProps) {
                   baseClassName: 'SyncedLyricsPanel',
                   bundle: stylesBundle || undefined
                 }}
-                lyrics={state.info.song.lyrics}
-                delay={0} />
+                lyrics={state.info.song.lyrics} />
             );
           }
           else {
