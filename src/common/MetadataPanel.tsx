@@ -419,9 +419,9 @@ function MetadataPanel(props: MetadataPanelProps) {
           isEmpty = !description || description === '?';
           contents = (description && description !== '?') ? <>{description}</> : t(`metadata.${forInfoType}Unavailable`);
         }
-        else if (forInfoType === 'lyrics' && state.info?.song?.lyrics) {
+        else if (forInfoType === 'lyrics') {
           let lyricsHTML: string | null;
-          switch (state.info.song.lyrics.type) {
+          switch (state.info?.song?.lyrics?.type) {
             case 'plain':
               lyricsHTML = state.info.song.lyrics.lines
                 .map((line) => escapeHTML(line))
@@ -447,13 +447,17 @@ function MetadataPanel(props: MetadataPanelProps) {
                 lyricsHTML = null;
               }
               break;
+            default:
+              lyricsHTML = null;
           }
           if (lyricsHTML) {
+            isEmpty = false;
             contents = <div
               className={getElementClassName('lyrics')}
               dangerouslySetInnerHTML={{ __html: lyricsHTML }} />;
           }
-          else if (state.info.song.lyrics.type === 'synced') {
+          else if (state.info?.song?.lyrics?.type === 'synced') {
+            isEmpty = false;
             contents = (
               <SyncedLyricsPanel
                 styles={{
@@ -464,11 +468,9 @@ function MetadataPanel(props: MetadataPanelProps) {
             );
           }
           else {
+            isEmpty = true;
             contents = t(`metadata.${forInfoType}Unavailable`);
           }
-        }
-        else {
-          contents = t(`metadata.${forInfoType}Unavailable`);
         }
       }
       else if (state.status === 'error' && state.error) {
