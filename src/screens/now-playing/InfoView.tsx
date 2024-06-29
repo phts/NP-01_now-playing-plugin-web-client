@@ -37,6 +37,8 @@ function InfoView(props: InfoViewProps) {
         song={playerState.title}
         album={playerState.album}
         artist={playerState.artist}
+        uri={playerState.uri}
+        service={playerState.service}
         placeholderImage={playerState.albumart}
         restoreStateKey="NowPlayingScreen.InfoView.restoreState" />
       <div className={styles.BottomBar}>

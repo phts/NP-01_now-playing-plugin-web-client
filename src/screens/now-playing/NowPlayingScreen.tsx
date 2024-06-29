@@ -185,6 +185,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--media-info-font-size'] = screenSettings.mediaInfoFontSize;
       _css['--seek-time-font-size'] = screenSettings.seekTimeFontSize;
       _css['--metadata-font-size'] = screenSettings.metadataFontSize;
+      _css['--synced-lyrics-current-line-font-size'] = screenSettings.syncedLyricsCurrentLineFontSize;
     }
 
     if (screenSettings.fontColors === 'custom') {
@@ -194,6 +195,8 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--media-info-font-color'] = screenSettings.mediaInfoFontColor;
       _css['--seek-time-font-color'] = screenSettings.seekTimeFontColor;
       _css['--metadata-font-color'] = screenSettings.metadataFontColor;
+      _css['--synced-lyrics-color'] = screenSettings.syncedLyricsColor;
+      _css['--synced-lyrics-current-line-color'] = screenSettings.syncedLyricsCurrentLineColor;
     }
 
     if (screenSettings.textAlignmentH) {

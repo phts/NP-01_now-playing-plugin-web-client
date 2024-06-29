@@ -1,0 +1,25 @@
+.SyncedLyricsPanel {
+  --text-align: center;
+  --line-font-color: var(--track-info-text-color);
+  --current-line-font-color: var(--track-info-text-color);
+  --current-line-font-size: inherit;
+
+  width: 100%;
+  height: 100%;
+  text-align: var(--lyrics-text-align);
+  
+  :global {
+    .rc-scrollbars-view {
+      scroll-behavior: smooth;
+    }
+  }
+
+  &__line {
+    color: var(--line-font-color);
+    &--current {
+      color: var(--current-line-font-color);
+      font-size: var(--current-line-font-size);
+      font-weight: 800;
+    }
+  }
+}

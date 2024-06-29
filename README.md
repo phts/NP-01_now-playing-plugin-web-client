@@ -2,6 +2,10 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.7.0
+- Add synced lyrics support
+- Improve seek timer accuracy
+
 0.6.3
 - Fix marquee title clipped with negative margin
 - Add support for portrait-related ContentRegionSettings

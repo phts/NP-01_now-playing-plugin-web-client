@@ -1,6 +1,6 @@
 {
   "name": "now-playing-reactjs-client",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "devDependencies": {
@@ -8,6 +8,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "@types/deep-equal": "^1.0.1",
+    "@types/escape-html": "^1.0.4",
     "@types/jest": "^29.5.3",
     "@types/lodash": "^4.14.195",
     "@types/luxon": "^3.3.0",
@@ -31,6 +32,7 @@
     "cash-dom": "^8.1.5",
     "classnames": "^2.3.2",
     "deep-equal": "^2.0.5",
+    "escape-html": "^1.0.3",
     "font-awesome": "^4.7.0",
     "i18next": "^21.6.16",
     "i18next-resources-to-backend": "^1.1.4",
@@ -38,7 +40,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.3.0",
     "md5": "^2.3.0",
-    "now-playing-common": "git+https://github.com/patrickkfkan/volumio-now-playing-common#v0.2.6",
+    "now-playing-common": "git+https://github.com/patrickkfkan/volumio-now-playing-common#v0.2.7",
     "rc-scrollbars": "^1.1.6",
     "rc-slider": "^10.2.1",
     "react": "^18.2.0",
