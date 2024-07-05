@@ -6,6 +6,8 @@
 
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   font-size: 0.9em;
   box-sizing: border-box;
 
@@ -36,7 +38,7 @@
   --art-border: var(--albumart-border);
   --art-border-radius: var(--albumart-border-radius);
 
-  height: calc(100% - 5em);
+  flex-grow: 1;
 }
 
 @import '../../common/SyncedLyricsPanel';
@@ -52,7 +54,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 5em;
 }
 
 @import "../../common/PlayerButtonGroup";
