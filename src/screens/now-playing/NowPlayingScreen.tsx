@@ -489,7 +489,10 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
             trackInfoOrder={trackInfoOrder}
             marqueeTitle={marqueeTitle} />
           : view === 'info' ?
-            <InfoView playerState={playerState} seekbarProps={seekbarProps} />
+            <InfoView
+              playerState={playerState}
+              widgetsVisibility={widgetsVisibility}
+              seekbarProps={seekbarProps} />
             : null}
       </div>
     </div>
