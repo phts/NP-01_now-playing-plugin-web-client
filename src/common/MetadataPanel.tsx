@@ -29,6 +29,9 @@ interface MetadataPanelProps extends StylesBundleProps {
     };
   };
   disableSyncedLyrics?: boolean;
+  wrappedHeader?: boolean;
+  singleLineTitle?: boolean;
+  customComponent?: React.JSX.Element | null;
 }
 
 export type MetadataPanelInfoType = keyof MetadataServiceGetInfoResult['info'] | 'lyrics';
@@ -87,7 +90,10 @@ function MetadataPanel(props: MetadataPanelProps) {
     { restoreStateKey,
       song, album, artist, uri,
       service: _service, placeholderImage,
-      infoChooserButtonStyles, disableSyncedLyrics = false } = props;
+      infoChooserButtonStyles, disableSyncedLyrics = false,
+      wrappedHeader = false,
+      singleLineTitle = false,
+      customComponent } = props;
   const metadataService = useMetadataService();
   const showToast = useToasts();
   const scrollbarRefs = useRef<Partial<Record<MetadataPanelInfoType, Scrollbars | null>>>({});
@@ -201,7 +207,9 @@ function MetadataPanel(props: MetadataPanelProps) {
       stylesBundle[baseClassName] || 'MetadataPanel',
       [ ...extraClassNames ],
       !secondaryTitleText ? stylesBundle[`${baseClassName}--singleLineTitle`] || 'MetadataPanel--singleLineTitle' : null,
-      availableInfoTypes.length <= 1 ? stylesBundle[`${baseClassName}--singleInfoType`] || 'MetadataPanel--singleInfoType' : null
+      availableInfoTypes.length <= 1 ? stylesBundle[`${baseClassName}--singleInfoType`] || 'MetadataPanel--singleInfoType' : null,
+      wrappedHeader ? stylesBundle[`${baseClassName}--wrappedHeader`] || 'MetadataPanel--wrappedHeader' : null,
+      singleLineTitle ? stylesBundle[`${baseClassName}--singleLineTitle`] || 'MetadataPanel--singleLineTitle' : null
     )
     :
     classNames(
@@ -545,13 +553,17 @@ function MetadataPanel(props: MetadataPanelProps) {
 
   return (
     <div className={mainClassName}>
-      {getTitleBar()}
+      {!wrappedHeader ? getTitleBar() : null}
       <div className={getElementClassName('contentsWrapper')}>
         <div className={getElementClassName('art')}>
           <Image className={getElementClassName('artImage')} src={getImage()} />
         </div>
-        <div className={getElementClassName('infoWrapper')}>
-          {infoContents}
+        <div className={getElementClassName('secondaryWrapper')}>
+          {wrappedHeader ? getTitleBar() : null}
+          <div className={getElementClassName('infoWrapper')}>
+            {infoContents}
+          </div>
+          {customComponent}
         </div>
       </div>
     </div>

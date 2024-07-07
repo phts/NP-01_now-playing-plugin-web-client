@@ -464,20 +464,34 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
 
   const marqueeTitle = screenSettings.trackInfoMarqueeTitle;
 
+  const dockChildren = {
+    topLeft: getDockChildren('top-left'),
+    top: getDockChildren('top'),
+    topRight: getDockChildren('top-right'),
+    left: getDockChildren('left'),
+    right: getDockChildren('right'),
+    bottomLeft: getDockChildren('bottom-left'),
+    bottom: getDockChildren('bottom'),
+    bottomRight: getDockChildren('bottom-right')
+  };
+
+  const hasTopDockChildren = dockChildren.top.length + dockChildren.topLeft.length + dockChildren.topRight.length > 0;
+  const hasBottomDockChildren = dockChildren.bottom.length + dockChildren.bottomLeft.length + dockChildren.bottomRight.length > 0;
+
   return (
     <div
       className={layoutClasses}
       style={{ ...css, ...props.style }}
       {...swipeHandler}
       ref={swipeableRefPassthrough}>
-      <Dock position="topLeft">{getDockChildren('top-left')}</Dock>
-      <Dock position="top">{getDockChildren('top')}</Dock>
-      <Dock position="topRight">{getDockChildren('top-right')}</Dock>
-      <Dock position="left">{getDockChildren('left')}</Dock>
-      <Dock position="right">{getDockChildren('right')}</Dock>
-      <Dock position="bottomLeft">{getDockChildren('bottom-left')}</Dock>
-      <Dock position="bottom">{getDockChildren('bottom')}</Dock>
-      <Dock position="bottomRight">{getDockChildren('bottom-right')}</Dock>
+      <Dock position="topLeft">{dockChildren.topLeft}</Dock>
+      <Dock position="top">{dockChildren.top}</Dock>
+      <Dock position="topRight">{dockChildren.topRight}</Dock>
+      <Dock position="left">{dockChildren.left}</Dock>
+      <Dock position="right">{dockChildren.right}</Dock>
+      <Dock position="bottomLeft">{dockChildren.bottomLeft}</Dock>
+      <Dock position="bottom">{dockChildren.bottom}</Dock>
+      <Dock position="bottomRight">{dockChildren.bottomRight}</Dock>
       <div className={styles.Layout__view}>
         {view === 'basic' ?
           <BasicView
@@ -492,7 +506,10 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
             <InfoView
               playerState={playerState}
               widgetsVisibility={widgetsVisibility}
-              seekbarProps={seekbarProps} />
+              seekbarProps={seekbarProps}
+              topPadding={hasTopDockChildren}
+              bottomPadding={hasBottomDockChildren}
+              layout={screenSettings.infoViewLayout}/>
             : null}
       </div>
     </div>

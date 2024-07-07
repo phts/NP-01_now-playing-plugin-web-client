@@ -1,8 +1,13 @@
 @import '../../common/animations';
 
 .Layout {
-  --art-width: #{'min(30vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
-  --art-height: #{'min(30vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
+  --real-vh: calc(var(--vh, 1vh) * 100);
+  --metadata-panel-header-height: 4.5em;
+  --screen-top-padding: 1.5em;
+  --screen-bottom-padding: 1.8em;
+  --art-size: #{'min(30vw, calc(var(--real-vh) - var(--metadata-panel-header-height) - 7em - var(--screen-top-padding) - var(--screen-bottom-padding)))'};
+  --art-width: var(--art-size);
+  --art-height: var(--art-size);
 
   width: 100%;
   height: 100%;
@@ -10,11 +15,48 @@
   flex-direction: column;
   font-size: 0.9em;
   box-sizing: border-box;
+  padding: 1.2em 0 1em 0;
+
+  &--noTopPadding {
+    padding-top: 0;
+  }
+
+  &--noBottomPadding {
+    padding-bottom: 0;
+  }
 
   @media (orientation: portrait) {
-    --art-width: #{'min(40vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
-    --art-height: #{'min(40vw, calc(calc(var(--vh, 1vh) * 100)) - 15em)'};
+    padding: 0;
+
+    --art-size: #{'min(40vw, calc(var(--real-vh) - var(--metadata-panel-header-height) - 7em))'};
   }
+}
+
+.Layout--bigart {
+  --metadata-panel-header-height: 4em;
+  --art-size: #{'min(40vw, calc(var(--real-vh) - var(--metadata-panel-header-height) - 1.5em - var(--screen-top-padding) - var(--screen-bottom-padding)))'};
+}
+
+.Layout--ultrawide {
+  --metadata-panel-header-height: 0px;
+  --art-size: #{'min(40vw, calc(var(--real-vh) - 1.9em - var(--screen-top-padding) - var(--screen-bottom-padding)))'};  
+
+  padding-top: 1.5em !important;
+}
+
+.Layout--bigart,
+.Layout--ultrawide {
+  .MetadataPanel__secondaryWrapper {
+    height: var(--art-height);
+  }
+}
+
+.Layout--noTopPadding {
+  --screen-top-padding: 0px;
+}
+
+.Layout--noBottomPadding {
+  --screen-bottom-padding: 0px;
 }
 
 @import '../../common/MetadataPanel';
@@ -37,8 +79,18 @@
   --art-fit: var(--albumart-fit);
   --art-border: var(--albumart-border);
   --art-border-radius: var(--albumart-border-radius);
+  --header-height: var(--metadata-panel-header-height);
 
   flex-grow: 1;
+  padding: 0;
+
+  &__header {
+    padding-bottom: 0;
+
+    @media (orientation: portrait) {
+      padding-bottom: 0.5em;
+    }
+  }
 }
 
 @import '../../common/SyncedLyricsPanel';
@@ -62,8 +114,11 @@
   display: inline-flex;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 
   @media all and (orientation: landscape) {
+    bottom: 0.5em;
+
     @media (max-width: 579px) {
       gap: 1em;
     }
@@ -181,4 +236,8 @@
   &--disabled {
     display: none;
   }
+}
+
+.SeekbarPlaceholder {
+  height: 1em;
 }
