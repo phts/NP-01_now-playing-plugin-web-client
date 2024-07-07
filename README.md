@@ -2,6 +2,9 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.7.1
+- Provide additional Info View layouts
+
 0.7.0
 - Add synced lyrics support
 - Improve seek timer accuracy
