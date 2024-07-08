@@ -41,10 +41,30 @@ const getStartupView = (startupOptions: StartupOptions) => {
   if (startupOptions.activeScreen === 'nowPlaying.basicView') {
     return 'basic';
   }
-  else if (startupOptions.activeScreen === 'nowPlaying.infoView') {
+  else if (
+    startupOptions.activeScreen === 'nowPlaying.infoView' ||
+    startupOptions.activeScreen === 'nowPlaying.infoView.artist' ||
+    startupOptions.activeScreen === 'nowPlaying.infoView.album' ||
+    startupOptions.activeScreen === 'nowPlaying.infoView.lyrics'
+  ) {
     return 'info';
   }
   return undefined;
+};
+
+const getInfoViewStartupType = (startupOptions: StartupOptions) => {
+  switch (startupOptions.activeScreen) {
+    case 'nowPlaying.infoView':
+      return 'song';
+    case 'nowPlaying.infoView.artist':
+      return 'artist';
+    case 'nowPlaying.infoView.album':
+      return 'album';
+    case 'nowPlaying.infoView.lyrics':
+      return 'lyrics';
+    default:
+      return undefined;
+  }
 };
 
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
@@ -509,7 +529,8 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
               seekbarProps={seekbarProps}
               topPadding={hasTopDockChildren}
               bottomPadding={hasBottomDockChildren}
-              layout={screenSettings.infoViewLayout}/>
+              layout={screenSettings.infoViewLayout}
+              displayInfoType={getInfoViewStartupType(startupOptions)}/>
             : null}
       </div>
     </div>

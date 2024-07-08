@@ -63,6 +63,9 @@ const ScreenContext = createContext({} as ScreenContextValue);
 const ACTIVE_SCREEN_TO_ID: Record<CommonSettingsOf<StartupOptions>['activeScreen'], ScreenId> = {
   'nowPlaying.basicView': 'NowPlaying',
   'nowPlaying.infoView': 'NowPlaying',
+  'nowPlaying.infoView.artist': 'NowPlaying',
+  'nowPlaying.infoView.album': 'NowPlaying',
+  'nowPlaying.infoView.lyrics': 'NowPlaying',
   browse: 'Browse',
   volumio: 'Volumio'
 };

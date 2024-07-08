@@ -4,7 +4,7 @@ import PlayerButtonGroup from '../../common/PlayerButtonGroup';
 import Seekbar from '../../common/Seekbar';
 import classNames from 'classnames';
 import styles from './InfoView.module.scss';
-import MetadataPanel from '../../common/MetadataPanel';
+import MetadataPanel, { MetadataPanelInfoType } from '../../common/MetadataPanel';
 import React, { useCallback, useEffect, useState } from 'react';
 import { PlayerState } from '../../contexts/player/PlayerStateProvider';
 import { NowPlayingScreenInfoViewLayout } from 'now-playing-common';
@@ -21,6 +21,7 @@ export interface InfoViewProps {
   topPadding?: boolean;
   bottomPadding?: boolean;
   layout?: NowPlayingScreenInfoViewLayout;
+  displayInfoType?: MetadataPanelInfoType;
 }
 
 const DEFAULT_SEEKBAR_PROPS = {
@@ -39,7 +40,8 @@ function InfoView(props: InfoViewProps) {
     widgetsVisibility = DEFAULT_WIDGETS_VISIBILITY,
     topPadding = true,
     bottomPadding = true,
-    layout
+    layout,
+    displayInfoType
   } = props;
   const [ targetLayout, setLayout ] = useState<NowPlayingScreenInfoViewLayout['layout']>('standard');
 
@@ -138,7 +140,8 @@ function InfoView(props: InfoViewProps) {
         placeholderImage={playerState.albumart}
         restoreStateKey="NowPlayingScreen.InfoView.restoreState"
         wrappedHeader={wrapHeader}
-        customComponent={wrapBottomBar ? bottomBar : null}/>
+        customComponent={wrapBottomBar ? bottomBar : null}
+        displayInfoType={displayInfoType}/>
       {!wrapBottomBar ? bottomBar : null}
     </div>
   );

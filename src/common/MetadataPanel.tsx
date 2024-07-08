@@ -32,6 +32,7 @@ interface MetadataPanelProps extends StylesBundleProps {
   wrappedHeader?: boolean;
   singleLineTitle?: boolean;
   customComponent?: React.JSX.Element | null;
+  displayInfoType?: MetadataPanelInfoType;
 }
 
 export type MetadataPanelInfoType = keyof MetadataServiceGetInfoResult['info'] | 'lyrics';
@@ -93,7 +94,8 @@ function MetadataPanel(props: MetadataPanelProps) {
       infoChooserButtonStyles, disableSyncedLyrics = false,
       wrappedHeader = false,
       singleLineTitle = false,
-      customComponent } = props;
+      customComponent,
+      displayInfoType = 'song' } = props;
   const metadataService = useMetadataService();
   const showToast = useToasts();
   const scrollbarRefs = useRef<Partial<Record<MetadataPanelInfoType, Scrollbars | null>>>({});
@@ -141,6 +143,9 @@ function MetadataPanel(props: MetadataPanelProps) {
   const getDefaultInfoType = useCallback(() => {
     if (restoreState && restoreState.infoType && availableInfoTypes.includes(restoreState.infoType)) {
       return restoreState.infoType;
+    }
+    if (availableInfoTypes.includes(displayInfoType)) {
+      return displayInfoType;
     }
     return availableInfoTypes[0];
   }, [ restoreState, availableInfoTypes ]);
