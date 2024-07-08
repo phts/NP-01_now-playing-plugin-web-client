@@ -5,7 +5,7 @@
   --metadata-panel-header-height: 4.5em;
   --screen-top-padding: 1.5em;
   --screen-bottom-padding: 1.8em;
-  --art-size: #{'min(30vw, calc(var(--real-vh) - var(--metadata-panel-header-height) - 7em - var(--screen-top-padding) - var(--screen-bottom-padding)))'};
+  --art-size: #{'min(30vw, calc(var(--real-vh) - var(--metadata-panel-header-height) - 7.5em - var(--screen-top-padding) - var(--screen-bottom-padding)))'};
   --art-width: var(--art-size);
   --art-height: var(--art-size);
 
