@@ -2,6 +2,9 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.7.2
+- Add support for info view tab in startup options
+
 0.7.1
 - Provide additional Info View layouts
 
