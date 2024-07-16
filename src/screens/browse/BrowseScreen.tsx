@@ -410,6 +410,7 @@ function BrowseScreen(props: BrowseScreenProps) {
         service: item.service
       };
       if (item.type === 'song') {
+        modalData.duration = item.duration;
         modalData.song = item.title;
         modalData.album = item.album;
         modalData.artist = item.artist;

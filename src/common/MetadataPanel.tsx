@@ -19,6 +19,7 @@ interface MetadataPanelProps extends StylesBundleProps {
   song?: string;
   album?: string;
   artist?: string;
+  duration?: number;
   uri?: string;
   service?: string;
   placeholderImage?: string;
@@ -47,6 +48,7 @@ interface MetadataPanelRestoreState {
       song?: string;
       album?: string;
       artist?: string;
+      duration?: number;
       uri?: string;
       service?: string;
     }
@@ -89,7 +91,7 @@ const getAvailableInfoTypes = (song: any, album: any, artist: any) => {
 function MetadataPanel(props: MetadataPanelProps) {
   const
     { restoreStateKey,
-      song, album, artist, uri,
+      song, album, artist, duration, uri,
       service: _service, placeholderImage,
       infoChooserButtonStyles, disableSyncedLyrics = false,
       wrappedHeader = false,
@@ -126,6 +128,7 @@ function MetadataPanel(props: MetadataPanelProps) {
           forProps.song !== song ||
           forProps.album !== album ||
           forProps.artist !== artist ||
+          forProps.duration !== duration ||
           forProps.uri !== uri ||
           forProps.service !== service) {
           rs.state = { status: 'idle' };
@@ -244,7 +247,7 @@ function MetadataPanel(props: MetadataPanelProps) {
           setState({
             status: 'fetched',
             info,
-            forProps: { song, album, artist, uri, service }
+            forProps: { song, album, artist, duration, uri, service }
           });
         }
       };
@@ -257,7 +260,7 @@ function MetadataPanel(props: MetadataPanelProps) {
         setState({
           status: 'error',
           error: { message },
-          forProps: { song, album, artist, uri, service }
+          forProps: { song, album, artist, duration, uri, service }
         });
       };
 
@@ -269,25 +272,27 @@ function MetadataPanel(props: MetadataPanelProps) {
         metadataService.off('error', handleError);
       };
     }
-  }, [ metadataService, song, artist, album, uri, service, setState, showToast ]);
+  }, [ metadataService, song, artist, album, duration, uri, service, setState, showToast ]);
 
-  // Fetch info when song / artist / album / uri / service changes
+  // Fetch info when song / artist / album / duration / uri / service changes
   useEffect(() => {
     if (state.forProps &&
       state.forProps.song === song &&
       state.forProps.album === album &&
       state.forProps.artist === artist &&
+      state.forProps.duration === duration &&
       state.forProps.uri === uri &&
       state.forProps.service === service) {
       return;
     }
-    const forProps = { song, album, artist, uri, service };
+    const forProps = { song, album, artist, duration, uri, service };
     if (metadataService.isReady()) {
       if (song) {
         const params = {
           name: song,
           artist,
           album,
+          duration,
           uri,
           service
         };
@@ -324,7 +329,7 @@ function MetadataPanel(props: MetadataPanelProps) {
         forProps
       });
     }
-  }, [ metadataService, song, artist, album, uri, service, state, setState, t ]);
+  }, [ metadataService, song, artist, album, duration, uri, service, state, setState, t ]);
 
   // Components
 

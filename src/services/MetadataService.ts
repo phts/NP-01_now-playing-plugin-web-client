@@ -6,6 +6,7 @@ export interface MetadataServiceGetSongInfoParams {
   name?: string;
   album?: string;
   artist?: string;
+  duration?: number;
   uri?: string;
   service?: string;
 }

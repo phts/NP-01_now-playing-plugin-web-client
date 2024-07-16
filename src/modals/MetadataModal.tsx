@@ -12,6 +12,7 @@ export interface MetadataModalProps extends ContextualModalProps {
     song?: string;
     album?: string;
     artist?: string;
+    duration?: number;
     uri?: string;
     service?: string;
     placeholderImage?: string;
@@ -21,7 +22,7 @@ export interface MetadataModalProps extends ContextualModalProps {
 function MetadataModal(props: MetadataModalProps) {
   const overlayEl = useRef<HTMLDivElement | null>(null);
   const { closeDialog } = props;
-  const { song, album, artist, uri, service, placeholderImage } = props.modalData || {};
+  const { song, album, artist, duration, uri, service, placeholderImage } = props.modalData || {};
 
   const modalOverlayClassNames = {
     base: styles.Overlay,
@@ -60,6 +61,7 @@ function MetadataModal(props: MetadataModalProps) {
         song={song}
         album={album}
         artist={artist}
+        duration={duration}
         uri={uri}
         service={service}
         placeholderImage={placeholderImage}

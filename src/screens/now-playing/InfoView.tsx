@@ -135,6 +135,7 @@ function InfoView(props: InfoViewProps) {
         song={playerState.title}
         album={playerState.album}
         artist={playerState.artist}
+        duration={playerState.duration}
         uri={playerState.uri}
         service={playerState.service}
         placeholderImage={playerState.albumart}
