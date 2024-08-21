@@ -10,10 +10,11 @@ import { PlayerState } from '../contexts/player/PlayerStateProvider';
 export interface SeekbarProps extends StylesBundleProps {
   playerState: PlayerState;
   showText?: boolean;
+  showThumb?: boolean;
 }
 
 function Seekbar(props: SeekbarProps) {
-  const playerState = props.playerState;
+  const { playerState, showThumb = true } = props;
   const { currentSeekPosition, seekTo } = usePlayerSeek();
   const [ displaySeek, setDisplaySeek ] = useState(currentSeekPosition);
   const isSeekingRef = useRef(false);
@@ -60,6 +61,7 @@ function Seekbar(props: SeekbarProps) {
     classNames(
       stylesBundle[baseClassName] || 'Seekbar',
       disabled ? (stylesBundle[`${baseClassName}--disabled`] || 'Seekbar--disabled') : null,
+      !showThumb ? (stylesBundle[`${baseClassName}--noThumb`] || 'Seekbar--noThumb') : null,
       'no-swipe',
       [ ...extraClassNames ]
     )
@@ -67,6 +69,7 @@ function Seekbar(props: SeekbarProps) {
     classNames(
       'Seekbar',
       disabled ? 'Seekbar--disabled' : null,
+      !showThumb ? 'Seekbar--noThumb' : null,
       'no-swipe',
       [ ...extraClassNames ]
     );

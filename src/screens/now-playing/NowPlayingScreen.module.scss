@@ -2,19 +2,30 @@
 
 .Layout {
   /* Default styles */
+  --default-content-padding: 20px;
+  --default-content-padding-portrait: 2em 40px;
   --default-base-font-size: 10px;
+  --default-title-font-style: "Noto Sans Display", sans-serif;
+  --default-artist-font-style: inherit;
+  --default-album-font-style: inherit;
+  --default-media-info-font-style: sans-serif;
+  --default-seek-time-font-style: inherit;
+  --default-metadata-font-style: inherit;
   --default-title-font-size: 1.5em;
   --default-artist-font-size: 1em;
   --default-album-font-size: 0.8em;
   --default-media-info-font-size: 0.7em;
   --default-seek-time-font-size: var(--seekbar-text-font-size); // From theme
   --default-metadata-font-size: 1em;
+  --default-synced-lyrics-current-line-font-size: var(1em);
   --default-title-font-color: #fff;
   --default-artist-font-color: #ccc;
   --default-album-font-color: #ccc;
   --default-media-info-font-color: #ccc;
   --default-seek-time-font-color: var(--seekbar-text-color); // From theme
   --default-metadata-font-color: #ccc;
+  --default-synced-lyrics-color: #777;
+  --default-synced-lyrics-current-line-color: #ccc;
   --default-text-alignment-h: unset;
   --default-text-alignment-v: unset;
   --default-text-alignment-lyrics: center;
@@ -38,6 +49,7 @@
   --default-albumart-fit: cover;
   --default-albumart-border: none;
   --default-albumart-border-radius: 0px;
+  --default-albumart-margin: 0 12px 0 0;
   --default-track-info-width: auto;
   --default-track-info-height: auto;
   --default-track-info-min-width: auto;
@@ -45,6 +57,14 @@
   --default-track-info-max-width: auto;
   --default-track-info-max-height: auto;
 
+  --content-padding: var(--default-content-padding);
+  --content-padding-portrait: var(--default-content-padding-portrait);
+  --title-font-style: var(--default-title-font-style);
+  --artist-font-style: var(--default-artist-font-style);
+  --album-font-style: var(--default-album-font-style);
+  --media-info-font-style: var(--default-media-info-font-style);
+  --seek-time-font-style: var(--default-seek-time-font-style);
+  --metadata-font-style: var(--default-metadata-font-style);
   --base-font-size: var(--default-base-font-size);
   --title-font-size: 28px;
   --artist-font-size: 24px;
@@ -58,6 +78,9 @@
   --media-info-font-color: #ccc;
   --seek-time-font-color: #fff;
   --metadata-font-color: #ccc;
+  --synced-lyrics-current-line-font-size: var(--default-synced-lyrics-current-line-font-size);
+  --synced-lyrics-color: var(--default-synced-lyrics-color);
+  --synced-lyrics-current-line-color: var(--default-synced-lyrics-current-line-color);
   --text-alignment-h: var(--default-text-alignment-h);
   --text-alignment-v: var(--default-text-alignment-v);
   --text-alignment-lyrics: var(--default-text-alignment-lyrics);
@@ -81,6 +104,7 @@
   --albumart-fit: var(--default-albumart-fit);
   --albumart-border: var(--default-albumart-border);
   --albumart-border-radius: var(--default-albumart-border-radius);
+  --albumart-margin: var(--default-albumart-margin);
   --track-info-width: var(--default-track-info-width);
   --track-info-height: 410px;
   --track-info-min-width: var(--default-track-info-min-width);
@@ -114,7 +138,7 @@
   }
 
   @media all and (orientation: portrait) {
-    padding: 2em 40px;
+    padding: var(--content-padding-portrait);
 
     &__contents {
       flex-direction: column;

@@ -20,6 +20,7 @@ const contexts: Record<CommonSettingsCategory, any> = {
   [CommonSettingsCategory.Localization]: createContext({} as SettingsContextValue<CommonSettingsCategory.Localization>),
   [CommonSettingsCategory.Background]: createContext({} as SettingsContextValue<CommonSettingsCategory.Background>),
   [CommonSettingsCategory.ActionPanel]: createContext({} as SettingsContextValue<CommonSettingsCategory.ActionPanel>),
+  [CommonSettingsCategory.ContentRegion]: createContext({} as SettingsContextValue<CommonSettingsCategory.ContentRegion>),
   [CommonSettingsCategory.NowPlayingScreen]: createContext({} as SettingsContextValue<CommonSettingsCategory.NowPlayingScreen>),
   [CommonSettingsCategory.IdleScreen]: createContext({} as SettingsContextValue<CommonSettingsCategory.IdleScreen>)
 };

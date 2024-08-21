@@ -1,0 +1,23 @@
+@import "../../common/TrackInfoText";
+
+.DockedMediaFormat {
+  @extend .TrackInfoText;
+
+  --font-size: var(--docked-font-size, 1em);
+  --font-color: var(--docked-font-color, #cccccc);
+  min-height: calc(var(--base-font-size, 1em) * 1.5);
+
+  &__format {
+    margin: var(--docked-margin, inherit);
+  }
+
+  &__formatIcon {
+    height: var(--font-size);
+    margin-right: 5px;
+  }
+
+  &__formatResolution {
+    font-size: var(--font-size);
+    color: var(--font-color);
+  }
+}

@@ -43,12 +43,13 @@
   --screen-switcher-active-color: var(--common-accent-color);
 
   // Seekbar
-  --seekbar-height: 5px;
+  --seekbar-height: 0.3em;
   --seekbar-thumb-color: var(--common-accent-color);
   --seekbar-thumb-size: 1.2em;
+  --seekbar-thumb-border-radius: 50%;
   --seekbar-track-played-color: var(--common-accent-color);
   --seekbar-track-remaining-color: var(--common-foreground-color);
-  --seekbar-track-border-radius: 2.5px;
+  --seekbar-track-border-radius: 0.15em;
   --seekbar-text-font-family: var(--common-secondary-font-family);
   --seekbar-text-font-size: 0.8em;
   --seekbar-text-color: var(--common-foreground-color);

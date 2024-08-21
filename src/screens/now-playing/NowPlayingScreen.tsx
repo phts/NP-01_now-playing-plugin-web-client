@@ -9,7 +9,6 @@ import { SwipeEventData, useSwipeable } from 'react-swipeable';
 import { eventPathHasNoSwipe } from '../../utils/event';
 import { ScreenProps, useScreens } from '../../contexts/ScreenContextProvider';
 import { ACTION_PANEL, VOLUME_INDICATOR } from '../../modals/CommonModals';
-import PopupMenu, { PopupMenuItem } from '../../common/PopupMenu';
 import BasicView from './BasicView';
 import InfoView from './InfoView';
 import { useSettings } from '../../contexts/SettingsProvider';
@@ -19,11 +18,12 @@ import DockedVolumeIndicator from './DockedVolumeIndicator';
 import DockedClock from './DockedClock';
 import DockedWeather from './DockedWeather';
 import DockedActionPanelTrigger from './DockedActionPanelTrigger';
-import { useTranslation } from 'react-i18next';
-import { ClickEvent } from '@szhsin/react-menu';
 import { TrackInfoTextProps } from '../../common/TrackInfoText';
 import { CommonSettingsCategory, DockComponentPlacement } from 'now-playing-common';
 import { StartupOptions } from 'now-playing-common/dist/config/StartupOptions';
+import DockedMediaFormat from './DockedMediaFormat';
+import DockedMenu from './DockedMenu';
+import { LoadedFont, useFonts } from '../../contexts/FontProvider';
 
 export interface NowPlayingScreenProps extends ScreenProps {
   screenId: 'NowPlaying';
@@ -41,26 +41,56 @@ const getStartupView = (startupOptions: StartupOptions) => {
   if (startupOptions.activeScreen === 'nowPlaying.basicView') {
     return 'basic';
   }
-  else if (startupOptions.activeScreen === 'nowPlaying.infoView') {
+  else if (
+    startupOptions.activeScreen === 'nowPlaying.infoView' ||
+    startupOptions.activeScreen === 'nowPlaying.infoView.artist' ||
+    startupOptions.activeScreen === 'nowPlaying.infoView.album' ||
+    startupOptions.activeScreen === 'nowPlaying.infoView.lyrics'
+  ) {
     return 'info';
   }
   return undefined;
 };
 
+const getInfoViewStartupType = (startupOptions: StartupOptions) => {
+  switch (startupOptions.activeScreen) {
+    case 'nowPlaying.infoView':
+      return 'song';
+    case 'nowPlaying.infoView.artist':
+      return 'artist';
+    case 'nowPlaying.infoView.album':
+      return 'album';
+    case 'nowPlaying.infoView.lyrics':
+      return 'lyrics';
+    default:
+      return undefined;
+  }
+};
+
 const RESTORE_STATE_KEY = 'NowPlayingScreen.restoreState';
+
+type FontFamily =
+  'NowPlayingScreen_Title' |
+  'NowPlayingScreen_Artist' |
+  'NowPlayingScreen_Album' |
+  'NowPlayingScreen_MediaInfo' |
+  'NowPlayingScreen_SeekTime' |
+  'NowPlayingScreen_Metadata';
 
 function NowPlayingScreen(props: NowPlayingScreenProps) {
   const playerState = usePlayerState();
   const { openModal, disableModal, enableModal } = useModals();
+  const { settings: contentRegionSettings } = useSettings(CommonSettingsCategory.ContentRegion);
   const { settings: screenSettings } = useSettings(CommonSettingsCategory.NowPlayingScreen);
   const { settings: startupOptions } = useSettings(CommonSettingsCategory.Startup);
+  const { loadFont, getLoadedFonts } = useFonts();
+  const [ loadedFonts, setLoadedFonts ] = useState<LoadedFont[]>([]);
   const screenEl = useRef<HTMLDivElement | null>(null);
   const { activeScreenId, switchScreen } = useScreens();
   const store = useStore();
   const restoreState = store.get<NowPlayingScreenRestoreState>(RESTORE_STATE_KEY, {}, true);
   const startupView = !restoreState.previouslyMounted ? getStartupView(startupOptions) : undefined;
   const [ view, setView ] = useState(startupView || restoreState.view || props.view || 'basic');
-  const { t } = useTranslation();
 
   useEffect(() => {
     return () => {
@@ -91,6 +121,35 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     restoreState.view = view;
   }, [ restoreState, view ]);
 
+  useEffect(() => {
+    const loadFontPromises = [
+      loadFont('NowPlayingScreen_Title', screenSettings.titleFontStyle),
+      loadFont('NowPlayingScreen_Artist', screenSettings.artistFontStyle),
+      loadFont('NowPlayingScreen_Album', screenSettings.albumFontStyle),
+      loadFont('NowPlayingScreen_MediaInfo', screenSettings.mediaInfoFontStyle),
+      loadFont('NowPlayingScreen_SeekTime', screenSettings.seekTimeFontStyle),
+      loadFont('NowPlayingScreen_Metadata', screenSettings.metadataFontStyle)
+    ];
+    Promise.all(loadFontPromises).then((results) => {
+      // `loadFont()` returns true when document's fonts have actually changed
+      if (!results.every((r) => !r)) {
+        const families: FontFamily[] = [
+          'NowPlayingScreen_Title',
+          'NowPlayingScreen_Artist',
+          'NowPlayingScreen_Album',
+          'NowPlayingScreen_MediaInfo',
+          'NowPlayingScreen_SeekTime',
+          'NowPlayingScreen_Metadata'
+        ];
+        const loaded = getLoadedFonts().filter((f) => families.includes(f.family as any));
+        setLoadedFonts(loaded);
+      }
+    })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [ loadFont, getLoadedFonts, screenSettings ]);
+
   const openActionPanel = useCallback(() => {
     openModal(ACTION_PANEL);
   }, [ openModal ]);
@@ -98,6 +157,47 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
   // Custom styles
   const css = useMemo(() => {
     const _css: any = {};
+
+    if (contentRegionSettings.padding === 'custom') {
+      if (view === 'basic') {
+        if (contentRegionSettings.npBasicViewPadding) {
+          _css['--content-padding'] = contentRegionSettings.npBasicViewPadding;
+        }
+        if (contentRegionSettings.npBasicViewPaddingPortrait) {
+          _css['--content-padding-portrait'] = contentRegionSettings.npBasicViewPaddingPortrait;
+        }
+      }
+      else if (view === 'info') {
+        if (contentRegionSettings.npInfoViewPadding) {
+          _css['--content-padding'] = contentRegionSettings.npInfoViewPadding;
+        }
+        if (contentRegionSettings.npInfoViewPaddingPortrait) {
+          _css['--content-padding-portrait'] = contentRegionSettings.npInfoViewPaddingPortrait;
+        }
+      }
+    }
+
+    if (screenSettings.fontStyles === 'custom') {
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_Title')) {
+        _css['--title-font-style'] = 'NowPlayingScreen_Title';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_Artist')) {
+        _css['--artist-font-style'] = 'NowPlayingScreen_Artist';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_Album')) {
+        _css['--album-font-style'] = 'NowPlayingScreen_Album';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_MediaInfo')) {
+        _css['--media-info-font-style'] = 'NowPlayingScreen_MediaInfo';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_SeekTime')) {
+        _css['--seek-time-font-style'] = 'NowPlayingScreen_SeekTime';
+      }
+      if (loadedFonts.find((f) => f.family === 'NowPlayingScreen_Metadata')) {
+        _css['--metadata-font-style'] = 'NowPlayingScreen_Metadata';
+      }
+    }
+
     if (screenSettings.fontSizes === 'custom') {
       _css['--title-font-size'] = screenSettings.titleFontSize;
       _css['--artist-font-size'] = screenSettings.artistFontSize;
@@ -105,6 +205,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--media-info-font-size'] = screenSettings.mediaInfoFontSize;
       _css['--seek-time-font-size'] = screenSettings.seekTimeFontSize;
       _css['--metadata-font-size'] = screenSettings.metadataFontSize;
+      _css['--synced-lyrics-current-line-font-size'] = screenSettings.syncedLyricsCurrentLineFontSize;
     }
 
     if (screenSettings.fontColors === 'custom') {
@@ -114,6 +215,8 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--media-info-font-color'] = screenSettings.mediaInfoFontColor;
       _css['--seek-time-font-color'] = screenSettings.seekTimeFontColor;
       _css['--metadata-font-color'] = screenSettings.metadataFontColor;
+      _css['--synced-lyrics-color'] = screenSettings.syncedLyricsColor;
+      _css['--synced-lyrics-current-line-color'] = screenSettings.syncedLyricsCurrentLineColor;
     }
 
     if (screenSettings.textAlignmentH) {
@@ -150,6 +253,12 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--playback-buttons-size'] = screenSettings.playbackButtonSize;
     }
 
+    if (screenSettings.seekbarStyling === 'custom') {
+      _css['--seekbar-height'] = screenSettings.seekbarThickness;
+      _css['--seekbar-track-border-radius'] = screenSettings.seekbarBorderRadius;
+      _css['--seekbar-thumb-size'] = screenSettings.seekbarThumbSize;
+    }
+
     if (screenSettings.widgetMargins === 'custom') {
       _css['--playback-buttons-margin'] = screenSettings.playbackButtonsMargin;
       _css['--seekbar-margin'] = screenSettings.seekbarMargin;
@@ -172,8 +281,12 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       _css['--albumart-border-radius'] = screenSettings.albumartBorderRadius;
     }
 
+    if (screenSettings.albumartMargin) {
+      _css['--albumart-margin'] = screenSettings.albumartMargin;
+    }
+
     return _css;
-  }, [ screenSettings ]);
+  }, [ screenSettings, contentRegionSettings, view, loadedFonts ]);
 
   const getDockChildren = (position: DockComponentPlacement) => {
     const children: { order: number; component: React.JSX.Element; }[] = [];
@@ -199,6 +312,14 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
       children.push({
         order: Number(dockedWeather.displayOrder) || 0,
         component: <DockedWeather key="dockedWeather" />
+      });
+    }
+
+    const dockedMediaFormat = screenSettings.dockedMediaFormat || {};
+    if (dockedMediaFormat.enabled && dockedMediaFormat.placement === position) {
+      children.push({
+        order: Number(dockedMediaFormat.displayOrder) || 0,
+        component: <DockedMediaFormat key="dockedMediaFormat" />
       });
     }
 
@@ -233,6 +354,10 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
   const widgetsVisibility = screenSettings.widgetVisibility === 'custom' ? {
     playbackButtons: screenSettings.playbackButtonsVisibility,
     seekbar: screenSettings.seekbarVisibility
+  } : undefined;
+
+  const seekbarProps = screenSettings.seekbarStyling === 'custom' ? {
+    showThumb: screenSettings.seekbarShowThumb
   } : undefined;
 
   const trackInfoOrder = useMemo(() => {
@@ -317,9 +442,7 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
     screenEl.current = el;
   };
 
-  const handleMenuItemClicked = (e: ClickEvent) => {
-    e.syntheticEvent.stopPropagation();
-    const { action } = e.value;
+  const handleMenuItemClicked = (action: string) => {
     switch (action) {
       case 'toggleView':
         setView(view === 'basic' ? 'info' : 'basic');
@@ -341,58 +464,16 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
         });
         break;
       default:
-
     }
   };
 
   // Menu
   const getMenu = () => {
-    const menuItems: PopupMenuItem[] = [
-      {
-        type: 'item',
-        key: 'toggleView',
-        value: {
-          action: 'toggleView'
-        },
-        icon: view === 'basic' ? 'newspaper' : 'art_track',
-        title: view === 'basic' ? t('screen.nowPlaying.infoView') : t('screen.nowPlaying.basicView')
-      },
-      {
-        type: 'divider',
-        key: 'divider1'
-      },
-      {
-        type: 'item',
-        key: 'gotoArtist',
-        value: {
-          action: 'gotoArtist'
-        },
-        icon: 'person',
-        title: t('action.gotoArtist')
-      },
-      {
-        type: 'item',
-        key: 'gotoAlbum',
-        value: {
-          action: 'gotoAlbum'
-        },
-        icon: 'album',
-        title: t('action.gotoAlbum')
-      }
-    ];
-
     return (
-      <PopupMenu
-        styles={{
-          baseClassName: 'PopupMenu',
-          bundle: styles,
-          extraClassNames: [ 'no-swipe' ]
-        }}
-        key="nowPlayingPopupMenu"
-        align="end"
-        direction="bottom"
-        onMenuItemClick={handleMenuItemClicked}
-        menuItems={menuItems} />
+      <DockedMenu
+        view={view}
+        iconStyle={screenSettings.dockedMenu.iconStyle}
+        onMenuItemClick={handleMenuItemClicked} />
     );
   };
 
@@ -403,31 +484,53 @@ function NowPlayingScreen(props: NowPlayingScreenProps) {
 
   const marqueeTitle = screenSettings.trackInfoMarqueeTitle;
 
+  const dockChildren = {
+    topLeft: getDockChildren('top-left'),
+    top: getDockChildren('top'),
+    topRight: getDockChildren('top-right'),
+    left: getDockChildren('left'),
+    right: getDockChildren('right'),
+    bottomLeft: getDockChildren('bottom-left'),
+    bottom: getDockChildren('bottom'),
+    bottomRight: getDockChildren('bottom-right')
+  };
+
+  const hasTopDockChildren = dockChildren.top.length + dockChildren.topLeft.length + dockChildren.topRight.length > 0;
+  const hasBottomDockChildren = dockChildren.bottom.length + dockChildren.bottomLeft.length + dockChildren.bottomRight.length > 0;
+
   return (
     <div
       className={layoutClasses}
       style={{ ...css, ...props.style }}
       {...swipeHandler}
       ref={swipeableRefPassthrough}>
-      <Dock position="topLeft">{getDockChildren('top-left')}</Dock>
-      <Dock position="top">{getDockChildren('top')}</Dock>
-      <Dock position="topRight">{getDockChildren('top-right')}</Dock>
-      <Dock position="left">{getDockChildren('left')}</Dock>
-      <Dock position="right">{getDockChildren('right')}</Dock>
-      <Dock position="bottomLeft">{getDockChildren('bottom-left')}</Dock>
-      <Dock position="bottom">{getDockChildren('bottom')}</Dock>
-      <Dock position="bottomRight">{getDockChildren('bottom-right')}</Dock>
+      <Dock position="topLeft">{dockChildren.topLeft}</Dock>
+      <Dock position="top">{dockChildren.top}</Dock>
+      <Dock position="topRight">{dockChildren.topRight}</Dock>
+      <Dock position="left">{dockChildren.left}</Dock>
+      <Dock position="right">{dockChildren.right}</Dock>
+      <Dock position="bottomLeft">{dockChildren.bottomLeft}</Dock>
+      <Dock position="bottom">{dockChildren.bottom}</Dock>
+      <Dock position="bottomRight">{dockChildren.bottomRight}</Dock>
       <div className={styles.Layout__view}>
         {view === 'basic' ?
           <BasicView
             playerState={playerState}
             trackInfoVisibility={trackInfoVisibility}
             widgetsVisibility={widgetsVisibility}
+            seekbarProps={seekbarProps}
             albumartVisibility={screenSettings.albumartVisibility}
             trackInfoOrder={trackInfoOrder}
             marqueeTitle={marqueeTitle} />
           : view === 'info' ?
-            <InfoView playerState={playerState} />
+            <InfoView
+              playerState={playerState}
+              widgetsVisibility={widgetsVisibility}
+              seekbarProps={seekbarProps}
+              topPadding={hasTopDockChildren}
+              bottomPadding={hasBottomDockChildren}
+              layout={screenSettings.infoViewLayout}
+              displayInfoType={getInfoViewStartupType(startupOptions)}/>
             : null}
       </div>
     </div>

@@ -11,7 +11,7 @@
 
 .AlbumArt {
   display: var(--albumart-visibility);
-  margin-right: 12px;
+  margin: var(--albumart-margin);
 
   &__image {
     filter: drop-shadow(0 0 8px #00000080);
@@ -59,14 +59,23 @@
 
   &__title {
     color: var(--title-font-color);
-    font-family: "Noto Sans Display", sans-serif;
+    font-family: var(--title-font-style);
     font-size: var(--title-font-size);
     margin: var(--title-margin);
     -webkit-line-clamp: var(--max-title-lines);
   }
 
+  &__marqueeTitleWrapper {
+    margin: var(--title-margin);
+  }
+
+  &__marqueeTitleWrapper &__title {
+    margin: unset !important;
+  }
+
   &__artist {
     color: var(--artist-font-color);
+    font-family: var(--artist-font-style);
     -webkit-line-clamp: var(--max-artist-lines);
   }
 
@@ -77,6 +86,7 @@
 
   &__album {
     color: var(--album-font-color);
+    font-family: var(--album-font-style);
     font-size: var(--album-font-size);
     margin: var(--album-margin);
     -webkit-line-clamp: var(--max-album-lines);
@@ -91,6 +101,7 @@
   }
 
   &__formatResolution {
+    font-family: var(--media-info-font-style);
     font-size: var(--media-info-font-size);
     color: var(--media-info-font-color);
   }
@@ -238,6 +249,7 @@
   --seekbar-thumb-color: var(--widget-highlight-color);
   --seekbar-track-played-color: var(--widget-highlight-color);
   --seekbar-track-remaining-color: var(--widget-primary-color);
+  --seekbar-text-font-family: var(--seek-time-font-style);
   --seekbar-text-font-size: var(--seek-time-font-size);
   --seekbar-text-color: var(--seek-time-font-color);
 
