@@ -241,6 +241,9 @@
   &--stop-status {
     color: var(--widget-primary-color);
   }
+  &--play-status {
+    color: var(--common-foreground-color-light);
+  }
 }
 
 @import "../../common/Seekbar";
