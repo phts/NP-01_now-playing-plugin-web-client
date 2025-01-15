@@ -229,14 +229,13 @@
     display: none;
   }
   &--play {
-    margin-right: auto;
-    order: -1;
+    margin-left: auto; // PlayerButtonGroup -> justify-content=end does not work on screen
   }
   &--play::before {
     border: 0 none;
   }
   &--play &__icon {
-    font-size: 3em;
+    font-size: 1.3em;
   }
   &--stop-status {
     color: var(--widget-primary-color);

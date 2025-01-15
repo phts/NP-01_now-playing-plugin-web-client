@@ -149,7 +149,7 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
   };
 
   const getButtons = () => {
-    const buttons = props.buttons || [ 'stop-after-current', 'repeat', 'previous', 'play', 'next', 'random' ];
+    const buttons = props.buttons || [ 'play', 'random', 'repeat', 'stop-after-current' ];
     const components: React.ReactNode[] = [];
     buttons.forEach((button) => {
       if (typeof button === 'string') {
