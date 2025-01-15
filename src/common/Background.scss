@@ -5,8 +5,8 @@
   --default-background-scale: 1.5;
   --default-background-image: none;
   --default-background-color: #000;
-  --default-background-overlay-color: #000;
-  --default-background-overlay-opacity: 0.5;
+  --default-background-overlay-color: #111;
+  --default-background-overlay-opacity: 1;
   --default-background-overlay-gradient: none;
   --default-background-overlay-display: inherit;
 
@@ -46,7 +46,7 @@
     height: 100%;
     object-fit: var(--background-size);
     object-position: var(--background-position);
-  } 
+  }
 
   // background overlay
   &:after {
