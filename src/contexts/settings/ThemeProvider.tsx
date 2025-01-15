@@ -1,6 +1,7 @@
 import React, { createContext, useEffect } from 'react';
 import defaultTheme from '../../themes/default/index';
 import glassTheme from '../../themes/glass/index';
+import {phtsNp01Theme} from '../../themes/phts-np-01/index';
 import { SettingsContextValue, useSettings } from '../SettingsProvider';
 import { CommonSettingsCategory } from 'now-playing-common';
 
@@ -18,12 +19,13 @@ const ThemeContext = createContext({} as ThemeContextValue);
 
 const themes: Record<string, Theme> = {
   default: defaultTheme,
-  glass: glassTheme
+  glass: glassTheme,
+  phtsNp01: phtsNp01Theme
 };
 
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const { settings: themeSettings, updateSettings } = useSettings(CommonSettingsCategory.Theme);
-  const theme = Reflect.has(themes, themeSettings.active) ? themes[themeSettings.active] : themes.default;
+  const theme = Reflect.has(themes, themeSettings.active) ? themes[themeSettings.active] : themes.phtsNp01;
 
   useEffect(() => {
     document.body.classList.add(...theme.className.split(' '));
