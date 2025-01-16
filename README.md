@@ -1,12 +1,18 @@
 # PHTS NP-01: Web client for Now Playing plugin
 
-This is a modification of original [volumio-now-playing-reactjs-client] (part of [NP-01_now-playing-plugin]) which is used by [PHTS NP-01].
+This is a modification of [volumio-now-playing-reactjs-client] (part of [NP-01_now-playing-plugin]) which is used by [PHTS NP-01].
 
-Noticeable changes:
+Tweaks made to [the original repo][volumio-now-playing-reactjs-client]:
 
-- Redesign/reorder player buttons, progress bar, album art, etc
-- Render year, bitrate, track number
-- Hide all controls on initial screen, leave only default picture, which also changed
+- Redesign "now playing" screen:
+  - Reorder player buttons, progress bar, album art, etc.
+- Render new data from state:
+  - Album year
+  - Bitrate
+  - Track number / Amount of queue items
+  - "Favorite" flag
+  - "Stop after current" indicator
+- Redesign "initial" screen: hide all controls, leave only default picture, which is also changed
 - [...and more][commits]
 
 ## Deploy

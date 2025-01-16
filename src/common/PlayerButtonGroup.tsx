@@ -8,7 +8,7 @@ import { StylesBundleProps } from './StylesBundle';
 export interface PlayerButtonGroupProps {
   playerState: PlayerState;
   className: string;
-  buttons?: Array<'repeat' | 'previous' | 'play' | 'next' | 'random' | React.ReactNode>;
+  buttons?: Array<'repeat' | 'previous' | 'play' | 'next' | 'random' | 'favorite'| React.ReactNode>;
   buttonStyles: StylesBundleProps['styles'];
 }
 
@@ -140,6 +140,16 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
           disabled: !playerState.duration
         };
         break;
+      case 'favorite':
+        buttonProps = {
+          key: 'favorite',
+          icon: 'favorite',
+          styles: getButtonStyles('favorite'),
+          toggleable: true,
+          toggled: !!playerState.favorite,
+          disabled: playerState.favorite === null
+        };
+        break;
       default:
         buttonProps = null;
     }
@@ -152,7 +162,7 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
   };
 
   const getButtons = () => {
-    const buttons = props.buttons || [ 'play', 'random', 'repeat', 'stop-after-current' ];
+    const buttons = props.buttons || [ 'play', 'favorite', 'random', 'repeat', 'stop-after-current' ];
     const components: React.ReactNode[] = [];
     buttons.forEach((button) => {
       if (typeof button === 'string') {

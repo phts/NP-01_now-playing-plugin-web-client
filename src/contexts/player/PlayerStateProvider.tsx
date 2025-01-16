@@ -28,6 +28,7 @@ export interface PlayerState {
   position?: number;
   queueTotal?: number;
   stopAfterCurrent?: boolean;
+  favorite?: boolean | null;
 }
 
 export type PlayerStateContextValue = PlayerState;
