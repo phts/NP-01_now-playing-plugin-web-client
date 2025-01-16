@@ -6,6 +6,7 @@ import { StylesBundleProps } from './StylesBundle';
 export interface ButtonProps extends StylesBundleProps {
   toggleable?: boolean;
   toggled?: boolean;
+  disabled?: boolean;
   image?: string;
   icon?: string;
   text?: string;
@@ -24,6 +25,7 @@ const Button = React.forwardRef<ButtonElement, ButtonProps>((props, ref) => {
       stylesBundle[baseClassName] || 'Button',
       props.toggleable ? stylesBundle[`${baseClassName}--toggleable`] || 'Button--toggleable' : null,
       props.toggled ? stylesBundle[`${baseClassName}--toggled`] || 'Button--toggled' : null,
+      props.disabled ? stylesBundle[`${baseClassName}--disabled`] || 'Button--disabled' : null,
       [ ...extraClassNames ]
     )
     :
@@ -31,6 +33,7 @@ const Button = React.forwardRef<ButtonElement, ButtonProps>((props, ref) => {
       'Button',
       props.toggleable ? 'Button--toggleable' : null,
       props.toggled ? 'Button--toggled' : null,
+      props.disabled ? 'Button--disabled' : null,
       [ ...extraClassNames ]
     );
 

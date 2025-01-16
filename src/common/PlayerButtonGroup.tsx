@@ -76,11 +76,12 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
       case 'repeat':
         buttonProps = {
           key: 'repeat',
-          icon: playerState.duration ? (playerState.repeatSingle ? 'repeat_one' : 'repeat') : '',
+          icon: playerState.repeatSingle ? 'repeat_one' : 'repeat',
           styles: getButtonStyles('repeat'),
           toggleable: true,
           toggled: playerState.repeat,
-          onClick: onRepeatClicked
+          onClick: onRepeatClicked,
+          disabled: !playerState.duration
         };
         break;
       case 'previous':
@@ -120,21 +121,23 @@ function PlayerButtonGroup(props: PlayerButtonGroupProps) {
       case 'random':
         buttonProps = {
           key: 'random',
-          icon: playerState.duration ? 'shuffle' : '',
+          icon: 'shuffle',
           styles: getButtonStyles('random'),
           toggleable: true,
           toggled: playerState.random,
-          onClick: onRandomClicked
+          onClick: onRandomClicked,
+          disabled: !playerState.duration
         };
         break;
       case 'stop-after-current':
         buttonProps = {
           key: 'stop-after-current',
-          icon: playerState.duration ? 'pause_presentation' : '',
+          icon: 'pause_presentation',
           styles: getButtonStyles('stop-after-current'),
           toggleable: true,
           toggled: playerState.stopAfterCurrent,
-          onClick: onStopAfterCurrentClicked
+          onClick: onStopAfterCurrentClicked,
+          disabled: !playerState.duration
         };
         break;
       default:
