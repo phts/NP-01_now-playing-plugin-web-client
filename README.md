@@ -5,7 +5,7 @@ This is a modification of original [volumio-now-playing-reactjs-client] (part of
 Noticeable changes:
 
 - Redesign/reorder player buttons, progress bar, album art, etc
-- Render year, bitrate, track number
+- Render year, bitrate, track number, "favorite" indicator
 - Hide all controls on initial screen, leave only default picture, which also changed
 - [...and more][commits]
 
