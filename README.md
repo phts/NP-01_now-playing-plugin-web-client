@@ -2,6 +2,9 @@ Web client served by [Volumio Now Playing plugin](https://github.com/patrickkfka
 
 ## Changelog
 
+0.7.4
+- Update socket.io v2
+
 0.7.3
 - Add `duration` to metadata requests
 
