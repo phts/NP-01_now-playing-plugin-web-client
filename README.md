@@ -13,6 +13,7 @@ Tweaks made to [the original repo][volumio-now-playing-reactjs-client]:
   - "Favorite" flag
   - "Stop after current" indicator
 - Redesign "initial" screen: hide all controls, leave only default picture, which is also changed
+- Support "Show clock" options for idle screen config
 - [...and more][commits]
 
 ## Deploy
