@@ -20,7 +20,7 @@ function IdleScreen(props: IdleScreenProps) {
   const { settings: screenSettings } = useSettings(CommonSettingsCategory.IdleScreen);
   const defaults = DefaultIdleScreenSettings;
   const displayNames = new Intl.DisplayNames([ 'en' ], { type: 'region' });
-  const { showWeather, showLocation, timeFormat } = screenSettings;
+  const { showWeather, showLocation, timeFormat, showClock } = screenSettings;
   const showSeconds = timeFormat === 'default' ? defaults.showSeconds : screenSettings.showSeconds;
   const clockTimeFormat: ClockProps['timeFormat'] = {
     hour12: timeFormat === 'default' ? !defaults.hour24 : !screenSettings.hour24,
@@ -115,7 +115,7 @@ function IdleScreen(props: IdleScreenProps) {
     <div className={styles.Layout} style={layoutStyles} onClick={props.onClick}>
       {backgroundComponent}
       <div className={mainClassNames} style={mainStyles}>
-        <Clock
+        {showClock ? <Clock
           showTime
           dateFormat={{
             year: 'numeric',
@@ -128,7 +128,7 @@ function IdleScreen(props: IdleScreenProps) {
             baseClassName: 'Clock',
             bundle: styles
           }}
-          style={clockStyles} />
+          style={clockStyles} /> : null}
         {locationName ?
           <span className={styles.Location} style={locationStyles} >
             {getLocationName()}
