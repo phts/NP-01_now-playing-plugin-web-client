@@ -19,8 +19,9 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => {
   const idleScreenWaitTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [ idleScreenActive, setIdleScreenActive ] = useState(false);
   const { settings: idleScreenSettings } = useSettings(CommonSettingsCategory.IdleScreen);
-  const { isKiosk } = useAppContext();
+  const { isKiosk, manuallyShowIdleScreen } = useAppContext();
   const idleScreenWaitTime = idleScreenSettings.waitTime;
+  const idleScreenManualControl = idleScreenWaitTime === 0;
   const idleScreenEnabled = (() => {
     const enableValue = idleScreenSettings.enabled;
     switch (enableValue) {
@@ -46,7 +47,7 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => {
   }, [ setIdleScreenActive ]);
 
   const startIdleScreenWaitTimer = useCallback(() => {
-    idleScreenWaitTimerRef.current = setTimeout(enterIdleScreen, idleScreenWaitTime * 1000);
+    idleScreenWaitTimerRef.current = idleScreenManualControl ? null : setTimeout(enterIdleScreen, idleScreenWaitTime * 1000);
   }, [ enterIdleScreen, idleScreenWaitTime ]);
 
   const clearIdleScreenWaitTimer = useCallback(() => {
@@ -66,6 +67,15 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => {
   // Start Idle View timer when playerState changes to 'stop' or 'pause'
   const switchToIdleScreen = idleScreenEnabled && (playerState.status === 'stop' || playerState.status === 'pause');
   useEffect(() => {
+    if (idleScreenManualControl) {
+      if (manuallyShowIdleScreen) {
+        enterIdleScreen();
+      }
+      else {
+        exitIdleScreen();
+      }
+      return;
+    }
     if (switchToIdleScreen && !idleScreenActive) {
       if (!ignoreStartupOptions && startupOptions.activateIdleScreen) {
         enterIdleScreen();
@@ -86,7 +96,8 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => {
       setIgnoreStartupOptions(true);
     }
   }, [ ignoreStartupOptions, startupOptions.activateIdleScreen, enterIdleScreen,
-    switchToIdleScreen, idleScreenActive, startIdleScreenWaitTimer, clearIdleScreenWaitTimer, exitIdleScreen ]);
+    switchToIdleScreen, idleScreenActive, startIdleScreenWaitTimer, clearIdleScreenWaitTimer, exitIdleScreen,
+    idleScreenManualControl, manuallyShowIdleScreen ]);
 
   useEffect(() => {
     setIgnoreStartupOptions(false);

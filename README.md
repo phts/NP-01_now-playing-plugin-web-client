@@ -1,4 +1,4 @@
-# PHTS NP-01: Web client for Now Playing plugin
+# PHTS NP-01: Now Playing plugin for Volumio (Web client)
 
 This is a modification of [volumio-now-playing-reactjs-client] (part of [NP-01_now-playing-plugin]) which is used by [PHTS NP-01].
 
@@ -13,7 +13,8 @@ Tweaks made to [the original repo][volumio-now-playing-reactjs-client]:
   - "Favorite" flag
   - "Stop after current" indicator
 - Redesign "initial" screen: hide all controls, leave only default picture, which is also changed
-- Support "Show clock" options for idle screen config
+- Support "Show clock" options for idle screen config ([patrickkfkan/volumio-now-playing-reactjs-client#5](https://github.com/patrickkfkan/volumio-now-playing-reactjs-client/pull/5))
+- Support manual triggering idle screen when set config `waitTime=0`
 - [...and more][commits]
 
 ## Deploy

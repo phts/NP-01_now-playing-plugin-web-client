@@ -17,6 +17,8 @@ export interface AppContextValue {
   setPluginInfo: (pluginInfo: PluginInfo) => void;
   isKiosk: boolean;
   setKiosk: (kiosk: boolean) => void;
+  manuallyShowIdleScreen: boolean;
+  setManuallyShowIdleScreen: (value: boolean) => void;
 }
 
 const AppContext = createContext({} as AppContextValue);
@@ -28,10 +30,11 @@ const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [ host, setHost ] = useState(getInitialHost());
   const [ pluginInfo, setPluginInfo ] = useReducer(pluginInfoReducer, getInitialPluginInfo());
   const [ isKiosk, setKiosk ] = useState(checkKiosk());
+  const [ manuallyShowIdleScreen, setManuallyShowIdleScreen ] = useState(false);
 
   return (
     <AppContext.Provider
-      value={{ host, setHost, pluginInfo, setPluginInfo, isKiosk, setKiosk }}>
+      value={{ host, setHost, pluginInfo, setPluginInfo, isKiosk, setKiosk, manuallyShowIdleScreen, setManuallyShowIdleScreen }}>
       {children}
     </AppContext.Provider>
   );

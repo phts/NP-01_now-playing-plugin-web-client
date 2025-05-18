@@ -10,7 +10,7 @@ const refresh = () => {
 };
 
 function AppStartup() {
-  const {host, pluginInfo, setPluginInfo} = useAppContext();
+  const {host, pluginInfo, setPluginInfo, setManuallyShowIdleScreen} = useAppContext();
   const {disableTransitions} = usePerformanceContext();
   const {socket, setSocket} = useSocket();
   const currentPluginInfo = useRef<PluginInfo | null>(null);
@@ -51,6 +51,7 @@ function AppStartup() {
 
       socket.on('nowPlayingPluginInfo', setPluginInfo);
       socket.on('nowPlayingRefresh', refresh);
+      socket.on('nowPlayingManuallyShowIdleScreen', setManuallyShowIdleScreen);
 
       socket.connect();
 
@@ -61,9 +62,10 @@ function AppStartup() {
 
         socket.off('nowPlayingPluginInfo', setPluginInfo);
         socket.off('nowPlayingRefresh', refresh);
+        socket.off('nowPlayingManuallyShowIdleScreen', setManuallyShowIdleScreen);
       };
     }
-  }, [ socket, setPluginInfo ]);
+  }, [ socket, setPluginInfo, setManuallyShowIdleScreen ]);
 
   useEffect(() => {
     // Plugin info updated - compare and decide whether to reload
